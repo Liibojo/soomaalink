@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoomaaLink - V8 FINAL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body{font-family:Inter,sans-serif;background:#000;color:#fff;margin:0}
+.video-card{scroll-snap-align:start;position:relative;height:100vh;overflow:hidden}
+.hide-scrollbar::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body class="bg-black">
+<header class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-4 py-3">
+<div class="flex items-center gap-2"><span class="text-2xl font-black text-[#ff0050]">Soomaa</span><span class="text-2xl font-black">Link</span><span class="ml-2 bg-[#ff0050] text-xs px-2 py-0.5 rounded-full font-bold">V8 FINAL</span></div>
+<div class="flex gap-3"><button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="bg-white text-black px-4 py-1.5 rounded-full font-bold text-sm">+ Upload</button></div>
+</header>
+<main id="feed" class="h-screen overflow-y-scroll snap-y snap-mandatory hide-scrollbar pt-12"></main>
+<nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-white/10 flex justify-around py-2 z-50">
+<button class="flex flex-col items-center text-white"><i class="fa-solid fa-house"></i><span class="text-[10px] mt-1 font-bold">Home</span></button>
+<button class="flex flex-col items-center text-white/50"><i class="fa-solid fa-magnifying-glass"></i><span class="text-[10px]">Search</span></button>
+<button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="flex flex-col items-center"><div class="bg-white text-black px-3 py-1 rounded-lg"><i class="fa-solid fa-plus"></i></div></button>
+<button class="flex flex-col items-center text-white/50"><i class="fa-solid fa-inbox"></i><span class="text-[10px]">Inbox</span></button>
+<button class="flex flex-col items-center text-white/50"><i class="fa-regular fa-user"></i><span class="text-[10px]">Profile</span></button>
+</nav>
+<div id="uploadModal" class="hidden fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4">
+<div class="bg-[#1a1a1a] w-full max-w-md rounded-2xl p-6 relative">
+<button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="absolute top-4 right-4">X</button>
+<h2 class="text-xl font-bold mb-4">Upload Video</h2>
+<input type="file" id="videoFile" accept="video/*" class="w-full bg-black border border-white/20 rounded-xl p-3 mb-3 text-sm">
+<input type="text" id="videoTitle" placeholder="Ciwaanka" class="w-full bg-black border border-white/20 rounded-xl p-3 mb-3 text-sm">
+<textarea id="videoDesc" placeholder="Sharaxaad..." class="w-full bg-black border border-white/20 rounded-xl p-3 mb-3 text-sm h-20"></textarea>
+<div id="uploadProgress" class="hidden mb-3"><div class="h-2 bg-white/10 rounded-full"><div id="progressBar" class="h-full bg-[#ff0050] w-0"></div></div><p id="progressText" class="text-xs mt-1">0%</p></div>
+<button onclick="uploadVideo()" id="uploadBtn" class="w-full bg-[#ff0050] py-3 rounded-xl font-bold">Upload Now</button>
+</div>
+</div>
+<script>
+const defaultVideos=[
+{url:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",title:"Qosolka Maanta 😂 - SoomaaLink",user:"@liibojo",likes:"12.5K"},
+{url:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",title:"Hees Cusub 2026 🎵",user:"@hodan_music",likes:"8.2K"},
+{url:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",title:"Wararka Caawa - Muqdisho",user:"@wararka_som",likes:"5.4K"},
+];
+function renderVideo(v){
+return `<div class="video-card snap-start relative flex items-center justify-center bg-black">
+<video src="${v.url}" loop playsinline class="h-full w-full object-cover" onclick="this.paused?this.play():this.pause()"></video>
+<div class="absolute bottom-20 left-4 right-20"><p class="font-bold text-sm">${v.user}</p><p class="text-sm mt-1">${v.title}</p></div>
+<div class="absolute bottom-28 right-3 flex flex-col items-center gap-6">
+<button class="flex flex-col items-center"><div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-heart text-xl"></i></div><span class="text-xs font-bold mt-1">${v.likes}</span></button>
+<button class="flex flex-col items-center"><div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-comment-dots text-xl"></i></div><span class="text-xs">342</span></button>
+<button class="flex flex-col items-center"><div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-share text-xl"></i></div><span class="text-xs">Share</span></button>
+</div></div>`;
+}
+function loadFeed(){
+const feed=document.getElementById('feed');
+const stored=JSON.parse(localStorage.getItem('soomaalink_videos')||'[]');
+const videos=[...stored,...defaultVideos];
+feed.innerHTML=videos.map(renderVideo).join('');
+const first=feed.querySelector('video');if(first)first.play().catch(()=>{});
+const obs=new IntersectionObserver((entries)=>{entries.forEach(en=>{const vid=en.target.querySelector('video');if(!vid)return;if(en.isIntersecting)vid.play().catch(()=>{});else vid.pause();});},{threshold:0.7});
+document.querySelectorAll('.video-card').forEach(c=>obs.observe(c));
+}
+loadFeed();
+function uploadVideo(){
+const file=document.getElementById('videoFile').files[0];
+const title=document.getElementById('videoTitle').value||"Video Cusub";
+if(!file){alert("Fadlan dooro video!");return;}
+const btn=document.getElementById('uploadBtn');btn.disabled=true;btn.innerHTML="Uploading...";
+document.getElementById('uploadProgress').classList.remove('hidden');
+let p=0;const interval=setInterval(()=>{p+=15;document.getElementById('progressBar').style.width=p+"%";document.getElementById('progressText').innerText=p+"%";
+if(p>=100){clearInterval(interval);
+const url=URL.createObjectURL(file);
+const newV={url,title,user:"@liibojo",likes:"0"};
+const stored=JSON.parse(localStorage.getItem('soomaalink_videos')||'[]');stored.unshift(newV);localStorage.setItem('soomaalink_videos',JSON.stringify(stored));
+alert("Uploaded! Hadda waa Local - Firebase ayaan ku xiri
