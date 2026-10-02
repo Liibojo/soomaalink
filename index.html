@@ -2,201 +2,77 @@
 <html lang="so">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>SoomaaLink V29 ULTIMATE - Firebase LIVE</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SoomaaliLink - Isku Xirka Soomaalida</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--green:#1DB954;--bg:#0a0a0a;--card:#161616;--card2:#1e1e1e;--text:#fff;--muted:#9ca3af;--border:#2a2a2a}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,sans-serif;padding-bottom:90px}
-.header{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-dot{width:36px;height:36px;background:var(--green);border-radius:50%;display:grid;place-items:center;font-weight:900;color:#000}
-.container{max-width:600px;margin:0 auto;padding:12px}
-.auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;text-align:center}
-.btn{background:var(--green);color:#000;border:0;padding:12px 20px;border-radius:12px;font-weight:800;width:100%;margin-top:8px;cursor:pointer}
-.btn2{background:var(--card2);color:#fff;border:1px solid var(--border);padding:10px 16px;border-radius:12px;font-weight:700;width:100%;margin-top:8px;cursor:pointer}
-.input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;color:#fff;outline:none;margin-top:8px}
-.create-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px;margin-bottom:14px}
-.tabs{display:flex;gap:8px;margin:10px 0}
-.tab{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer}
-.tab.active{background:var(--green);color:#000;border-color:var(--green)}
-.upload{border:2px dashed var(--border);border-radius:14px;padding:16px;text-align:center;position:relative}
-.upload input{position:absolute;inset:0;opacity:0}
-.preview{width:100%;border-radius:14px;margin-top:10px;max-height:380px;object-fit:contain;display:none}
-.post{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:14px}
-.post-head{padding:12px;display:flex;justify-content:space-between;align-items:center}
-.user{display:flex;gap:10px;align-items:center}
-.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--green),#0a5);display:grid;place-items:center;font-weight:800;color:#000}
-.post-text{padding:0 12px 10px;font-size:14px;line-height:1.5;white-space:pre-wrap}
-.post-media{width:100%;background:#000;max-height:70vh;object-fit:contain;display:block}
-.actions{display:flex;gap:8px;padding:10px 12px}
-.act{display:flex;gap:6px;background:var(--card2);border:1px solid var(--border);padding:8px 14px;border-radius:20px;font-size:13px;color:var(--muted);cursor:pointer}
-.act.liked{background:rgba(29,185,84,.15);border-color:var(--green);color:var(--green)}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(22,22,22,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 14px;z-index:50}
-.bottom button{background:0;border:0;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px}
-.bottom button.active{color:var(--green)}
-.yt-preview{aspect-ratio:16/9;width:100%;border:0;background:#000}
-.stats{display:flex;justify-content:space-around;padding:10px;background:var(--card2);border-radius:14px;margin-bottom:12px;border:1px solid var(--border)}
-.stats b{display:block;color:var(--green)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#f6f7f8}
+header{background:#008751;color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{font-weight:900;font-size:22px}
+.btn{padding:9px 18px;border-radius:999px;border:none;font-weight:800;cursor:pointer}
+.btn-w{background:white;color:#008751}
+.hero{background:linear-gradient(135deg,#008751 0%,#00c46a 100%);color:white;padding:55px 20px 40px;text-align:center}
+.hero h1{font-size:32px;font-weight:900;max-width:500px;margin:0 auto 12px}
+.hero p{opacity:.9;max-width:400px;margin:0 auto 22px}
+.card{background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.feed{max-width:620px;margin:20px auto;padding:0 14px}
+.input-box{display:flex;gap:10px;background:white;padding:10px;border-radius:30px;box-shadow:0 4px 20px rgba(0,0,0,.06);margin-bottom:18px}
+.input-box input{flex:1;border:none;outline:none;padding:10px 14px;font-size:15px}
+.post-btn{background:#008751;color:white;border:none;padding:10px 20px;border-radius:999px;font-weight:900;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="header">
-<div class="logo"><div class="logo-dot">S</div><div><b>SoomaaLink</b><br><small style="color:var(--green)">V29 ULTIMATE • FIREBASE</small></div></div>
-<div id="userTop" style="font-size:12px;color:var(--muted)"></div>
+<header>
+<div class="logo">🇸🇴 SoomaaliLink</div>
+<div><button class="btn btn-w">Gal</button></div>
+</header>
+<div class="hero">
+<h1>Isku Xirka Bulshada Soomaaliyeed</h1>
+<p>Dadaab • Nairobi • Muqdisho • Qurbaha</p>
+<button class="btn btn-w" style="font-size:16px;padding:12px 26px">Bilow Hada →</button>
+<p style="margin-top:15px;font-size:13px">🔥 1,247 online</p>
 </div>
-<div class="container">
-<div id="authBox" class="auth-card">
-<h3>🔐 Login si video u post-gareyso</h3>
-<button class="btn" onclick="loginGoogle()">🔵 Google Login</button>
-<input id="email" class="input" placeholder="Email">
-<input id="password" class="input" type="password" placeholder="Password">
-<div style="display:flex;gap:8px">
-<button class="btn2" onclick="loginEmail()">Login</button>
-<button class="btn2" onclick="signupEmail()">Sign Up</button>
+<div class="feed" id="feed">
+<div class="input-box">
+<input id="postInput" placeholder="Maxaa cusub? La wadaag...">
+<button class="post-btn" onclick="addPost()">Post</button>
 </div>
-<small style="color:var(--muted);display:block;margin-top:8px">Firebase Auth • Secure</small>
+<div id="posts">Loading...</div>
 </div>
-<div class="stats">
-<div><b id="sPosts">0</b><small>Posts</small></div>
-<div><b id="sUsers">∞</b><small>Realtime</small></div>
-<div><b style="color:#fff">● LIVE DB</b><small>Firebase</small></div>
-</div>
-<div id="createBox" class="create-card" style="display:none">
-<h3>📹 Video Cusub (Firebase)</h3>
-<div class="tabs">
-<button class="tab active" onclick="setMode('file')" id="tFile">📁 File</button>
-<button class="tab" onclick="setMode('youtube')" id="tYt">▶️ YouTube</button>
-</div>
-<div id="fileMode">
-<div class="upload"><input type="file" id="fileIn" accept="video/*,image/*" onchange="handleFile(this)"><div>📤 Video/Photo dooro<br><small>Upload to Firebase Storage</small></div></div>
-<img id="imgPrev" class="preview"><video id="vidPrev" class="preview" controls muted></video>
-<div id="uploadProg" style="display:none;margin-top:8px"><div style="background:var(--card2);border-radius:10px;height:10px;overflow:hidden"><div id="progBar" style="width:0%;height:100%;background:var(--green)"></div></div><small id="progText">0%</small></div>
-</div>
-<div id="ytMode" style="display:none">
-<input id="ytIn" class="input" placeholder="https://youtube.com/watch?v=..." oninput="previewYT()">
-<div id="ytBox" style="margin-top:10px;display:none"></div>
-</div>
-<textarea id="capIn" class="input" placeholder="Caption #Soomali..." style="min-height:70px"></textarea>
-<button id="postBtn" class="btn" onclick="createPost()">🚀 Post to Firebase</button>
-<button class="btn2" onclick="logout()" style="margin-top:8px">Logout</button>
-</div>
-<input id="search" class="input" placeholder="🔍 Search posts..." oninput="filterFeed()" style="margin-bottom:12px">
-<div id="feed"></div>
-</div>
-<div class="bottom">
-<button class="active"><span>🏠</span>Feed</button>
-<button onclick="document.getElementById('createBox').scrollIntoView({behavior:'smooth'})"><span>＋</span>Create</button>
-<button onclick="location.reload()"><span>🔄</span>Refresh</button>
-</div>
-<div id="toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:20px;font-weight:700;font-size:13px;display:none;z-index:99"></div>
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyCIOmLEDxgOhcl1qd9sHXtpl7-SDk86NxA",
   authDomain: "soomaalink.firebaseapp.com",
   projectId: "soomaalink",
   storageBucket: "soomaalink.firebasestorage.app",
   messagingSenderId: "11747437865",
-  appId: "1:11747437865:web:af80d198746abeadc85b38"
+  appId: "1:11747437865:web:569952a546d1ed8dc85b38"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
-let mode='file'; let curFile=null; let curYT=null; let currentUser=null; let allPosts=[];
-auth.onAuthStateChanged(user=>{
-  currentUser=user;
-  if(user){
-    document.getElementById('authBox').style.display='none';
-    document.getElementById('createBox').style.display='block';
-    document.getElementById('userTop').innerHTML = (user.displayName||user.email||'User')+' ✅';
-  } else {
-    document.getElementById('authBox').style.display='block';
-    document.getElementById('createBox').style.display='none';
-    document.getElementById('userTop').textContent='Not logged';
-  }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+try{ await signInAnonymously(auth);}catch(e){}
+const postsRef = collection(db, "posts");
+const q = query(postsRef, orderBy("time","desc"));
+onSnapshot(q, snap=>{
+  const div=document.getElementById('posts');
+  if(snap.empty){div.innerHTML='<div class="card" style="text-align:center">Wali post ma jiro - Adiga noqo ugu horeeya! 🚀</div>';return;}
+  div.innerHTML="";
+  snap.forEach(d=>{
+    const p=d.data();
+    div.innerHTML+=`<div class="card"><b style="color:#008751">Soomaali ✓</b><div style="margin-top:8px">${p.text}</div></div>`;
+  });
 });
-function loginGoogle(){ const p=new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(p).catch(e=>showToast(e.message)); }
-function loginEmail(){ auth.signInWithEmailAndPassword(email.value,password.value).catch(e=>showToast(e.message)); }
-function signupEmail(){ auth.createUserWithEmailAndPassword(email.value,password.value).catch(e=>showToast(e.message)); }
-function logout(){ auth.signOut(); }
-function setMode(m){ mode=m; document.getElementById('tFile').classList.toggle('active',m==='file'); document.getElementById('tYt').classList.toggle('active',m==='youtube'); document.getElementById('fileMode').style.display=m==='file'?'block':'none'; document.getElementById('ytMode').style.display=m==='youtube'?'block':'none'; }
-function handleFile(inp){ const f=inp.files[0]; if(!f) return; curFile=f; curYT=null; const url=URL.createObjectURL(f); if(f.type.startsWith('video')){ document.getElementById('vidPrev').src=url; document.getElementById('vidPrev').style.display='block'; document.getElementById('imgPrev').style.display='none'; } else { document.getElementById('imgPrev').src=url; document.getElementById('imgPrev').style.display='block'; document.getElementById('vidPrev').style.display='none'; } }
-function previewYT(){ const v=document.getElementById('ytIn').value.trim(); if(!v){document.getElementById('ytBox').style.display='none';curYT=null;return;} let m=v.match(/(?:v=|\.be\/|shorts\/)([^&\s]+)/); if(m){ curYT={type:'youtube',id:m[1],embed:`https://www.youtube.com/embed/${m[1]}`}; document.getElementById('ytBox').innerHTML=`<iframe class="yt-preview" src="${curYT.embed}" allowfullscreen></iframe>`; document.getElementById('ytBox').style.display='block'; } }
-async function createPost(){
-  if(!currentUser) return showToast('Login first!');
-  const cap=document.getElementById('capIn').value.trim();
-  if(mode==='file' &&!curFile) return showToast('File dooro!');
-  if(mode==='youtube' &&!curYT) return showToast('YouTube link!');
-  const btn=document.getElementById('postBtn'); btn.disabled=true; btn.textContent='⏳ Uploading...';
-  try{
-    let mediaUrl=''; let type='youtube';
-    if(mode==='file' && curFile){
-      type=curFile.type.startsWith('video')?'video':'image';
-      const ref=storage.ref(`posts/${Date.now()}_${curFile.name}`);
-      const task=ref.put(curFile);
-      document.getElementById('uploadProg').style.display='block';
-      task.on('state_changed', s=>{
-        let p=Math.round(s.bytesTransferred/s.totalBytes*100);
-        document.getElementById('progBar').style.width=p+'%';
-        document.getElementById('progText').textContent=p+'%';
-      });
-      await task;
-      mediaUrl=await ref.getDownloadURL();
-    }
-    await db.collection('posts').add({
-      userId: currentUser.uid,
-      userName: currentUser.displayName||currentUser.email.split('@')[0],
-      caption: cap||'Video cusub! 🔥',
-      type: type,
-      mediaUrl: mediaUrl,
-      youtube: curYT||null,
-      likes: 0,
-      likedBy: [],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      comments: []
-    });
-    document.getElementById('capIn').value=''; document.getElementById('fileIn').value=''; document.getElementById('ytIn').value='';
-    document.getElementById('imgPrev').style.display='none'; document.getElementById('vidPrev').style.display='none'; document.getElementById('ytBox').style.display='none'; document.getElementById('uploadProg').style.display='none';
-    curFile=null; curYT=null; showToast('✅ Firebase posted!');
-  }catch(e){ showToast(e.message); }
-  btn.disabled=false; btn.textContent='🚀 Post to Firebase';
+window.addPost=async()=>{
+  const input=document.getElementById('postInput');
+  if(!input.value.trim()) return;
+  const t=input.value; input.value="";
+  try{ await addDoc(postsRef,{text:t,time:serverTimestamp()}); }
+  catch(e){ alert("Firestore fur! Firebase → Firestore Database → Create → Test mode"); }
 }
-db.collection('posts').orderBy('createdAt','desc').limit(50).onSnapshot(snap=>{
-  allPosts=snap.docs.map(d=>({id:d.id,...d.data()}));
-  document.getElementById('sPosts').textContent=allPosts.length;
-  render();
-});
-function filterFeed(){ render(); }
-function render(){
-  const q=(document.getElementById('search').value||'').toLowerCase();
-  let list=allPosts.filter(p=>!q|| (p.caption||'').toLowerCase().includes(q) || (p.userName||'').toLowerCase().includes(q));
-  const feed=document.getElementById('feed');
-  if(list.length===0){ feed.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)">No posts yet - noqo kii ugu horreeyay! 🚀</div>'; return; }
-  feed.innerHTML=list.map(p=>{
-    const isLiked = currentUser && p.likedBy && p.likedBy.includes(currentUser.uid);
-    const time = p.createdAt? p.createdAt.toDate().toLocaleString() : 'Hada';
-    const media = p.youtube? `<iframe class="yt-preview" src="${p.youtube.embed}" allowfullscreen></iframe>` : p.mediaUrl? (p.type==='video'?`<video class="post-media" src="${p.mediaUrl}" controls playsinline></video>`:`<img class="post-media" src="${p.mediaUrl}">`) : '';
-    return `<div class="post"><div class="post-head"><div class="user"><div class="avatar">${(p.userName||'A')[0]}</div><div><b>${p.userName||'User'} ✅</b><br><small>${time}</small></div></div></div><div class="post-text">${(p.caption||'').replace(/</g,'&lt;')}</div>${media}<div class="actions"><button class="act ${isLiked?'liked':''}" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="act">💬 ${(p.comments||[]).length}</button><button class="act" onclick="sharePost('${p.id}')">↗️ Share</button></div></div>`;
-  }).join('');
-}
-async function likePost(id){
-  if(!currentUser) return showToast('Login si like u sameyso!');
-  const ref=db.collection('posts').doc(id);
-  const doc=await ref.get(); const data=doc.data();
-  const likedBy=data.likedBy||[];
-  if(likedBy.includes(currentUser.uid)){
-    await ref.update({likes: firebase.firestore.FieldValue.increment(-1), likedBy: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)});
-  } else {
-    await ref.update({likes: firebase.firestore.FieldValue.increment(1), likedBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)});
-  }
-}
-function sharePost(id){ if(navigator.share){ navigator.share({title:'SoomaaLink',url:location.href}); } else { navigator.clipboard.writeText(location.href); showToast('Link copied 🔗'); } }
-function showToast(t){ const el=document.getElementById('toast'); el.textContent=t; el.style.display='block'; setTimeout(()=>el.style.display='none',2500); }
 </script>
 </body>
 </html>
