@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SoomaaLink V30 - Premium €5</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Outfit,system-ui}
+body{background:#080808;color:#fff;min-height:100vh}
+header{background:#0f0f0f;border-bottom:1px solid #1f1f1f;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{font-weight:900;font-size:22px} .logo span{color:#22c55e}
+.btn{padding:10px 20px;border-radius:999px;border:none;font-weight:800;cursor:pointer}
+.btn-g{background:#22c55e;color:#000}
+.hero{background:radial-gradient(800px at 50% -20%,#22c55e22,transparent),linear-gradient(180deg,#111,#080808);padding:70px 20px 50px;text-align:center}
+.hero h1{font-size:42px;font-weight:900;line-height:.9;max-width:500px;margin:0 auto 16px} .hero h1 span{color:#22c55e}
+.hero p{color:#888;max-width:400px;margin:0 auto 28px;font-size:18px}
+.card{max-width:420px;margin:-10px auto 0;background:#111;border:1px solid #222;border-radius:24px;padding:24px}
+.badge{display:inline-block;background:#22c55e;color:#000;font-weight:900;padding:4px 12px;border-radius:999px;font-size:12px;margin-bottom:12px}
+.price{font-size:48px;font-weight:900;margin:8px 0} .price small{font-size:16px;color:#888}
+.list{list-style:none;margin:18px 0;text-align:left} .list li{padding:10px 0;border-bottom:1px solid #1a1a1a;display:flex;gap:10px;color:#ccc}
+.list li b{color:#fff}
+.pay{width:100%;padding:18px;background:#22c55e;color:#000;border:none;border-radius:16px;font-size:18px;font-weight:900;cursor:pointer;margin-top:10px}
+.pay:hover{transform:scale(1.02)}
+.foot{text-align:center;color:#555;padding:40px;font-size:12px}
+.live{max-width:420px;margin:20px auto 0;background:#0f0f0f;border:1px solid #1f1f1f;border-radius:16px;padding:16px;display:flex;gap:12px;align-items:center}
+.dot{width:10px;height:10px;background:#22c55e;border-radius:50%;box-shadow:0 0 10px #22c55e;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">Soomaa<span>Link</span> V30</div>
+<button class="btn btn-g">Login</button>
+</header>
+
+<div class="hero">
+<h1>Isku Xirka <span>Soomaalida</span> Premium</h1>
+<p>Hel shaqo, isku xir ganacsi, V30 waa 10x ka deg badan V26</p>
+
+<div class="card">
+<span class="badge">🔥 V30 PREMIUM</span>
+<div class="price">€5 <small>/ bishii</small></div>
+<p style="color:#888">Cancel anytime. 7 days free trial.</p>
+
+<ul class="list">
+<li>✅ <b>Unlimited</b> - Xiriir aan xad lahayn</li>
+<li>✅ <b>Verified Badge</b> - Calaamad buluug ah</li>
+<li>✅ <b>Top Search</b> - Hore uga muuqo</li>
+<li>✅ <b>0% Fee</b> - Lacag diris bilaash</li>
+<li>✅ <b>Premium Support</b> - WhatsApp 24/7</li>
+</ul>
+
+<button class="pay" onclick="pay()">BIXI €5 - GAL HADA 💳</button>
+<p style="color:#666;font-size:11px;margin-top:12px;text-align:center">🔒 Stripe Secure Payment</p>
+</div>
+
+<div class="live">
+<div class="dot"></div>
+<div>
+<div style="font-weight:800">342 qof ayaa online ah</div>
+<div style="color:#888;font-size:13px">+18 maanta ku biiray V30</div>
+</div>
+</div>
+</div>
+
+<div class="foot">© 2026 SoomaaLink V30 - Made for Somalis in Europe<br>Paris • Stockholm • London</div>
+
+<script>
+function pay(){
+  alert("✅ V30 Premium!\n\nStripe Payment waa la isku xirayaa...\n\nHada demo: Waxaad gashay Premium!\n\nLink-gaaga: soomaalink.vercel.app");
+  document.body.innerHTML='<div style="background:#080808;color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px"><div style="font-size:80px">🎉</div><h1 style="font-size:36px;font-weight:900;margin:20px 0">Welcome to V30!</h1><p style="color:#888">Premium activated ✅</p><br><a href="/" style="background:#22c55e;color:#000;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:900">Back to Home</a></div>';
+}
+</script>
+</body>
+</html>
