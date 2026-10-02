@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Soomaalink V32</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00a651">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#f0fdf4;min-height:100vh;display:flex;justify-content:center;padding:16px}
+.card{background:white;width:100%;max-width:400px;border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.1);text-align:center;border-top:6px solid #00a651;margin:auto}
+.logo{font-size:40px;font-weight:900;color:#00a651}
+.badge{background:#00a651;color:white;padding:4px 12px;border-radius:20px;font-size:12px;display:inline-block;margin:8px 0}
+.price{font-size:26px;font-weight:900;color:#00a651;margin:10px 0}
+.btn{width:100%;background:#00a651;color:white;border:0;padding:13px;border-radius:12px;font-weight:700;margin:6px 0;cursor:pointer}
+.btn2{background:white;color:#00a651;border:2px solid #00a651}
+input{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:10px;margin:6px 0}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:99}
+.modal>div{background:white;padding:22px;border-radius:16px;width:90%;max-width:360px;text-align:center}
+.dash{display:none}
+.user{ background:#f0fdf4;padding:12px;border-radius:12px;margin:8px 0;text-align:left;display:flex;justify-content:space-between;align-items:center}
+.dot{width:10px;height:10px;background:#00a651;border-radius:50%;display:inline-block}
+</style>
+</head>
+<body>
+
+<div id="home" class="card">
+<div class="logo">S</div>
+<span class="badge">V32 DASHBOARD ✅</span>
+<h2>Soomaalink</h2>
+<p style="color:#666;font-size:13px;margin:6px 0">Platform-ka Soomaalida</p>
+<div class="price">€5 / month</div>
+<button class="btn" onclick="openM()">Ku Biir Hadda - V32</button>
+<button class="btn btn2" onclick="openDash()">Dashboard-ka Fur</button>
+<small style="color:#999"><br>soomaalink-fmzt.vercel.app<br>V32 Premium</small>
+</div>
+
+<div id="dash" class="card dash">
+<div class="logo">S</div>
+<span class="badge">PREMIUM ACTIVE 💚</span>
+<h2>Welcome!</h2>
+<p id="welcome" style="margin:8px 0;color:#00a651;font-weight:700"></p>
+<div style="text-align:left;margin-top:12px">
+<b>📊 Dashboard-kaaga:</b>
+<div class="user"><span><span class="dot"></span> Premium Status</span><b style="color:#00a651">ACTIVE</b></div>
+<div class="user"><span>👥 Members Online</span><b>1,247</b></div>
+<div class="user"><span>💬 Fariimo Cusub</span><b>23</b></div>
+<div class="user"><span>⭐ Points-kaaga</span><b>5,000</b></div>
+</div>
+<button class="btn" onclick="alert('Chat Coming V33!')">💬 Bilow Chat</button>
+<button class="btn btn2" onclick="showHome()">Log Out</button>
+</div>
+
+<div id="modal" class="modal"><div>
+<h3 style="color:#00a651">V32 Premium</h3><br>
+<input id="email" type="email" placeholder="Email-kaaga">
+<input id="phone" type="tel" placeholder="Telefon">
+<button class="btn" onclick="pay()">Bixi €5 - Stripe 💳</button>
+<button class="btn btn2" onclick="closeM()">Xir</button>
+<p id="status" style="margin-top:10px;color:#00a651;font-size:13px"></p>
+</div></div>
+
+<script>
+let userEmail='';
+function openM(){document.getElementById('modal').style.display='flex'}
+function closeM(){document.getElementById('modal').style.display='none'}
+function openDash(){
+ if(!userEmail){openM();document.getElementById('status').innerText='Fadlan marka hore ku biir €5!';return}
+ showDash();
+}
+function showDash(){document.getElementById('home').style.display='none';document.getElementById('dash').style.display='block';}
+function showHome(){document.getElementById('dash').style.display='none';document.getElementById('home').style.display='block';}
+function pay(){
+ let e=document.getElementById('email').value;
+ if(!e){document.getElementById('status').innerText='Email gali!';return}
+ userEmail=e;
+ document.getElementById('status').innerText='✅ Bixinta waa la aqbalay!';
+ document.getElementById('welcome').innerText=e;
+ setTimeout(()=>{closeM();showDash()},1000);
+}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+</script>
+</body>
+</html>
