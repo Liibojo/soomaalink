@@ -1,1 +1,97 @@
-<!DOCTYPE html><html lang="so"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SoomaanLink V30 - Bixi €5</title><style>body{font-family:sans-serif;background:linear-gradient(135deg,#0f172a,#1e40af);color:white;text-align:center;padding:40px 20px;min-height:100vh}h1{font-size:3em;margin:20px}button{background:#22c55e;color:white;border:none;padding:20px 50px;font-size:24px;border-radius:50px;cursor:pointer;font-weight:bold}button:hover{transform:scale(1.05)}#msg{margin-top:20px;font-size:20px}</style></head><body><h1>SoomaanLink V30 💰</h1><p>Lacag Bixinta Auto - €5 = 1 Month Premium</p><p>Waxaad Heli Doontaa Access Buuxa!</p><button onclick="bixi()">💳 BIXI €5 HADA</button><div id="msg"></div><script>function bixi(){document.getElementById('msg').innerHTML='✅ Redirecting to Stripe...';setTimeout(()=>{window.location.href='https://buy.stripe.com/test_14k4gK...'},1000);alert('HADA STRIPE LINK AYAA KA HADHAY - 1 DAQIIQO!')}</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoomaaLink V30 - Premium</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#080808;color:#fff}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif}
+ .glow{box-shadow:0 0 40px rgba(34,197,94,0.3)}
+ .card{background:#141414;border:1px solid #222;border-radius:20px}
+</style>
+</head>
+<body class="min-h-screen">
+<header class="border-b border-[#1a1a1a] px-6 py-4 flex justify-between items-center sticky top-0 bg-[#080808]/90 backdrop-blur z-10">
+  <div class="flex items-center gap-2">
+    <span class="text-green-500 text-2xl">★</span>
+    <span class="font-bold text-lg">SoomaaLink <span class="text-green-500">V30</span> <span class="bg-green-500 text-black text-xs px-2 py-0.5 rounded-full ml-1">PREMIUM</span></span>
+  </div>
+  <a href="/" class="text-sm text-zinc-400 hover:text-white">← Back to Feed</a>
+</header>
+
+<div class="max-w-[900px] mx-auto px-5 py-10">
+  <div class="text-center mb-10">
+    <div class="inline-flex bg-green-500/10 border border-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full mb-4">🔥 127 Somali creators already premium</div>
+    <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">SoomaaLink <span class="text-green-500">V30</span><br>Unlimited. No Limits.</h1>
+    <p class="text-zinc-400 max-w-[560px] mx-auto">V26 waa free. V30 waa full power - post aan xad lahayn, video upload, verified badge, iyo lacag samayn.</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-4 mb-10">
+    <div class="card p-6">
+      <div class="text-2xl mb-3">♾️</div>
+      <h3 class="font-bold mb-1">Unlimited Posts</h3>
+      <p class="text-sm text-zinc-500">V26: 500 chars. V30: No limit + video + images HD.</p>
+    </div>
+    <div class="card p-6 border-green-500/30 glow">
+      <div class="text-2xl mb-3">✅</div>
+      <h3 class="font-bold mb-1">Verified Badge</h3>
+      <p class="text-sm text-zinc-500">Green check + magacaaga oo sare ka muuqda feed-ka.</p>
+    </div>
+    <div class="card p-6">
+      <div class="text-2xl mb-3">💰</div>
+      <h3 class="font-bold mb-1">Earn Money</h3>
+      <p class="text-sm text-zinc-500">Creator fund - post-kaaga views lacag ku hel.</p>
+    </div>
+  </div>
+
+  <div class="card p-8 md:p-10 text-center max-w-[420px] mx-auto glow border-green-500/40">
+    <h2 class="text-2xl font-bold mb-2">SoomaaLink V30 Premium</h2>
+    <div class="flex items-end justify-center gap-2 mb-6">
+      <span class="text-5xl font-bold">€5</span>
+      <span class="text-zinc-500 mb-2">/month</span>
+    </div>
+    <ul class="text-left text-sm text-zinc-300 space-y-2 mb-8 max-w-[260px] mx-auto">
+      <li>✅ Unlimited posts & video</li>
+      <li>✅ Verified green badge</li>
+      <li>✅ No ads, fast feed</li>
+      <li>✅ Earn from views</li>
+      <li>✅ Priority support</li>
+    </ul>
+    <a id="payBtn" href="https://buy.stripe.com/test_00g4g0a0a0a0a0a0" target="_blank" class="block w-full bg-green-500 hover:bg-green-400 text-black font-bold py-4 rounded-xl text-lg transition">
+      Unlock V30 - Pay €5
+    </a>
+    <p class="text-xs text-zinc-500 mt-3">Secure payment by Stripe • Cancel anytime</p>
+    <div class="mt-6 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-xs text-yellow-200/80 text-left">
+      <b>⚠️ How to add your Stripe:</b><br>
+      1. Tag stripe.com → Create product €5<br>
+      2. Copy Payment Link<br>
+      3. GitHub → v30.html → ku beddel link-ga sare
+    </div>
+  </div>
+
+  <div class="text-center mt-10 text-xs text-zinc-600">
+    Already premium? <a href="/?premium=true" class="text-green-500 underline">Login with premium account</a><br>
+    © 2026 SoomaaLink • Made for Somalis worldwide 🌍
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+if(params.get('premium')==='true'){
+  localStorage.setItem('soomaalink_premium','true');
+  alert('Mabruuk! Premium activated ✅');
+}
+document.getElementById('payBtn').addEventListener('click', ()=>{
+  setTimeout(()=>{
+    if(confirm('Payment test: Ma bixisay €5? Riix OK si premium loo daaro (test mode)')){
+      localStorage.setItem('soomaalink_premium','true');
+      location.href='/?premium=true';
+    }
+  }, 2000);
+});
+</script>
+</body>
+</html>
