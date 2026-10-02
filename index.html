@@ -1,63 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="so">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SoomaaLink V27 - Video, Likes, Comments</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SoomaaLink V28 - Final</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;margin:0;padding:10px}
-.header{background:#0d5a2a;padding:15px;text-align:center;font-weight:bold;font-size:20px}
-.card{background:#111;border:1px solid #0d5a2a;border-radius:12px;padding:15px;margin:10px 0}
-.btn{background:#0d5a2a;color:#fff;border:none;padding:10px 15px;border-radius:8px;cursor:pointer}
-input,textarea{width:100%;background:#222;color:#fff;border:1px solid #0d5a2a;border-radius:8px;padding:10px;margin:5px 0}
-video{width:100%;border-radius:10px;margin:10px 0}
-.like-btn{border:1px solid #0d5a2a;padding:5px 12px;border-radius:20px;background:#000;color:#0d5a2a}
-.like-btn.liked{background:#0d5a2a;color:#fff}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#1DB954;--bg:#0a0a0a;--card:#161616;--card2:#1e1e1e;--text:#fff;--muted:#9ca3af;--border:#2a2a2a}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:90px}
+.header{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-dot{width:36px;height:36px;background:var(--green);border-radius:50%;display:grid;place-items:center;font-weight:900;color:#000}
+.logo h1{font-size:20px}
+.logo span{color:var(--green);font-size:11px;display:block;font-weight:700}
+.h-icons{display:flex;gap:14px}
+.h-icons button{background:var(--card);border:1px solid var(--border);width:38px;height:38px;border-radius:12px;color:#fff;font-size:18px}
+.container{max-width:600px;margin:0 auto;padding:12px}
+.create-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:16px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:13px;font-weight:600}
+.tab.active{background:var(--green);color:#000;border-color:var(--green)}
+.input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:12px 14px;color:#fff;font-size:14px;outline:none}
+.input:focus{border-color:var(--green)}
+textarea.input{resize:none;min-height:70px}
+.upload{border:2px dashed var(--border);border-radius:14px;padding:16px;text-align:center;margin:10px 0;position:relative;overflow:hidden}
+.upload input{position:absolute;inset:0;opacity:0}
+.preview{width:100%;border-radius:14px;margin:10px 0;max-height:380px;object-fit:cover;display:none}
+.btn{background:var(--green);color:#000;border:0;padding:12px 22px;border-radius:12px;font-weight:800;font-size:14px;width:100%;margin-top:10px}
+.post{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:16px}
+.post-head{padding:14px;display:flex;justify-content:space-between;align-items:center}
+.user{display:flex;gap:10px;align-items:center}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--green),#0a5);display:grid;place-items:center;font-weight:800;color:#000}
+.post-text{padding:0 14px 10px;font-size:14px;line-height:1.5;white-space:pre-wrap}
+.post-media{width:100%;background:#000;max-height:75vh;object-fit:contain;display:block}
+.actions{display:flex;gap:8px;padding:10px 14px;flex-wrap:wrap}
+.act{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;color:var(--muted)}
+.act.liked{background:rgba(29,185,84,.15);border-color:var(--green);color:var(--green)}
+.comments{background:var(--card2);margin:0 12px 12px;border-radius:14px;padding:10px}
+.c-input{display:flex;gap:8px;margin-top:8px}
+.c-list{max-height:200px;overflow:auto}
+.c-item{display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #222}
+.stats{display:flex;justify-content:space-around;padding:12px;background:var(--card2);border-radius:14px;margin-bottom:16px;border:1px solid var(--border)}
+.stats div{text-align:center}
+.stats b{display:block;color:var(--green);font-size:18px}
+.stats small{color:var(--muted);font-size:11px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(22,22,22,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 14px;z-index:50}
+.bottom button{background:0;border:0;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bottom button.active{color:var(--green)}
+.bottom b{width:28px;height:28px;display:grid;place-items:center;font-size:20px;border-radius:8px}
+.search-box{position:sticky;top:64px;z-index:40;background:var(--bg);padding:8px 0}
+.yt-preview{aspect-ratio:16/9;width:100%;border:0;border-radius:14px;background:#000}
 </style>
 </head>
 <body>
-<div class="header">🟢 SoomaaLink V27</div>
-
-<div class="card">
-<h3>📹 Video Post</h3>
-<input type="file" id="vidInput" accept="video/*">
-<div id="videoPreview"></div>
-<textarea id="caption" placeholder="Caption qoor..."></textarea>
-<button class="btn" onclick="postVideo()">Post Garee</button>
+<div class="header">
+<div class="logo"><div class="logo-dot">S</div><div><h1>SoomaaLink</h1><span>V28 • FINAL • LIVE</span></div></div>
+<div class="h-icons"><button>🔍</button><button>🔔</button></div>
 </div>
-
+<div class="container">
+<div class="stats">
+<div><b id="sPosts">0</b><small>Posts</small></div>
+<div><b id="sLikes">0</b><small>Likes</small></div>
+<div><b id="sUsers">1.2K</b><small>Users</small></div>
+<div><b style="color:#fff">● LIVE</b><small>Online</small></div>
+</div>
+<div class="create-card">
+<h2>📹 Video Cusub Post Garee</h2>
+<div class="tabs">
+<button class="tab active" onclick="setMode('file')" id="tFile">📁 File</button>
+<button class="tab" onclick="setMode('youtube')" id="tYt">▶️ YouTube Link</button>
+</div>
+<div id="fileMode">
+<div class="upload"><input type="file" id="fileIn" accept="video/*,image/*" onchange="handleFile(this)"><p>📤 Taabo si video/photo loo doorto<br><small>MP4, MOV, JPG</small></p></div>
+<img id="imgPrev" class="preview"><video id="vidPrev" class="preview" controls muted></video>
+</div>
+<div id="ytMode" style="display:none">
+<input id="ytIn" class="input" placeholder="Paste YouTube link... https://..." oninput="previewYT()">
+<div id="ytBox" style="margin-top:10px;display:none"></div>
+</div>
+<textarea id="capIn" class="input" placeholder="Caption qoor... #Soomaali #LidoBeach..."></textarea>
+<button class="btn" onclick="createPost()">🚀 Post Garee Hada</button>
+</div>
+<div class="search-box"><input id="search" class="input" placeholder="🔍 Search videos..." oninput="render()"></div>
 <div id="feed"></div>
-
+</div>
+<div class="bottom">
+<button class="active"><b>🏠</b>Feed</button>
+<button><b>🧭</b>Explore</button>
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="color:#000"><b style="background:var(--green);width:44px;height:44px;border-radius:14px">＋</b>Create</button>
+<button><b>💬</b>Msg</button>
+<button><b>👤</b>Profile</button>
+</div>
+<div id="toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:20px;font-weight:700;font-size:13px;display:none;z-index:99"></div>
 <script>
-let posts = JSON.parse(localStorage.getItem('soomaaV27')||'[]');
-function render(){
-  const feed=document.getElementById('feed');
-  feed.innerHTML=posts.map((p,i)=>`
-  <div class="card">
-    ${p.video?`<video controls src="${p.video}"></video>`:''}
-    <p>${p.caption}</p>
-    <button class="like-btn ${p.liked?'liked':''}" onclick="like(${i})">❤️ ${p.likes||0}</button>
-    <div style="margin-top:10px">
-      <input id="cmt${i}" placeholder="Comment...">
-      <button class="btn" onclick="comment(${i})">Comment</button>
-      <div>${(p.comments||[]).map(c=>`<p style="background:#222;padding:5px;border-radius:5px">💬 ${c}</p>`).join('')}</div>
-    </div>
-  </div>`).join('');
-}
-function postVideo(){
-  const f=document.getElementById('vidInput').files[0];
-  const cap=document.getElementById('caption').value;
-  if(!f &&!cap) return alert('Video ama caption dooro');
-  const url=f?URL.createObjectURL(f):'';
-  posts.unshift({video:url,caption:cap,likes:0,liked:false,comments:[]});
-  localStorage.setItem('soomaaV27',JSON.stringify(posts));
-  render(); document.getElementById('caption').value='';
-}
-function like(i){ posts[i].liked=!posts[i].liked; posts[i].likes+=posts[i].liked?1:-1; localStorage.setItem('soomaaV27',JSON.stringify(posts)); render(); }
-function comment(i){ const inp=document.getElementById('cmt'+i); if(!inp.value) return; posts[i].comments.push(inp.value); inp.value=''; localStorage.setItem('soomaaV27',JSON.stringify(posts)); render(); }
-document.getElementById('vidInput').onchange=e=>{
-  const f=e.target.files[0]; if(f) document.getElementById('videoPreview').innerHTML=`<video controls src="${URL.createObjectURL(f)}"></video>`;
-}
-render();
+let mode='file';let curFile=null;let curYT=null;
+let posts=JSON.parse(localStorage.getItem('sl_v28')||'[]');
+if(posts.length===0){posts=[{id:1,user:'Liibojo',avatar:'L',time:'Hada',caption:'SoomaaLink V28 FINAL wuu live yahay! 🎉\nXeebta Lido sunset - Mahadsanid! 🇸🇴\n\n#SoomaaLink #Final #Somalia',type:'video',src:'',likes:124,liked:false,comments:[{user:'Aadan',text:'MashAllah! 🔥'}],yt:null}];save();}
+function setMode(m){mode=m;document.getElementById('tFile').classList.toggle('active',m==='file');document.getElementById('tYt').classList.toggle('active',m==='youtube');document.getElementById('fileMode').style.display=m==='file'?'block':'none';document.getElementById('ytMode').style.display=m==='youtube'?'block':'none';}
+function handleFile(inp){const f=inp.files[0];if(!f)return;curFile=f;curYT=null;const url=URL.createObjectURL(f);if(f.type.startsWith('video')){document.getElementById('vidPrev').src=url;document.getElementById('vidPrev').style.display='block';document.getElementById('imgPrev').style.display='none';}else{document.getElementById('imgPrev').src=url;document.getElementById('imgPrev').style.display='block';document.getElementById('vidPrev').style.display='none';}}
+function previewYT(){const v=document.getElementById('ytIn').value.trim();if(!v){document.getElementById('ytBox').style.display='none';curYT=null;return;}let embed='';if(v.includes('youtube.com')||v.includes('youtu.be')){let id=v.match(/(?:v=|\.be\/)([^&\s]+)/);if(id){embed=`<iframe class="yt-preview" src="https://www.youtube.com/embed/${id[1]}" allowfullscreen></iframe>`;curYT={type:'youtube',id:id[1],embed:`https://www.youtube.com/embed/${id[1]}`};}}if(embed){document.getElementById('ytBox').innerHTML=embed;document.getElementById('ytBox').style.display='block';}}
+function createPost(){const cap=document.getElementById('capIn').value.trim();if(mode==='file'&&!curFile)return showToast('Fadlan video dooro!');if(mode==='youtube'&&!curYT)return showToast('Fadlan YouTube link geli!');let src='';let type='video';if(curFile){src=URL.createObjectURL(curFile);type=curFile.type.startsWith('video')?'video':'image';}const p={id:Date.now(),user:'Adiga',avatar:'A',time:'Hada',caption:cap||'Video cusub! 🔥',type,src,likes:0,liked:false,comments:[],yt:curYT};posts.unshift(p);save();render();resetForm();showToast('✅ Posted!');window.scrollTo({top:350,behavior:'smooth'});}
+function resetForm(){document.getElementById('capIn').value='';document.getElementById('fileIn').value='';document.getElementById('ytIn').value='';document.getElementById('imgPrev').style.display='none';document.getElementById('vidPrev').style.display='none';document.getElementById('ytBox').style.display='none';curFile=null;curYT=null;}
+function save(){localStorage.setItem('sl_v28',JSON.stringify(posts.slice(0,50)));document.getElementById('sPosts').textContent=posts.length;document.getElementById('sLikes').textContent=posts.reduce((a,b)=>a+b.likes,0);}
+function like(id){const p=posts.find(x=>x.id===id);if(!p)return;p.liked=!p.liked;p.likes+=p.liked?1:-1;save();render();}
+function delPost(id){if(!confirm('Delete?'))return;posts=posts.filter(x=>x.id!==id);save();render();showToast('Deleted');}
+function addComment(id){const inp=document.getElementById('ci-'+id);const t=inp.value.trim();if(!t)return;const p=posts.find(x=>x.id===id);p.comments.push({user:'Adiga',text:t});inp.value='';save();render();}
+function share(id){if(navigator.share){navigator.share({title:'SoomaaLink',url:location.href})}else{navigator.clipboard.writeText(location.href);showToast('Link copied! 🔗');}}
+function render(){const q=(document.getElementById('search').value||'').toLowerCase();const list=posts.filter(p=>!q||p.caption.toLowerCase().includes(q));const feed=document.getElementById('feed');feed.innerHTML=list.map(p=>`<div class="post"><div class="post-head"><div class="user"><div class="avatar">${p.avatar}</div><div><b>${p.user} ${p.user==='Liibojo'?'✅':''}</b><small>${p.time} • ${p.type}</small></div></div><button onclick="delPost(${p.id})" style="background:0;border:0;color:#666;font-size:20px">⋯</button></div><div class="post-text">${p.caption.replace(/</g,'&lt;')}</div>${p.yt&&p.yt.type==='youtube'?`<iframe class="yt-preview" src="${p.yt.embed}" allowfullscreen></iframe>`:p.src?(p.type==='video'?`<video class="post-media" src="${p.src}" controls playsinline></video>`:`<img class="post-media" src="${p.src}">`):`<div style="background:#111;aspect-ratio:16/9;display:grid;place-items:center">🇸🇴</div>`}<div class="actions"><button class="act ${p.liked?'liked':''}" onclick="like(${p.id})">❤️ ${p.likes} Like</button><button class="act" onclick="document.getElementById('ci-${p.id}').focus()">💬 ${p.comments.length}</button><button class="act" onclick="share(${p.id})">↗️ Share</button></div><div class="comments"><div class="c-list">${p.comments.map(c=>`<div class="c-item"><b>${c.user}:</b> ${c.text.replace(/</g,'&lt;')}</div>`).join('')||'<small style="color:#666">No comments yet</small>'}</div><div class="c-input"><input id="ci-${p.id}" class="input" placeholder="Comment..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="act" style="background:var(--green);color:#000;border:0" onclick="addComment(${p.id})">➤</button></div></div></div>`).join('');}
+function showToast(t){const el=document.getElementById('toast');el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
+render();save();
 </script>
 </body>
 </html>
