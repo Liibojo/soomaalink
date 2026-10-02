@@ -1,28 +1,63 @@
 <!DOCTYPE html>
-<html lang="so">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SoomaaLink 🇸🇴</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SoomaaLink V27 - Video, Likes, Comments</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;margin:0;padding:10px}
+.header{background:#0d5a2a;padding:15px;text-align:center;font-weight:bold;font-size:20px}
+.card{background:#111;border:1px solid #0d5a2a;border-radius:12px;padding:15px;margin:10px 0}
+.btn{background:#0d5a2a;color:#fff;border:none;padding:10px 15px;border-radius:8px;cursor:pointer}
+input,textarea{width:100%;background:#222;color:#fff;border:1px solid #0d5a2a;border-radius:8px;padding:10px;margin:5px 0}
+video{width:100%;border-radius:10px;margin:10px 0}
+.like-btn{border:1px solid #0d5a2a;padding:5px 12px;border-radius:20px;background:#000;color:#0d5a2a}
+.like-btn.liked{background:#0d5a2a;color:#fff}
+</style>
 </head>
-<body style="background:#0a0a0a;color:white;font-family:sans-serif">
-<div style="background:black;padding:15px;display:flex;justify-content:space-between;position:sticky;top:0;border-bottom:1px solid #222">
-<h1 style="font-weight:900">🇸🇴 SoomaaLink V8</h1>
-<button style="background:white;color:black;padding:6px 16px;border-radius:20px;font-weight:bold">+ Upload</button>
+<body>
+<div class="header">🟢 SoomaaLink V27</div>
+
+<div class="card">
+<h3>📹 Video Post</h3>
+<input type="file" id="vidInput" accept="video/*">
+<div id="videoPreview"></div>
+<textarea id="caption" placeholder="Caption qoor..."></textarea>
+<button class="btn" onclick="postVideo()">Post Garee</button>
 </div>
-<div style="text-align:center;padding:30px">
-<h2 style="font-size:32px;font-weight:900">Soomaalida Hal Meel 🇸🇴</h2>
-<p style="color:#888;margin-top:10px">Mabruuk Liibo! Website-kaagu wuu shaqeeyay!</p>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;max-width:900px;margin:auto">
-<div style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:20px;text-align:center"><div style="font-size:40px">🎵</div><b>Hees Cusub</b><br><small style="color:#888">125K views</small></div>
-<div style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:20px;text-align:center"><div style="font-size:40px">😂</div><b>Sheeko Qosol</b><br><small style="color:#888">89K views</small></div>
-<div style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:20px;text-align:center"><div style="font-size:40px">📰</div><b>Wararka Maanta</b><br><small style="color:#888">210K views</small></div>
-<div style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:20px;text-align:center"><div style="font-size:40px">💃</div><b>Dhaanto Cusub</b><br><small style="color:#888">340K views</small></div>
-<div style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:20px;text-align:center"><div style="font-size:40px">⚽</div><b>Football SOM</b><br><small style="color:#888">500K views</small></div>
-<div style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:20px;text-align:center"><div style="font-size:40px">🇸🇴</div><b>Hidaha & Dhaqanka</b><br><small style="color:#888">78K views</small></div>
-</div>
-<div style="text-align:center;padding:40px;color:#555;font-size:12px">© 2026 SoomaaLink by Liibojo • Caen, France<br>liibojo.github.io/soomaalink</div>
+
+<div id="feed"></div>
+
+<script>
+let posts = JSON.parse(localStorage.getItem('soomaaV27')||'[]');
+function render(){
+  const feed=document.getElementById('feed');
+  feed.innerHTML=posts.map((p,i)=>`
+  <div class="card">
+    ${p.video?`<video controls src="${p.video}"></video>`:''}
+    <p>${p.caption}</p>
+    <button class="like-btn ${p.liked?'liked':''}" onclick="like(${i})">❤️ ${p.likes||0}</button>
+    <div style="margin-top:10px">
+      <input id="cmt${i}" placeholder="Comment...">
+      <button class="btn" onclick="comment(${i})">Comment</button>
+      <div>${(p.comments||[]).map(c=>`<p style="background:#222;padding:5px;border-radius:5px">💬 ${c}</p>`).join('')}</div>
+    </div>
+  </div>`).join('');
+}
+function postVideo(){
+  const f=document.getElementById('vidInput').files[0];
+  const cap=document.getElementById('caption').value;
+  if(!f &&!cap) return alert('Video ama caption dooro');
+  const url=f?URL.createObjectURL(f):'';
+  posts.unshift({video:url,caption:cap,likes:0,liked:false,comments:[]});
+  localStorage.setItem('soomaaV27',JSON.stringify(posts));
+  render(); document.getElementById('caption').value='';
+}
+function like(i){ posts[i].liked=!posts[i].liked; posts[i].likes+=posts[i].liked?1:-1; localStorage.setItem('soomaaV27',JSON.stringify(posts)); render(); }
+function comment(i){ const inp=document.getElementById('cmt'+i); if(!inp.value) return; posts[i].comments.push(inp.value); inp.value=''; localStorage.setItem('soomaaV27',JSON.stringify(posts)); render(); }
+document.getElementById('vidInput').onchange=e=>{
+  const f=e.target.files[0]; if(f) document.getElementById('videoPreview').innerHTML=`<video controls src="${URL.createObjectURL(f)}"></video>`;
+}
+render();
+</script>
 </body>
 </html>
