@@ -1,25 +1,20 @@
 {
-  "name": "SoomaaLink V33",
+  "name": "SoomaaLink",
   "short_name": "SoomaaLink",
-  "id": "com.soomaalink.v33",
-  "description": "SoomaaLink - Somali Social Link Platform",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0066CC",
-  "theme_color": "#0066CC",
-  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "IMG-20261003-WA2568.jpg",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/jpeg"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "IMG-20261003-WA5502.jpg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/jpeg"
     }
   ]
 }
