@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>SoomaaLi</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:sans-serif;height:100vh;overflow:hidden}
+.header{position:fixed;top:0;left:0;right:0;height:50px;background:#000;display:flex;justify-content:space-between;align-items:center;padding:0 15px;z-index:100;border-bottom:1px solid #222}
+.page{display:none;height:calc(100vh - 65px);margin-top:50px;overflow-y:auto;padding-bottom:20px}
+.page.active{display:block}
+.feed{height:calc(100vh - 115px);overflow-y:scroll;scroll-snap-type:y mandatory}
+.post{height:calc(100vh - 115px);scroll-snap-align:start;position:relative;background:#1a1a1a;display:flex;align-items:flex-end;padding:15px;border-bottom:1px solid #222}
+.post-bg{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(transparent, rgba(0,0,0,0.8)), url('https://picsum.photos/400/800');background-size:cover;opacity:0.6}
+.post-info{position:relative;z-index:2}
+.side{position:absolute;right:10px;bottom:80px;z-index:3;display:flex;flex-direction:column;gap:15px;text-align:center}
+.icon{width:50px;height:50px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;backdrop-filter:blur(10px)}
+.nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:200}
+.nav div{font-size:11px;text-align:center;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="header">
+<div style="font-weight:900;font-size:20px;">🦅 Soomaa<span style="color:#ffcc00">Li</span></div>
+<a href="https://buy.stripe.com/4gMcMYgFA2dU0S39W80000" target="_blank" style="background:#ffcc00;color:#000;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:900;text-decoration:none;">💎 PREMIUM</a>
+</div>
+
+<div id="homePage" class="page active">
+<div class="feed">
+<div class="post">
+<div class="post-bg" style="background:linear-gradient(transparent,rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=500') center/cover;"></div>
+<div class="side">
+<div><div class="icon" onclick="this.innerHTML='💖'">❤️</div><div>12k</div></div>
+<div><div class="icon">💬</div><div>234</div></div>
+<div><div class="icon">↗️</div></div>
+</div>
+<div class="post-info"><b>@hees_cusub 🔥</b><br>Hees cusub oo macaan! 🎶 #SoomaLi</div>
+</div>
+<div class="post">
+<div class="post-bg" style="background:linear-gradient(transparent,rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500') center/cover;"></div>
+<div class="side">
+<div><div class="icon" onclick="this.innerHTML='💖'">❤️</div><div>8k</div></div>
+<div><div class="icon">💬</div><div>112</div></div>
+<div><div class="icon">↗️</div></div>
+</div>
+<div class="post-info"><b>@qosol_wali 😂</b><br>Qosolka maanta walle! #qosol</div>
+</div>
+<div class="post" style="justify-content:center;align-items:center;text-align:center;background:linear-gradient(45deg,#0b1220,#1a1a1a)">
+<div style="z-index:2;"><div style="font-size:60px;">💎</div><h2 style="color:#ffcc00;margin:10px 0;">Premium €5</h2><a href="https://buy.stripe.com/4gMcMYgFA2dU0S39W80000" target="_blank" style="background:#ffcc00;color:#000;padding:12px 25px;border-radius:25px;text-decoration:none;font-weight:900;display:inline-block;margin-top:10px;">HEL PREMIUM</a></div>
+</div>
+</div>
+</div>
+
+<div id="discoverPage" class="page" style="padding:20px;">
+<h2>🔍 Discover</h2><br>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div style="background:#1a1a1a;padding:25px;border-radius:12px;text-align:center;">🎤<br>#hees_cusub<br><small>12.3k</small></div>
+<div style="background:#1a1a1a;padding:25px;border-radius:12px;text-align:center;">😂<br>#qosol<br><small>8.1k</small></div>
+<div style="background:#1a1a1a;padding:25px;border-radius:12px;text-align:center;">📰<br>#war<br><small>5.4k</small></div>
+<div style="background:#1a1a1a;padding:25px;border-radius:12px;text-align:center;">📖<br>#quraan<br><small>3k</small></div>
+</div>
+</div>
+
+<div id="inboxPage" class="page" style="padding:20px;">
+<h2>💬 Inbox</h2><br>
+<div style="background:#1a1a1a;padding:15px;border-radius:12px;display:flex;gap:12px;align-items:center;">
+<div style="width:45px;height:45px;background:#ffcc00;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;">S</div>
+<div><b>SoomaaLi Team</b><br><small style="opacity:0.6;">Ku soo dhawoow SoomaaLi! 🎉 App-kaaga wuu diyaar yahay!</small></div>
+</div>
+</div>
+
+<div id="profilePage" class="page" style="padding:20px;text-align:center;">
+<div style="width:90px;height:90px;background:linear-gradient(45deg,#ff2d55,#ffcc00);border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:40px;">👤</div>
+<h2>@liibo_jo</h2><p style="opacity:0.6;">liibojo.github.io/soon</p>
+<div style="display:flex;justify-content:center;gap:30px;margin:20px 0;">
+<div><b>12</b><br><small>Following</small></div><div><b>1.2k</b><br><small>Followers</small></div><div><b>5.6k</b><br><small>Likes</small></div>
+</div>
+</div>
+
+<div class="nav">
+<div onclick="openPage('home')">🏠<br>Home</div>
+<div onclick="openPage('discover')">🔍<br>Discover</div>
+<div onclick="openPage('home')" style="background:#ff2d55;width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;">♡</div>
+<div onclick="openPage('inbox')">💬<br>Inbox</div>
+<div onclick="openPage('profile')">👤<br>Profile</div>
+</div>
+
+<script>
+function openPage(n){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(n+'Page').classList.add('active');
+}
+</script>
+</body>
+</html>
