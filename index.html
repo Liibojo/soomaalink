@@ -794,8 +794,7 @@ document.getElementById('feed').innerHTML=videos.map(v=>`
 <div class="mus">🎵 ${v.music}</div>
 </div>
 </div>`).join('');
-document.querySelectorAll('.post').forEach(p=>{
-p.addEventListener('click',()=>{
+document.querySelectorAll('.post').forEach(p=>{p.addEventListener('click',()=>{
 let wrap=p.querySelector('.vid-wrap');
 let id=p.dataset.vid;
 if(wrap.querySelector('iframe')){
