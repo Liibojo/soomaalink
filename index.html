@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:sans-serif;height:100vh;overflow:hidden}
+.page{display:none;height:calc(100vh - 65px);padding:20px;padding-top:70px;overflow:auto}
+.page.active{display:block}
+.feed{height:calc(100vh - 65px);overflow-y:scroll;scroll-snap-type:y mandatory;padding:0!important}
+.post{height:calc(100vh - 65px);scroll-snap-align:start;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:15px;background:#111}
+.side{position:absolute;right:10px;bottom:100px;display:flex;flex-direction:column;gap:15px;text-align:center}
+.icon{width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
+.header{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;padding:10px 15px;background:#000}
+.nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:999}
+</style>
+</head>
+<body>
+<div class="header"><b>🦅 SoomaaLi</b><a href="https://buy.stripe.com/4gMcMYgFA2dU0S39W80000" target="_blank" style="background:#f5c26b;color:#000;padding:5px 10px;border-radius:15px;text-decoration:none;font-size:12px;font-weight:900;">💎 PREMIUM</a></div>
+
+<div id="homePage" class="page active" style="padding:0;">
+<div class="feed">
+<div class="post">
+<div class="side"><div><div class="icon">❤️</div>12k</div><div><div class="icon">💬</div>234</div><div><div class="icon">↗️</div></div></div>
+<div><b>@hees_cusub</b><br>Hees cusub 🔥 #SoomaLi</div>
+</div>
+<div class="post" style="align-items:center;justify-content:center;text-align:center;"><div style="font-size:50px;">💎</div><h2 style="color:#f5c26b;">Premium €5</h2><a href="https://buy.stripe.com/4gMcMYgFA2dU0S39W80000" target="_blank" style="background:#f5c26b;color:#000;padding:12px 25px;border-radius:25px;text-decoration:none;margin-top:10px;display:inline-block;font-weight:900;">HEL €5/BISHII</a></div>
+</div>
+</div>
+
+<div id="discoverPage" class="page"><h2>🔍 Discover</h2><br><div style="background:#1a1a1a;padding:20px;border-radius:10px;margin-bottom:10px;">#hees_cusub 🎤 - 12k videos</div><div style="background:#1a1a1a;padding:20px;border-radius:10px;margin-bottom:10px;">#qosol 😂 - 8k videos</div><div style="background:#1a1a1a;padding:20px;border-radius:10px;">#war 📰 - 5k videos</div></div>
+<div id="inboxPage" class="page"><h2>💬 Inbox</h2><br><div style="background:#1a1a1a;padding:15px;border-radius:10px;">👤 SoomaaLi Team<br><small>Ku soo dhawoow! 🎉</small></div></div>
+<div id="profilePage" class="page" style="text-align:center;"><div style="width:80px;height:80px;background:linear-gradient(45deg,#ff2d55,#f5c26b);border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:35px;">👤</div><h2>@liibo_jo</h2><p style="opacity:0.6;">liibojo.github.io</p></div>
+
+<div class="nav">
+<div onclick="openPage('home')">🏠<br>Home</div>
+<div onclick="openPage('discover')">🔍<br>Discover</div>
+<div onclick="openPage('home')" style="background:#ff2d55;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;">♡</div>
+<div onclick="openPage('inbox')">💬<br>Inbox</div>
+<div onclick="openPage('profile')">👤<br>Profile</div>
+</div>
+
+<script>
+function openPage(n){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(n+'Page').classList.add('active');
+}
+</script>
+</body>
+</html>
