@@ -488,8 +488,10 @@ video#cam{width:100%;height:100%;object-fit:cover}
 <div class="shop-grid">
 <div class="shop-item"><img src="https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=300"><br><small>Mixed Color Phone Suctio...</small></div>
 <div class="shop-item"><img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=300"><br><small><span style="background:#ffcc00;font-size:10px;padding:2px 4px;border-radius:4px">Offres</span> Phone Chest Strap ...</small></div>
+
 </div>
 <div class="nav nav-w"><div onclick="openPage('feed')"><b>🏠</b>Home</div><div><b>👥</b>Friends <span style="background:red;color:#fff;border-radius:50%;padding:1px 5px;font-size:10px">61</span></div><div class="add-btn" onclick="openPage('camera')">+</div><div><b>💬</b>Inbox</div><div onclick="openPage('profile')"><b>👤</b>Profile</div></div>
+
 </div>
 <script>
 function openPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(n+'Page').classList.add('active'); if(n=='camera')startCam()}
