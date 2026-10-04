@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SoomaaLink</title>
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+.header{position:fixed;top:0;left:0;right:0;height:50px;background:rgba(0,0,0,.85);display:flex;align-items:center;gap:10px;padding:0 12px;z-index:20}
+.header img{width:30px;height:30px;border-radius:8px}
+.header b{font-size:1.1rem}
+.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{background:none;border:0;color:#9aa;font:inherit;font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;cursor:pointer}
+.nav button span{font-size:1.3rem}
+.nav button.on{color:#fff}
+.nav .mid{background:#fe2c55;color:#fff;border-radius:50%;width:52px;height:52px;justify-content:center}
+.page{position:fixed;top:50px;bottom:64px;left:0;right:0;display:none;overflow-y:auto}
+.page.on{display:block}
+#feed{scroll-snap-type:y mandatory;overscroll-behavior:contain}
+.post{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.post .bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(24px) brightness(.5);transform:scale(1.2)}
+.stage{position:relative;width:100%;aspect-ratio:16/9;background:#000;cursor:pointer}
+.stage img{width:100%;height:100%;object-fit:cover;display:block}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stage .pl{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6)}
+.stage .pl::after{content:"";position:absolute;left:25px;top:18px;border-left:22px solid #fff;border-top:14px solid transparent;border-bottom:14px solid transparent}
+.info{position:absolute;left:14px;bottom:18px;right:90px;text-shadow:0 1px 4px #000}
+.info h3{font-size:1.05rem}
+.info small{opacity:.8}
+.side{position:absolute;right:10px;bottom:14px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.side button{background:rgba(70,70,70,.8);border:0;color:#fff;width:52px;height:52px;border-radius:50%;font-size:1.5rem;cursor:pointer}
+.side small{display:block;text-align:center;font-size:.72rem;margin-top:3px}
+.side .liked{color:#fe2c55}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px}
+.chip{flex:none;border:1px solid #333;background:none;color:#fff;padding:8px 16px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer}
+.chip.on{background:#2563eb;border-color:#2563eb}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 20px}
+.tile{background:#111;border:0;border-radius:12px;overflow:hidden;color:#fff;text-align:left;font:inherit;cursor:pointer}
+.tile img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.tile p{padding:8px 10px;font-size:.85rem}
+.txt{padding:20px 16px;max-width:640px;margin:auto;line-height:1.6;color:#cfd6e4}
+.txt h2{color:#fff;margin-bottom:10px}
+.txt p{margin-bottom:10px}
+.txt a{color:#f5c26b}
+.msg{background:#111;border-radius:12px;padding:12px 14px;margin-bottom:10px}.msg b{color:#fff}.msg p{margin:4px 0 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal[hidden]{display:none}
+.mbox{width:100%;max-width:420px;background:#111;border-radius:16px;padding:18px}
+.mbox h2{margin-bottom:12px}
+.mbox input,.mbox select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;font:inherit}
+.mbox .note{font-size:.8rem;color:#9aa;margin-bottom:12px}
+.btn{display:block;width:100%;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font:inherit;margin-bottom:8px;cursor:pointer}
+.btn.alt{background:#222}
+.btn.red{background:#fe2c55}
+.stats{display:flex;justify-content:center;gap:28px;margin:0 0 18px;text-align:center}
+.stats b{display:block;font-size:1.3rem;color:#fff}
+.stats span{font-size:.8rem;color:#9aa}
+.side .fl{background:#fe2c55;font-size:1.3rem}
+.side .fl.on{background:rgba(70,70,70,.8);font-size:1.1rem}
+.empty{padding:30px 16px;text-align:center;color:#9aa}
+</style>
+</head>
+<body>
+
+<div class="header"><img src="icon-192.png" alt=""><b>SoomaaLink</b></div>
+
+<div class="page on" id="p-home"><div id="feed" style="height:100%;overflow-y:auto;scroll-snap-type:y mandatory"></div></div>
+
+<div class="page" id="p-discover">
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="page" id="p-inbox"><div class="txt">
+  <h2>Inbox</h2>
+  <div class="msg"><b>Ku soo dhawow SoomaaLink 👋</b><p>Halkan waxaad ka daawan kartaa muuqaallo Soomaali ah. Taabo ♥ si aad u jeceshahay, ↗ si aad u wadaagto.</p></div>
+  <div class="msg"><b>Talo ama cabasho?</b><p>Noo soo dir fariin: <a href="mailto:boyyare432@gmail.com">boyyare432@gmail.com</a></p></div>
+  <div class="msg"><b>Muuqaal ma ku darsan kartaa?</b><p>Haddii aad leedahay muuqaal Soomaali ah oo aad rabto in lagu soo bandhigo, email noo soo dir link-ga YouTube.</p></div>
+</div></div>
+
+<div class="page" id="p-profile"><div class="txt">
+  <div style="text-align:center;margin-bottom:18px"><img src="icon-192.png" alt="" style="width:84px;height:84px;border-radius:20px"><h2 style="margin:8px 0 0">SoomaaLink</h2><p>Somali Video Platform</p></div>
+  <div class="stats"><div><b id="stFollowing">0</b><span>Following</span></div><div><b id="stLikes">0</b><span>Like</span></div></div>
+  <h2>Aad jeceshahay (<span id="lkcount">0</span>)</h2>
+  <div class="grid" id="lkgrid" style="padding:0 0 16px"></div>
+  <h2>Aad dartay (<span id="mncount">0</span>)</h2>
+  <div class="grid" id="mngrid" style="padding:0 0 8px"></div>
+  <button class="btn alt" id="mnclear">Tirtir kuwa aan dartay</button>
+  <h2>Nagu saabsan</h2>
+  <p>SoomaaLink waa goob lagu helo muuqaallo Soomaali ah. Mid walba waxaa leh milkiilihiisa.</p>
+  <h2>Sirta (Privacy Policy)</h2>
+  <p>SoomaaLink ma ururiso macluumaad shaqsi ah, ma lahan akoon, mana iibiso xog. Akoon ma jiro. Xogtaada (jecelka, follow, muuqaallada aad dartay) waxay ku jirtaa taleefankaaga oo keliya. Waad tirtiri kartaa Profile → Tirtir xogtayda, ama app-ka ka saar.</p>
+  <p>Muuqaallada waxaa bixiya YouTube, waxayna ku shaqeeyaan xeerarkeeda sirta: <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>.</p>
+  <p>Haddii aad rabto in muuqaal laga saaro, nala soo xiriir. <a href="privacy.html">Sirta oo dhan</a>.</p>
+  <h2>Nala soo xiriir</h2>
+  <p>Email: <a href="mailto:boyyare432@gmail.com">boyyare432@gmail.com</a></p>
+  <button class="btn alt" id="termsOpen">Akhri Shuruudaha (Terms)</button>
+  <button class="btn red" id="delData">Tirtir xogtayda</button>
+</div></div>
+
+<div class="modal" id="postm" hidden>
+  <div class="mbox">
+    <h2>Ku dar muuqaal ☆</h2>
+    <input id="pl" placeholder="Link-ga YouTube" inputmode="url">
+    <input id="pt" placeholder="Magaca muuqaalka">
+    <select id="pc"><option>Hees</option><option>Wararka</option><option>Qosol</option><option>Quraan</option></select>
+    <p class="note">Muuqaalka waa inuu ahaadaa mid aad leedahay ama leh ogolaansho. "Ku dar halkan" wuxuu ka muuqanayaa taleefankaaga oo keliya. "U dir SoomaaLink" wuxuu noo diraa email si dadka oo dhan loogu daro.</p>
+    <button class="btn red" id="psave">Ku dar halkan</button>
+    <button class="btn" id="psend">U dir SoomaaLink (email)</button>
+    <button class="btn alt" id="pclose">Xidh</button>
+  </div>
+</div>
+
+<div class="modal" id="reportm" hidden><div class="mbox">
+  <h2>Soo sheeg muuqaal ⚑</h2><p class="note" id="rpTitle"></p>
+  <select id="rpReason"><option>Nuxur xun / rabshad / nacayb</option><option>Nuxur galmo ama aan habboonayn</option><option>Xuquuq (copyright) / waa la xaday</option><option>Been ama marin habaabin</option><option>Kale</option></select>
+  <input id="rpNote" placeholder="Faahfaahin (ikhtiyaari)">
+  <button class="btn red" id="rpSend">U dir report oo qari</button>
+  <button class="btn" id="rpHide">Qari muuqaalkan</button>
+  <button class="btn" id="rpBlock">Block milkiilaha</button>
+  <button class="btn alt" id="rpClose">Xidh</button>
+</div></div>
+
+<div class="modal" id="termsm" hidden style="z-index:60"><div class="mbox" style="max-height:90vh;overflow-y:auto">
+  <h2>Shuruudaha (Terms)</h2>
+  <div class="txt" style="padding:0;color:#cfd6e4;font-size:.9rem">
+    <p>1. Muuqaalka aad ku darto waa inuu ahaadaa mid aad leedahay ama leh ogolaansho.</p>
+    <p>2. Waa mamnuuc: rabshad, nacayb, cabsi gelin, galmo, xadgudub carruur, been abuur, xad gudub xuquuq (copyright) iyo spam.</p>
+    <p>3. Muuqaal kasta waxaad ku soo sheegi kartaa ⚑ Report. Waan ka saari karnaa muuqaal ama milkiile ku xad gudba shuruudahan.</p>
+    <p>4. Xogtaada waxay ku jirtaa taleefankaaga. Waad tirtiri kartaa: Profile → Tirtir xogtayda.</p>
+    <p>5. Marka aad taabato "Waan aqbalay", waxaad oggolaatay shuruudahan iyo Sirta (Privacy Policy).</p>
+  </div>
+  <button class="btn red" id="termsYes">Waan aqbalay</button>
+</div></div>
+
+<div class="nav">
+  <button data-p="home" class="on"><span>🏠</span>Home</button>
+  <button data-p="discover"><span>🔍</span>Discover</button>
+  <button class="mid" id="midpost" aria-label="Ku dar muuqaal"><span>☆</span></button>
+  <button data-p="inbox"><span>💬</span>Inbox</button>
+  <button data-p="profile"><span>👤</span>Profile</button>
+</div>
+
+<script>
+/* KU DAR MUUQAALLADA HALKAN (gudaha [ ])
+   cat = "Hees" | "Wararka" | "Qosol" | "Quraan" */
+const BASE = [
+  { id: "gJAnKsyu5Tk", title: "Hees kaban", cat: "Hees" },
+  { id: "xPAOUCS0v-4", title: "Muuqaal 2", cat: "Hees" },
+  { id: "oQT9j610FI8", title: "Muuqaal 3", cat: "Hees" },
+];
+let mine = [];
+try { mine = JSON.parse(localStorage.getItem("mine") || "[]"); } catch(e){}
+let hidden = [], blocked = [];
+try { hidden = JSON.parse(localStorage.getItem("hidden") || "[]"); blocked = JSON.parse(localStorage.getItem("blocked") || "[]"); } catch(e){}
+const okV = v => !hidden.includes(v.id) && !blocked.includes(v.by || "SoomaaLink");
+const VIDEOS = BASE.concat(mine).filter(okV);
+
+const $ = id => document.getElementById(id);
+const thumb = id => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+let likes = {};
+try { likes = JSON.parse(localStorage.getItem("likes") || "{}"); } catch(e){}
+let follows = {};
+try { follows = JSON.parse(localStorage.getItem("follows") || "{}"); } catch(e){}
+function saveFollows(){ try { localStorage.setItem("follows", JSON.stringify(follows)); } catch(e){} }
+const by = v => v.by || "SoomaaLink";
+function updateStats(){
+  $("stFollowing").textContent = Object.keys(follows).length;
+  $("stLikes").textContent = Object.keys(likes).length;
+}
+function saveLikes(){ try { localStorage.setItem("likes", JSON.stringify(likes)); } catch(e){} }
+
+/* FEED */
+const feed = $("feed");
+function play(stage){
+  if (stage.querySelector("iframe")) return;
+  stage.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${stage.dataset.id}?autoplay=1&mute=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="Muuqaal"></iframe>`;
+}
+function stop(stage){
+  if (!stage.querySelector("iframe")) return;
+  stage.innerHTML = `<img alt="" src="${thumb(stage.dataset.id)}"><span class="pl"></span>`;
+}
+let current = 0;
+const io = new IntersectionObserver(es => es.forEach(e => {
+  const st = e.target.querySelector(".stage");
+  if (e.isIntersecting && e.intersectionRatio > .6) { current = +e.target.dataset.i; play(st); }
+  else stop(st);
+}), { root: feed, threshold: [0, .6] });
+function renderFeed(){
+  io.disconnect();
+  feed.innerHTML = VIDEOS.length ? VIDEOS.map((v,i) => `
+  <section class="post" data-i="${i}">
+    <div class="bg" style="background-image:url(${thumb(v.id)})"></div>
+    <div class="stage" data-id="${v.id}"><img alt="" src="${thumb(v.id)}"><span class="pl"></span></div>
+    <div class="info"><h3>${esc(v.title)}</h3><small>@${esc(by(v))} · ${v.cat}</small></div>
+    <div class="side">
+      <div><button class="fl ${follows[by(v)]?'on':''}" data-by="${esc(by(v))}" aria-label="Follow">${follows[by(v)]?'✓':'+'}</button><small>${follows[by(v)]?'Following':'Follow'}</small></div>
+      <div><button class="lk ${likes[v.id]?'liked':''}" data-id="${v.id}" aria-label="Jecel">♥</button><small>Jecel</small></div>
+      <div><button class="sh" data-i="${i}" aria-label="Wadaag">↗</button><small>Wadaag</small></div>
+      <div><button class="rp" data-i="${i}" aria-label="Report">⚑</button><small>Report</small></div>
+    </div>
+  </section>`).join("") : '<p class="empty">Weli muuqaal lama darin.</p>';
+  document.querySelectorAll(".post").forEach(p => io.observe(p));
+}
+function esc(t){ return String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+renderFeed();
+
+feed.onclick = e => {
+  const fl = e.target.closest(".fl");
+  if (fl) { toggleFollow(fl.dataset.by); return; }
+  const lk = e.target.closest(".lk");
+  if (lk) { toggleLike(lk.dataset.id); return; }
+  const rp = e.target.closest(".rp");
+  if (rp) { openReport(+rp.dataset.i); return; }
+  const sh = e.target.closest(".sh");
+  if (sh) { share(VIDEOS[+sh.dataset.i]); return; }
+  const st = e.target.closest(".stage"); if (st) play(st);
+};
+function toggleFollow(name){
+  if (follows[name]) delete follows[name]; else follows[name] = true;
+  saveFollows(); updateStats();
+  document.querySelectorAll(".fl").forEach(b => {
+    if (b.dataset.by !== name) return;
+    const on = !!follows[name];
+    b.classList.toggle("on", on); b.textContent = on ? "✓" : "+";
+    b.parentElement.querySelector("small").textContent = on ? "Following" : "Follow";
+  });
+}
+function toggleLike(id){
+  likes[id] = !likes[id]; if(!likes[id]) delete likes[id]; saveLikes();
+  drawLikes();
+  document.querySelectorAll(`.lk[data-id="${id}"]`).forEach(b => b.classList.toggle("liked", !!likes[id]));
+}
+async function share(v){
+  const url = `https://youtu.be/${v.id}`;
+  try { if (navigator.share) await navigator.share({ title: v.title, url }); else { await navigator.clipboard.writeText(url); alert("Link waa la koobiyeeyay"); } } catch(e){}
+}
+
+/* DISCOVER */
+const CATS = ["Dhammaan","Hees","Wararka","Qosol","Quraan"];
+let cat = "Dhammaan";
+function drawDiscover(){
+  $("chips").innerHTML = CATS.map(c => `<button class="chip ${c===cat?'on':''}" data-c="${c}">${c}</button>`).join("");
+  const list = VIDEOS.map((v,i)=>({v,i})).filter(o => cat==="Dhammaan" || o.v.cat===cat);
+  $("grid").innerHTML = list.map(o => `<button class="tile" data-i="${o.i}"><img loading="lazy" alt="" src="${thumb(o.v.id)}"><p>${o.v.title}</p></button>`).join("");
+}
+$("chips").onclick = e => { const c = e.target.dataset.c; if(c){ cat = c; drawDiscover(); } };
+function goTo(e){
+  const t = e.target.closest(".tile"); if(!t) return;
+  show("home");
+  document.querySelectorAll(".post")[+t.dataset.i].scrollIntoView();
+}
+$("grid").onclick = goTo;
+$("lkgrid").onclick = goTo;
+function drawLikes(){
+  const list = VIDEOS.map((v,i)=>({v,i})).filter(o => likes[o.v.id]);
+  $("lkcount").textContent = list.length;
+  updateStats();
+  $("lkgrid").innerHTML = list.length
+    ? list.map(o => `<button class="tile" data-i="${o.i}"><img loading="lazy" alt="" src="${thumb(o.v.id)}"><p>${o.v.title}</p></button>`).join("")
+    : '<p class="empty" style="grid-column:1/-1;padding:10px">Weli wax ma jeclayn. Taabo ♥ muuqaal.</p>';
+}
+drawDiscover();
+drawLikes();
+
+/* POST */
+function ytId(u){
+  u = (u||"").trim();
+  const m = u.match(/(?:youtu\.be\/|shorts\/|embed\/|[?&]v=)([A-Za-z0-9_-]{11})/) || u.match(/^([A-Za-z0-9_-]{11})$/);
+  return m ? m[1] : null;
+}
+function drawMine(){
+  const vis = mine.filter(v => VIDEOS.includes(v));
+  $("mncount").textContent = vis.length;
+  $("mngrid").innerHTML = vis.length
+    ? vis.map(v => `<button class="tile" data-i="${VIDEOS.indexOf(v)}"><img loading="lazy" alt="" src="${thumb(v.id)}"><p>${esc(v.title)}</p></button>`).join("")
+    : '<p class="empty" style="grid-column:1/-1;padding:10px">Weli wax ma darin.</p>';
+}
+$("mngrid").onclick = goTo;
+$("mnclear").onclick = () => {
+  if (!mine.length || !confirm("Tirtir muuqaallada aad dartay?")) return;
+  mine.length = 0; VIDEOS.splice(0, VIDEOS.length, ...BASE.filter(okV));
+  try { localStorage.setItem("mine","[]"); } catch(e){}
+  renderFeed(); drawDiscover(); drawLikes(); drawMine();
+};
+$("midpost").onclick = () => { if (!termsOk()) { $("termsm").hidden = false; return; } $("postm").hidden = false; };
+$("pclose").onclick = () => { $("postm").hidden = true; };
+function readForm(){
+  const id = ytId($("pl").value);
+  if (!id) { alert("Link-ga YouTube ma saxna."); return null; }
+  return { id, title: $("pt").value.trim() || "Muuqaal cusub", cat: $("pc").value, link: $("pl").value.trim() };
+}
+$("psave").onclick = () => {
+  const v = readForm(); if (!v) return;
+  const item = { id: v.id, title: v.title, cat: v.cat };
+  mine.push(item); VIDEOS.push(item);
+  try { localStorage.setItem("mine", JSON.stringify(mine)); } catch(e){}
+  renderFeed(); drawDiscover(); drawMine();
+  $("postm").hidden = true; $("pl").value = ""; $("pt").value = "";
+  show("home");
+  const posts = document.querySelectorAll(".post"); posts[posts.length-1].scrollIntoView();
+};
+$("psend").onclick = () => {
+  const v = readForm(); if (!v) return;
+  const body = `Link: ${v.link}\nMagac: ${v.title}\nQayb: ${v.cat}\n\nWaxaan leeyahay muuqaalkan ama waxaa leeyahay ogolaansho.`;
+  location.href = "mailto:boyyare432@gmail.com?subject=" + encodeURIComponent("Muuqaal cusub - SoomaaLink") + "&body=" + encodeURIComponent(body);
+};
+drawMine();
+
+/* MODERATION, TERMS, DELETE */
+let reporting = null;
+function saveList(k, a){ try { localStorage.setItem(k, JSON.stringify(a)); } catch(e){} }
+function refreshAll(){ renderFeed(); drawDiscover(); drawLikes(); drawMine(); }
+function openReport(i){ reporting = VIDEOS[i]; if (!reporting) return; $("rpTitle").textContent = reporting.title; $("reportm").hidden = false; }
+function dropReported(){
+  hidden.push(reporting.id); saveList("hidden", hidden);
+  const k = VIDEOS.indexOf(reporting); if (k > -1) VIDEOS.splice(k, 1);
+  refreshAll(); $("reportm").hidden = true;
+}
+$("rpClose").onclick = () => { $("reportm").hidden = true; };
+$("rpHide").onclick = () => { if (reporting) dropReported(); };
+$("rpSend").onclick = () => {
+  if (!reporting) return;
+  const body = `Muuqaal: https://youtu.be/${reporting.id}\nMagac: ${reporting.title}\nSabab: ${$("rpReason").value}\nFaahfaahin: ${$("rpNote").value}`;
+  dropReported();
+  alert("Mahadsanid. Muuqaalka waa laga qariyay, waanan eegi doonaa.");
+  location.href = "mailto:boyyare432@gmail.com?subject=" + encodeURIComponent("Report - SoomaaLink") + "&body=" + encodeURIComponent(body);
+};
+$("rpBlock").onclick = () => {
+  if (!reporting) return;
+  const n = reporting.by || "SoomaaLink"; blocked.push(n); saveList("blocked", blocked);
+  for (let k = VIDEOS.length - 1; k >= 0; k--) if ((VIDEOS[k].by || "SoomaaLink") === n) VIDEOS.splice(k, 1);
+  refreshAll(); $("reportm").hidden = true;
+};
+function termsOk(){ try { return localStorage.getItem("terms") === "1"; } catch(e){ return false; } }
+if (!termsOk()) $("termsm").hidden = false;
+$("termsYes").onclick = () => { try { localStorage.setItem("terms", "1"); } catch(e){} $("termsm").hidden = true; };
+$("termsOpen").onclick = () => { $("termsm").hidden = false; };
+$("delData").onclick = () => {
+  if (!confirm("Tirtir xogtaada oo dhan ee taleefankan?")) return;
+  try { localStorage.clear(); } catch(e){}
+  location.reload();
+};
+
+/* NAV */
+function show(p){
+  document.querySelectorAll(".page").forEach(x => x.classList.toggle("on", x.id === "p-"+p));
+  document.querySelectorAll(".nav button[data-p]").forEach(b => b.classList.toggle("on", b.dataset.p === p));
+  if (p !== "home") document.querySelectorAll(".stage").forEach(stop);
+  if (p === "profile") drawLikes();
+}
+document.querySelectorAll(".nav button[data-p]").forEach(b => b.onclick = () => show(b.dataset.p));
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
