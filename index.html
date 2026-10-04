@@ -48,12 +48,32 @@ html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-sy
 .txt p{margin-bottom:10px}
 .txt a{color:#f5c26b}
 .msg{background:#111;border-radius:12px;padding:12px 14px;margin-bottom:10px}.msg b{color:#fff}.msg p{margin:4px 0 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal[hidden]{display:none}
+.mbox{width:100%;max-width:420px;background:#111;border-radius:16px;padding:18px}
+.mbox h2{margin-bottom:12px}
+.mbox input,.mbox select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;font:inherit}
+.mbox .note{font-size:.8rem;color:#9aa;margin-bottom:12px}
+.btn{display:block;width:100%;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font:inherit;margin-bottom:8px;cursor:pointer}
+.btn.alt{background:#222}
+.btn.red{background:#fe2c55}
+.stats{display:flex;justify-content:center;gap:28px;margin:0 0 18px;text-align:center}
+.stats b{display:block;font-size:1.3rem;color:#fff}
+.stats span{font-size:.8rem;color:#9aa}
+.side .fl{background:#fe2c55;font-size:1.3rem}
+.side .fl.on{background:rgba(70,70,70,.8);font-size:1.1rem}
+.chipc{margin-left:auto;background:#222;border:0;color:#f5c26b;border-radius:99px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
+.packs{display:flex;gap:8px;margin-bottom:12px}
+.pack{flex:1;border:2px solid #333;background:#000;color:#fff;border-radius:12px;padding:10px 4px;font:inherit;cursor:pointer}
+.pack.on{border-color:#f5c26b}
+.pack b{display:block;font-size:1.1rem}
+.bal{text-align:center;font-size:2rem;font-weight:700;color:#f5c26b;margin-bottom:12px}
 .empty{padding:30px 16px;text-align:center;color:#9aa}
 </style>
 </head>
 <body>
 
-<div class="header"><img src="icon-192.png" alt=""><b>SoomaaLink</b></div>
+<div class="header"><img src="icon-192.png" alt=""><b>SoomaaLink</b><button class="chipc" id="walletbtn">🪙 <span id="coinTop">0</span></button></div>
 
 <div class="page on" id="p-home"><div id="feed" style="height:100%;overflow-y:auto;scroll-snap-type:y mandatory"></div></div>
 
@@ -71,8 +91,12 @@ html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-sy
 
 <div class="page" id="p-profile"><div class="txt">
   <div style="text-align:center;margin-bottom:18px"><img src="icon-192.png" alt="" style="width:84px;height:84px;border-radius:20px"><h2 style="margin:8px 0 0">SoomaaLink</h2><p>Somali Video Platform</p></div>
+  <div class="stats"><div><b id="stFollowing">0</b><span>Following</span></div><div><b id="stFollowers">0</b><span>Followers</span></div><div><b id="stLikes">0</b><span>Like</span></div><div><b id="stCoins">0</b><span>Coins</span></div></div>
   <h2>Aad jeceshahay (<span id="lkcount">0</span>)</h2>
   <div class="grid" id="lkgrid" style="padding:0 0 16px"></div>
+  <h2>Aad dartay (<span id="mncount">0</span>)</h2>
+  <div class="grid" id="mngrid" style="padding:0 0 8px"></div>
+  <button class="btn alt" id="mnclear">Tirtir kuwa aan dartay</button>
   <h2>Nagu saabsan</h2>
   <p>SoomaaLink waa goob lagu helo muuqaallo Soomaali ah. Mid walba waxaa leh milkiilihiisa.</p>
   <h2>Sirta (Privacy Policy)</h2>
@@ -83,10 +107,41 @@ html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-sy
   <p>Email: <a href="mailto:boyyare432@gmail.com">boyyare432@gmail.com</a></p>
 </div></div>
 
+<div class="modal" id="postm" hidden>
+  <div class="mbox">
+    <h2>Ku dar muuqaal ☆</h2>
+    <input id="pl" placeholder="Link-ga YouTube" inputmode="url">
+    <input id="pt" placeholder="Magaca muuqaalka">
+    <select id="pc"><option>Hees</option><option>Wararka</option><option>Qosol</option><option>Quraan</option></select>
+    <p class="note">Muuqaalka waa inuu ahaadaa mid aad leedahay ama leh ogolaansho. "Ku dar halkan" wuxuu ka muuqanayaa taleefankaaga oo keliya. "U dir SoomaaLink" wuxuu noo diraa email si dadka oo dhan loogu daro.</p>
+    <button class="btn red" id="psave">Ku dar halkan</button>
+    <button class="btn" id="psend">U dir SoomaaLink (email)</button>
+    <button class="btn alt" id="pclose">Xidh</button>
+  </div>
+</div>
+
+<div class="modal" id="walletm" hidden>
+  <div class="mbox" style="max-height:90vh;overflow-y:auto">
+    <h2>Wallet 🪙</h2>
+    <div class="bal"><span id="balNum">0</span> coins</div>
+    <p class="note">Dooro xirmo:</p>
+    <div class="packs" id="packs"></div>
+    <p class="note">Habka lacag bixinta:</p>
+    <div id="payBtns"></div>
+    <button class="btn alt" disabled>Google Play Billing: dhawaan (marka lagu daro Play Store)</button>
+    <hr style="border:0;border-top:1px solid #333;margin:12px 0">
+    <p class="note">Haddii aad lacag bixisay oo aad hesho koodh, halkan ku geli:</p>
+    <input id="codeIn" placeholder="SL-XXXX-XXXX" autocapitalize="characters">
+    <button class="btn red" id="redeemBtn">Gali koodh</button>
+    <p class="note">Coins-ka waxaa lagu keydiyaa taleefankaaga. Lacag la bixiyay lama soo celin karo haddii taleefanka la tirtiro.</p>
+    <button class="btn alt" id="walletClose">Xidh</button>
+  </div>
+</div>
+
 <div class="nav">
   <button data-p="home" class="on"><span>🏠</span>Home</button>
   <button data-p="discover"><span>🔍</span>Discover</button>
-  <button class="mid" id="midlike" aria-label="Jecel"><span>♥</span></button>
+  <button class="mid" id="midpost" aria-label="Ku dar muuqaal"><span>☆</span></button>
   <button data-p="inbox"><span>💬</span>Inbox</button>
   <button data-p="profile"><span>👤</span>Profile</button>
 </div>
@@ -94,32 +149,32 @@ html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-sy
 <script>
 /* KU DAR MUUQAALLADA HALKAN (gudaha [ ])
    cat = "Hees" | "Wararka" | "Qosol" | "Quraan" */
-const VIDEOS = [
+const BASE = [
   { id: "gJAnKsyu5Tk", title: "Hees kaban", cat: "Hees" },
   { id: "xPAOUCS0v-4", title: "Muuqaal 2", cat: "Hees" },
   { id: "oQT9j610FI8", title: "Muuqaal 3", cat: "Hees" },
 ];
+let mine = [];
+try { mine = JSON.parse(localStorage.getItem("mine") || "[]"); } catch(e){}
+const VIDEOS = BASE.concat(mine);
 
 const $ = id => document.getElementById(id);
 const thumb = id => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 let likes = {};
 try { likes = JSON.parse(localStorage.getItem("likes") || "{}"); } catch(e){}
+let follows = {};
+try { follows = JSON.parse(localStorage.getItem("follows") || "{}"); } catch(e){}
+function saveFollows(){ try { localStorage.setItem("follows", JSON.stringify(follows)); } catch(e){} }
+const by = v => v.by || "SoomaaLink";
+function updateStats(){
+  $("stFollowing").textContent = Object.keys(follows).length;
+  $("stLikes").textContent = Object.keys(likes).length;
+  $("stFollowers").textContent = 0;
+}
 function saveLikes(){ try { localStorage.setItem("likes", JSON.stringify(likes)); } catch(e){} }
 
 /* FEED */
 const feed = $("feed");
-if (!VIDEOS.length) feed.innerHTML = '<p class="empty">Weli muuqaal lama darin.</p>';
-feed.innerHTML = VIDEOS.map((v,i) => `
-  <section class="post" data-i="${i}">
-    <div class="bg" style="background-image:url(${thumb(v.id)})"></div>
-    <div class="stage" data-id="${v.id}"><img alt="" src="${thumb(v.id)}"><span class="pl"></span></div>
-    <div class="info"><h3>${v.title}</h3><small>@SoomaaLink · ${v.cat}</small></div>
-    <div class="side">
-      <div><button class="lk ${likes[v.id]?'liked':''}" data-id="${v.id}" aria-label="Jecel">♥</button><small>Jecel</small></div>
-      <div><button class="sh" data-i="${i}" aria-label="Wadaag">↗</button><small>Wadaag</small></div>
-    </div>
-  </section>`).join("");
-
 function play(stage){
   if (stage.querySelector("iframe")) return;
   stage.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${stage.dataset.id}?autoplay=1&mute=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="Muuqaal"></iframe>`;
@@ -128,27 +183,54 @@ function stop(stage){
   if (!stage.querySelector("iframe")) return;
   stage.innerHTML = `<img alt="" src="${thumb(stage.dataset.id)}"><span class="pl"></span>`;
 }
+let current = 0;
 const io = new IntersectionObserver(es => es.forEach(e => {
   const st = e.target.querySelector(".stage");
   if (e.isIntersecting && e.intersectionRatio > .6) { current = +e.target.dataset.i; play(st); }
   else stop(st);
 }), { root: feed, threshold: [0, .6] });
-let current = 0;
-document.querySelectorAll(".post").forEach(p => io.observe(p));
+function renderFeed(){
+  io.disconnect();
+  feed.innerHTML = VIDEOS.length ? VIDEOS.map((v,i) => `
+  <section class="post" data-i="${i}">
+    <div class="bg" style="background-image:url(${thumb(v.id)})"></div>
+    <div class="stage" data-id="${v.id}"><img alt="" src="${thumb(v.id)}"><span class="pl"></span></div>
+    <div class="info"><h3>${esc(v.title)}</h3><small>@${esc(by(v))} · ${v.cat}</small></div>
+    <div class="side">
+      <div><button class="fl ${follows[by(v)]?'on':''}" data-by="${esc(by(v))}" aria-label="Follow">${follows[by(v)]?'✓':'+'}</button><small>${follows[by(v)]?'Following':'Follow'}</small></div>
+      <div><button class="lk ${likes[v.id]?'liked':''}" data-id="${v.id}" aria-label="Jecel">♥</button><small>Jecel</small></div>
+      <div><button class="sh" data-i="${i}" aria-label="Wadaag">↗</button><small>Wadaag</small></div>
+    </div>
+  </section>`).join("") : '<p class="empty">Weli muuqaal lama darin.</p>';
+  document.querySelectorAll(".post").forEach(p => io.observe(p));
+}
+function esc(t){ return String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+renderFeed();
 
 feed.onclick = e => {
+  const fl = e.target.closest(".fl");
+  if (fl) { toggleFollow(fl.dataset.by); return; }
   const lk = e.target.closest(".lk");
   if (lk) { toggleLike(lk.dataset.id); return; }
   const sh = e.target.closest(".sh");
   if (sh) { share(VIDEOS[+sh.dataset.i]); return; }
   const st = e.target.closest(".stage"); if (st) play(st);
 };
+function toggleFollow(name){
+  if (follows[name]) delete follows[name]; else follows[name] = true;
+  saveFollows(); updateStats();
+  document.querySelectorAll(".fl").forEach(b => {
+    if (b.dataset.by !== name) return;
+    const on = !!follows[name];
+    b.classList.toggle("on", on); b.textContent = on ? "✓" : "+";
+    b.parentElement.querySelector("small").textContent = on ? "Following" : "Follow";
+  });
+}
 function toggleLike(id){
   likes[id] = !likes[id]; if(!likes[id]) delete likes[id]; saveLikes();
   drawLikes();
   document.querySelectorAll(`.lk[data-id="${id}"]`).forEach(b => b.classList.toggle("liked", !!likes[id]));
 }
-$("midlike").onclick = () => { if (VIDEOS[current]) toggleLike(VIDEOS[current].id); };
 async function share(v){
   const url = `https://youtu.be/${v.id}`;
   try { if (navigator.share) await navigator.share({ title: v.title, url }); else { await navigator.clipboard.writeText(url); alert("Link waa la koobiyeeyay"); } } catch(e){}
@@ -173,12 +255,106 @@ $("lkgrid").onclick = goTo;
 function drawLikes(){
   const list = VIDEOS.map((v,i)=>({v,i})).filter(o => likes[o.v.id]);
   $("lkcount").textContent = list.length;
+  updateStats();
   $("lkgrid").innerHTML = list.length
     ? list.map(o => `<button class="tile" data-i="${o.i}"><img loading="lazy" alt="" src="${thumb(o.v.id)}"><p>${o.v.title}</p></button>`).join("")
     : '<p class="empty" style="grid-column:1/-1;padding:10px">Weli wax ma jeclayn. Taabo ♥ muuqaal.</p>';
 }
 drawDiscover();
 drawLikes();
+
+/* POST */
+function ytId(u){
+  u = (u||"").trim();
+  const m = u.match(/(?:youtu\.be\/|shorts\/|embed\/|[?&]v=)([A-Za-z0-9_-]{11})/) || u.match(/^([A-Za-z0-9_-]{11})$/);
+  return m ? m[1] : null;
+}
+function drawMine(){
+  $("mncount").textContent = mine.length;
+  $("mngrid").innerHTML = mine.length
+    ? mine.map(v => `<button class="tile" data-i="${VIDEOS.indexOf(v)}"><img loading="lazy" alt="" src="${thumb(v.id)}"><p>${esc(v.title)}</p></button>`).join("")
+    : '<p class="empty" style="grid-column:1/-1;padding:10px">Weli wax ma darin.</p>';
+}
+$("mngrid").onclick = goTo;
+$("mnclear").onclick = () => {
+  if (!mine.length || !confirm("Tirtir muuqaallada aad dartay?")) return;
+  VIDEOS.length = BASE.length; mine.length = 0;
+  try { localStorage.setItem("mine","[]"); } catch(e){}
+  renderFeed(); drawDiscover(); drawLikes(); drawMine();
+};
+$("midpost").onclick = () => { $("postm").hidden = false; };
+$("pclose").onclick = () => { $("postm").hidden = true; };
+function readForm(){
+  const id = ytId($("pl").value);
+  if (!id) { alert("Link-ga YouTube ma saxna."); return null; }
+  return { id, title: $("pt").value.trim() || "Muuqaal cusub", cat: $("pc").value, link: $("pl").value.trim() };
+}
+$("psave").onclick = () => {
+  const v = readForm(); if (!v) return;
+  const item = { id: v.id, title: v.title, cat: v.cat };
+  mine.push(item); VIDEOS.push(item);
+  try { localStorage.setItem("mine", JSON.stringify(mine)); } catch(e){}
+  renderFeed(); drawDiscover(); drawMine();
+  $("postm").hidden = true; $("pl").value = ""; $("pt").value = "";
+  show("home");
+  const posts = document.querySelectorAll(".post"); posts[posts.length-1].scrollIntoView();
+};
+$("psend").onclick = () => {
+  const v = readForm(); if (!v) return;
+  const body = `Link: ${v.link}\nMagac: ${v.title}\nQayb: ${v.cat}\n\nWaxaan leeyahay muuqaalkan ama waxaa leeyahay ogolaansho.`;
+  location.href = "mailto:boyyare432@gmail.com?subject=" + encodeURIComponent("Muuqaal cusub - SoomaaLink") + "&body=" + encodeURIComponent(body);
+};
+drawMine();
+
+/* WALLET */
+const PACKS = [ {c:100, p:"$1"}, {c:500, p:"$4"}, {c:1000, p:"$7"} ];   /* beddel qiimaha halkan */
+const PAY = {
+  stripe: "",     /* Card: ku dar link-ga Stripe Payment Link, tusaale "https://buy.stripe.com/xxxx" */
+  paypal: "",     /* PayPal: tusaale "https://paypal.me/magacaaga" */
+  bank: "",       /* Bank: tusaale "Bank: ...\nMagac: ...\nIBAN: ..." */
+  wallet: "",     /* Wallet: tusaale "EVC Plus: 252XXXXXXXXX\nZaad: 252XXXXXXXXX" */
+  whatsapp: ""    /* ikhtiyaari: "252XXXXXXXXX" */
+};
+const CODES = {"9262a0753576479a2abbbf1d7b632adc7590f1d6116e9d9e1d773e6d04c30d8a": 100, "781f12837dec6f0e6c34af7dc36d34543ae673f00de9638964adef6f91a387fc": 100, "76797e65c09a9b74df292954f62404be2d8eacf73f2b97418ba5f59a2522a9bc": 100, "2b27f61022a25a71813479d2b55957741e365a51fd18ff457f1594fb95c2418a": 100, "d3914d89f5778ac3f4d5b74d912754438b8fcdcc3de506af54da96cf5fe2d66c": 100, "5c589fae34df0f93485669a831b16049ea031063f751c1ded6c1ddd5484f1401": 100, "d4ca7fe27c19af086d7095155006f57111d1975dcca95333899eb5e228f9c9ed": 100, "ac83ee46dbe84d22f6c20f6c3c9aa4894d1ea07a87e3b98344dcee9e35349549": 100, "f0199d6a40550b6f5e6dc6bb706e2016cb54fd0f4199d47c86f5976065078ca6": 100, "731d11a5d4c8235b23caeb05c5a4f6803a29fe29db2c34787cdd3dae00b4d564": 100, "db9f7ca1ffdc1804ab25c858245866b9dcf4218f4c722947d8e6b57705b9da9e": 500, "3b1628cff734f68c16c218f6d78c31b5a778894d844e2470708387c0342e9a4e": 500, "8b741031b355762d14b97401f7823f5f265d02d64c091ace1db221eac4eeb264": 500, "8cb28e197a326e157b0946e0986c127e3c9e973119ff390bf468ba4c761f6b07": 500, "3a69f9dfd51288349fb2c7576271e63c517d7f7851d4ea17c1f792d726b17e4b": 500, "7a2e42e4ff328f7d685b4e9f7894e5c57983cc4f3f073d0d128505a634b6bb9f": 1000, "69ebd54f7ea991d51a6dc87c3b512fa8d3e5d90bdeedd3dd734e3f515558e3c0": 1000, "d8af806a2525e365d0413c4a3d553157cbfa335b2f6d01fdc63abbc8a0e2624c": 1000};
+let coins = 0, used = [];
+try { coins = +localStorage.getItem("coins") || 0; used = JSON.parse(localStorage.getItem("used") || "[]"); } catch(e){}
+let sel = PACKS[0];
+function saveWallet(){ try { localStorage.setItem("coins", coins); localStorage.setItem("used", JSON.stringify(used)); } catch(e){} }
+function drawWallet(){
+  $("coinTop").textContent = coins; $("balNum").textContent = coins; $("stCoins").textContent = coins;
+  $("packs").innerHTML = PACKS.map(p => `<button class="pack ${p===sel?'on':''}" data-c="${p.c}"><b>${p.c}</b>🪙<br>${p.p}</button>`).join("");
+  const msg = `Waxaan rabaa inaan iibsado ${sel.c} coins (${sel.p}) - SoomaaLink.`;
+  const mail = how => "mailto:boyyare432@gmail.com?subject=" + encodeURIComponent("Iibso coins - SoomaaLink") + "&body=" + encodeURIComponent(msg + "\nHabka: " + how + "\nLambarkayga: ");
+  $("payBtns").innerHTML = `<button class="btn" data-m="card">💳 Card (Visa / Mastercard)</button><button class="btn" data-m="paypal">PayPal</button><button class="btn" data-m="bank">🏦 Bank account</button><button class="btn" data-m="wallet">👛 Wallet (EVC Plus / Zaad)</button><p class="note" id="payInfo" style="white-space:pre-line"></p><button class="btn alt" id="proofBtn">U dir caddaynta lacagta</button>`;
+  $("payBtns").onclick = e => {
+    const b = e.target.closest("[data-m]"); if (!b) return; const m = b.dataset.m;
+    if (m === "card" && PAY.stripe) { window.open(PAY.stripe, "_blank", "noopener"); return; }
+    if (m === "paypal" && PAY.paypal) { window.open(PAY.paypal, "_blank", "noopener"); return; }
+    if ((m === "bank" && PAY.bank) || (m === "wallet" && PAY.wallet)) {
+      $("payInfo").textContent = (m === "bank" ? PAY.bank : PAY.wallet) + "\n\nQiimaha: " + sel.p + " (" + sel.c + " coins)\nKa dib taabo \"U dir caddaynta\" si aad u hesho koodh.";
+      return;
+    }
+    location.href = mail({card:"Card", paypal:"PayPal", bank:"Bank account", wallet:"Wallet"}[m]);
+  };
+  $("proofBtn").onclick = () => {
+    if (PAY.whatsapp) location.href = "https://wa.me/" + PAY.whatsapp + "?text=" + encodeURIComponent(msg + " Waan bixiyay, caddaynta halkan waa.");
+    else location.href = mail("Caddayn lacag bixin (ku lifaaq screenshot)");
+  };
+}
+$("packs").onclick = e => { const b = e.target.closest(".pack"); if(!b) return; sel = PACKS.find(p => p.c === +b.dataset.c); drawWallet(); };
+async function sha(t){ const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,"0")).join(""); }
+$("redeemBtn").onclick = async () => {
+  const code = $("codeIn").value.trim().toUpperCase();
+  if (!code) return;
+  let h; try { h = await sha(code); } catch(e){ alert("Browser-kaaga ma taageero."); return; }
+  if (!CODES[h]) { alert("Koodhka ma saxna."); return; }
+  if (used.includes(h)) { alert("Koodhkan hore ayaa loo isticmaalay."); return; }
+  coins += CODES[h]; used.push(h); saveWallet(); drawWallet(); $("codeIn").value = "";
+  alert("Waad ku guuleysatay! +" + CODES[h] + " coins");
+};
+$("walletbtn").onclick = () => { drawWallet(); $("walletm").hidden = false; };
+$("walletClose").onclick = () => { $("walletm").hidden = true; };
+drawWallet();
 
 /* NAV */
 function show(p){
