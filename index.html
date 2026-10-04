@@ -369,3 +369,135 @@ if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catc
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SoomaaLink</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:system-ui;overflow:hidden;height:100vh}
+.page{display:none;height:100vh;overflow:hidden;position:relative}
+.page.active{display:block}
+
+/* === 1. CAMERA PAGE (sawirka 1aad) === */
+.camera-bg{background:#222;width:100%;height:100%;position:relative}
+.camera-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:15px;z-index:5}
+.add-sound{background:#333;padding:8px 18px;border-radius:20px;font-size:14px}
+.right-tools{position:absolute;right:12px;top:80px;display:flex;flex-direction:column;gap:20px;z-index:5;font-size:22px;text-align:center}
+.time-bar{position:absolute;bottom:110px;left:0;right:0;display:flex;justify-content:center;gap:15px;color:#aaa;font-size:14px;z-index:5}
+.time-bar .active{color:#fff;background:#fff;color:#000;padding:4px 12px;border-radius:15px;font-weight:700}
+.record-area{position:absolute;bottom:30px;left:0;right:0;display:flex;justify-content:space-around;align-items:center;z-index:5}
+.rec-btn{width:75px;height:75px;background:#ff2d55;border:4px solid #fff;border-radius:50%}
+.effect{width:55px;height:55px;border-radius:50%;overflow:hidden;border:2px solid #444}
+.bottom-tabs{position:absolute;bottom:0;left:0;right:0;background:#000;display:flex;justify-content:space-around;padding:12px 0;color:#888;font-weight:700;font-size:14px}
+.bottom-tabs .active{color:#fff}
+video#cam{width:100%;height:100%;object-fit:cover}
+
+/* === 2. FOR YOU FEED (sawirka 2aad) === */
+.top-tabs{position:absolute;top:0;left:0;right:0;display:flex;gap:15px;padding:12px;color:#aaa;font-size:15px;font-weight:600;z-index:5;overflow-x:auto}
+.top-tabs .active{color:#fff;border-bottom:2px solid #fff}
+.video-post{height:100vh;position:relative;background:#111}
+.video-post video{width:100%;height:100%;object-fit:cover}
+.location-tag{position:absolute;bottom:140px;left:12px;background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);padding:6px 12px;border-radius:12px;font-size:12px}
+.post-side{position:absolute;right:10px;bottom:100px;display:flex;flex-direction:column;gap:15px;text-align:center;z-index:5}
+.action{font-size:11px} .action b{display:block;font-size:28px}
+.profile-plus{position:relative} .plus{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);background:#ff2d55;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+.post-bottom{position:absolute;bottom:70px;left:12px;right:70px;z-index:5}
+.badge{background:#3a4bff;color:#fff;padding:4px 10px;border-radius:6px;font-size:13px;display:inline-block;margin-bottom:6px}
+
+/* === 3. PROFILE (sawirka 3aad) === */
+.profile-page{background:#fff;color:#000;height:100vh;overflow-y:auto;padding-bottom:80px}
+.p-top{display:flex;justify-content:space-between;padding:12px;font-size:20px}
+.p-name{font-size:22px;font-weight:800;padding:0 12px;margin-top:10px}
+.p-handle{color:#777;padding:0 12px;font-size:14px}
+.p-stats{display:flex;gap:20px;padding:12px;font-weight:700} .p-stats span{font-weight:400;color:#666;font-size:13px;display:block}
+.bio{padding:0 12px;font-size:14px;line-height:1.3;margin-top:8px}
+.p-buttons{display:flex;gap:8px;padding:12px;overflow-x:auto}
+.p-btn{background:#f1f1f1;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap}
+.shop-bar{background:#f8f8f8;padding:10px 12px;font-weight:700;font-size:14px;border-top:1px solid #eee;border-bottom:1px solid #eee}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px}
+.shop-item{background:#f9f9f9;border-radius:8px;overflow:hidden} .shop-item img{width:100%;height:140px;object-fit:cover}
+
+.nav{position:fixed;bottom:0;left:0;right:0;height:60px;background:#000;display:flex;justify-content:space-around;align-items:center;z-index:99;border-top:1px solid #222}
+.nav-w{background:#fff;color:#000;border-top:1px solid #eee}
+.nav div{text-align:center;font-size:11px} .nav b{font-size:20px;display:block}
+.add-btn{width:45px;height:32px;background:#000;border:2px solid #00f2ea;border-right-color:#ff0050;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: CAMERA (sida sawirka 1aad) -->
+<div id="cameraPage" class="page">
+<div class="camera-bg">
+<video id="cam" autoplay muted playsinline></video>
+<div class="camera-top"><span onclick="openPage('feed')" style="font-size:24px">✕</span><div class="add-sound">♪ Add sound</div><span>🔄</span></div>
+<div class="right-tools">
+<div>✖️<br><small style="font-size:10px"></small></div>
+<div>⏱️</div><div>🖼️</div><div>👤✨</div><div>👥✅</div><div>⌄</div>
+</div>
+<div class="time-bar"><span>10m</span><span class="active">60s</span><span>15s</span><span>PHOTO</span><span>TEXT</span></div>
+<div class="record-area">
+<div class="effect" style="background: pink">🥒</div>
+<div class="effect" style="background: url('https://images.unsplash.com/photo-1431274172761-fca41d930114?w=100') center/cover"></div>
+<div class="rec-btn" onclick="startRec()"></div>
+<div class="effect">❤️💚💙</div>
+<div class="effect" style="background:#222"></div>
+</div>
+</div>
+<div class="bottom-tabs"><span>📷</span><span>LIVE</span><span class="active">CAMERA</span><span>CREATE</span></div>
+</div>
+
+<!-- PAGE 2: FOR YOU FEED (sida sawirka 2aad Bordeaux) -->
+<div id="feedPage" class="page active">
+<div class="video-post" onclick="this.querySelector('video').paused?this.querySelector('video').play():this.querySelector('video').pause()">
+<video autoplay muted loop playsinline src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+<div class="top-tabs"><span>🔴 LIVE</span><span>Sarthe</span><span>Following</span><span>Shop</span><span class="active">For You</span><span style="margin-left:auto">🔍</span></div>
+<div style="position:absolute;top:55px;left:12px;background:#3a4bff;padding:6px 12px;border-radius:8px;font-weight:700;font-size:14px">Bordeaux France 🇫🇷</div>
+<div class="post-side">
+<div class="profile-plus"><img src="https://images.unsplash.com/photo-1431274172761-fca41d930114?w=100" style="width:45px;height:45px;border-radius:50%;border:2px solid #fff"><div class="plus">+</div></div>
+<div class="action"><b>❤️</b>279K</div>
+<div class="action"><b>💬</b>693</div>
+<div class="action"><b>🔖</b>5,068</div>
+<div class="action"><b>↗️</b>3,786</div>
+<div class="action"><img src="https://images.unsplash.com/photo-1431274172761-fca41d930114?w=100" style="width:35px;height:35px;border-radius:50%"></div>
+</div>
+<div class="location-tag">📍 Château de Chambord · Blois<br><small>5030 people posted about this place</small></div>
+<div class="post-bottom">
+<b>Nhek Phochetra</b><br>Bordeaux France 🇫🇷 #adventure #travel #views<br><small style="color:#ccc">See translation</small><br>
+<div style="background:rgba(255,255,255,0.15);padding:6px 10px;border-radius:20px;margin-top:8px;font-size:12px">◎ Ask · Best places to visit in Bordeaux ➤</div>
+</div>
+</div>
+<div class="nav"><div onclick="openPage('feed')"><b>🏠</b>Home</div><div><b>👥</b>Friends</div><div class="add-btn" onclick="openPage('camera')">+</div><div onclick="openPage('feed')"><b>💬</b>Inbox</div><div onclick="openPage('profile')"><b>👤</b>Profile</div></div>
+</div>
+
+<!-- PAGE 3: PROFILE (sida sawirka 3aad) -->
+<div id="profilePage" class="page profile-page">
+<div class="p-top"><span>✏️</span><div><span>👤4</span> <span>👤+</span> <span>☰</span></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px">
+<div><div class="p-name">༄Ha_Qoslin_Sin... <span style="background:#ff2d55;color:#fff;font-size:12px;padding:2px 8px;border-radius:12px">9+</span></div><div class="p-handle">@bahal_ceyjiye</div>
+<div class="p-stats"><div>3,763 <span>Following</span></div><div>3,739 <span>Followers</span></div><div>8,702 <span>Likes</span></div></div>
+</div>
+<img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100" style="width:85px;height:85px;border-radius:50%;border:2px solid #fff">
+</div>
+<div class="bio">IXTIRAAMKU<br>"waa toban, Sagaal Ka mid ah waa Aamusnaan, Halka Soo harayna waa in Loo Tanaasulo Kuwa Ay Garashadu Ku Yar tahay"</div>
+<div class="p-buttons"><div class="p-btn">👥 TikTok Studio</div><div class="p-btn">👜 Your orders</div><div class="p-btn">👛 Balance</div></div>
+<div style="display:flex;gap:20px;padding:15px"><div style="text-align:center"><div style="width:65px;height:65px;border:1px solid #ddd;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">+</div><small>New</small></div><div style="text-align:center"><img src="https://images.unsplash.com/photo-1431274172761-fca41d930114?w=100" style="width:65px;height:65px;border-radius:50%"><br><small>Highlight</small></div></div>
+<div style="display:flex;justify-content:space-around;padding:12px;border-top:1px solid #eee;color:#888"><span>⋮▭</span><span style="color:#000;border-bottom:2px solid #000">👜</span><span>🔒</span><span>🔄</span><span>🔖</span><span>♡</span></div>
+<div class="shop-bar">🏪 TikTok Shop for Creator ➤</div>
+<div class="shop-grid">
+<div class="shop-item"><img src="https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=300"><br><small>Mixed Color Phone Suctio...</small></div>
+<div class="shop-item"><img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=300"><br><small><span style="background:#ffcc00;font-size:10px;padding:2px 4px;border-radius:4px">Offres</span> Phone Chest Strap ...</small></div>
+</div>
+<div class="nav nav-w"><div onclick="openPage('feed')"><b>🏠</b>Home</div><div><b>👥</b>Friends <span style="background:red;color:#fff;border-radius:50%;padding:1px 5px;font-size:10px">61</span></div><div class="add-btn" onclick="openPage('camera')">+</div><div><b>💬</b>Inbox</div><div onclick="openPage('profile')"><b>👤</b>Profile</div></div>
+</div>
+
+<script>
+function openPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(n+'Page').classList.add('active'); if(n=='camera')startCam()}
+async function startCam(){try{let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true});document.getElementById('cam').srcObject=s}catch(e){}}
+function startRec(){alert('🔴 Recording 60s - Feature-kan wuxuu duubayaa! (ku dar server haddii aad rabto save)')}
+openPage('feed');
+</script>
+</body>
+</html>
