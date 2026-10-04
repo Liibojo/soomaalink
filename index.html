@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SoomaaLink - TikTok Somali</title>
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+.page{position:fixed;inset:0;display:none;flex-direction:column;background:#000;overflow:hidden}
+.page.on{display:flex}
+.top-nav{height:52px;display:flex;align-items:center;gap:14px;padding:0 12px;background:#000;z-index:20;overflow-x:auto;white-space:nowrap}
+.top-nav.live{border:2px solid #fff;border-radius:6px;padding:2px 6px;font-weight:900;font-size:13px}
+.top-nav span{color:#8a8a8a;font-size:16px;font-weight:600;cursor:pointer}
+.top-nav span.on{color:#fff;position:relative}
+.top-nav span.on::after{content:"";position:absolute;left:30%;right:30%;bottom:-8px;height:3px;background:#fff;border-radius:2px}
+.feed{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory}
+.feed::-webkit-scrollbar{display:none}
+.post{height:calc(100vh - 112px);width:100vw;scroll-snap-align:start;position:relative;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.text-post{display:flex;align-items:center;justify-content:center;padding:30px;text-align:center;font-size:38px;font-weight:800;line-height:1.25}
+.right{position:absolute;right:8px;bottom:14px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:14px}
+.rbtn{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:24px;border:0;color:#fff;cursor:pointer}
+.rbtn.liked{background:rgba(254,44,85,.25);color:#fe2c55}
+.av{width:48px;height:48px;border-radius:50%;border:2px solid #fff;overflow:hidden;position:relative}
+.av img{width:100%;height:100%;object-fit:cover}
+.plus{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);background:#fe2c55;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}
+.rcnt{font-size:12px;font-weight:700;text-align:center;margin-top:2px}
+.bottom{position:absolute;left:12px;bottom:10px;right:80px;z-index:10}
+.nav{height:60px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:30}
+.nav button{background:none;border:0;color:#8a8a8a;font-size:10px;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.nav button.on{color:#fff}
+.nav button b{font-size:22px}
+.nav.plusBtn{background:#fff;color:#000;width:44px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;box-shadow:-3px 0 0 #25f4ee,3px 0 0 #fe2c55;border:0}
+.profile-page{background:#fff;color:#000;overflow-y:auto}
+.p-top{display:flex;justify-content:space-between;align-items:center;padding:12px}
+.p-name{font-size:22px;font-weight:800;padding:0 12px;display:flex;align-items:center;gap:8px}
+.p-name.badge{background:#fe2c55;color:#fff;font-size:12px;padding:2px 8px;border-radius:12px}
+.p-handle{color:#777;padding:0 12px;font-size:14px;margin-bottom:12px}
+.p-row{display:flex;justify-content:space-between;padding:0 12px}
+.p-stats{display:flex;gap:18px;font-weight:800}
+.p-stats span{font-weight:400;color:#666;font-size:12px;display:block}
+.p-avatar{width:86px;height:86px;border-radius:50%;overflow:hidden;position:relative;border:2px solid #eee}
+.p-avatar img{width:100%;height:100%;object-fit:cover}
+.p-bio{padding:12px;font-size:14px;line-height:1.35;white-space:pre-wrap}
+.p-pills{display:flex;gap:8px;overflow-x:auto;padding:0 12px 12px}
+.pill{background:#f1f1f1;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;border:0}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:84%;max-width:340px;background:#fff;color:#000;z-index:100;transform:translateX(100%);transition:.3s;overflow-y:auto;padding:16px}
+.drawer.on{transform:translateX(0)}
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;display:none}
+.dim.on{display:block}
+.settings{background:#f5f5f5;color:#000;overflow-y:auto}
+.set-group{background:#fff;border-radius:12px;margin:10px 12px;padding:0 14px}
+.set-item{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal.center{align-items:center}
+.modal[hidden]{display:none}
+.mbox{width:100%;max-width:440px;background:#121212;border-radius:18px 18px 0 0;padding:18px;max-height:85vh;overflow-y:auto;color:#fff}
+.mbox.light{background:#fff;color:#000;border-radius:18px}
+.mbox input{width:100%;padding:13px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-bottom:10px}
+.mbox.light input{background:#f2f2f2;border-color:#e5e5e5;color:#000}
+.btn{width:100%;padding:13px;border-radius:10px;border:0;background:#fe2c55;color:#fff;font-weight:700;cursor:pointer;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="page on" id="p-feed">
+<div class="top-nav"><div class="live">LIVE</div><span>Community</span><span>Sarthe</span><span>Following</span><span>Shop</span><span class="on">For You</span><div style="margin-left:auto">⌕</div></div>
+<div class="feed" id="feed"></div>
+<div class="nav"><button class="on" data-p="feed"><b>⌂</b>Home</button><button data-p="friends"><b>👥</b>Friends</button><button class="plusBtn" id="addBtn">+</button><button data-p="inbox"><b>💬</b>Inbox</button><button data-p="profile"><b>👤</b>Profile</button></div>
+</div>
+<div class="page" id="p-profile">
+<div class="profile-page" style="flex:1;display:flex;flex-direction:column">
+<div class="p-top"><span>✏️</span><div style="display:flex;gap:16px"><span>👁️ 4</span><span>👤+</span><span id="menuBtn">☰</span></div></div>
+<div class="p-row"><div><div class="p-name">༄Ha_Qoslin_Sin... <span class="badge">9+</span></div><div class="p-handle">@bahal_ceyjiye</div><div class="p-stats"><div>3,763 <span>Following</span></div><div>3,739 <span>Followers</span></div><div>8,702 <span>Likes</span></div></div></div><div class="p-avatar"><img src="https://i.pravatar.cc/200?u=bahal"><div style="position:absolute;bottom:-4px;right:-4px;background:#00c2ff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;border:2px solid #fff">+</div></div></div>
+<div class="p-bio">IXTIRAAMKU
+"waa toban, Sagaal Ka mid ah waa Aamusnaan"</div>
+<div class="p-pills"><button class="pill">👥 TikTok Studio</button><button class="pill">👜 Your orders</button><button class="pill">👛 Balance</button></div>
+<div class="shop-grid" id="shopGrid"></div>
+</div>
+<div class="nav" style="background:#fff;color:#000"><button data-p="feed"><b>⌂</b>Home</button><button data-p="friends"><b>👥</b>Friends</button><button class="plusBtn">+</button><button data-p="inbox"><b>💬</b>Inbox</button><button class="on" data-p="profile" style="color:#000"><b>👤</b>Profile</button></div>
+</div>
+<div class="dim" id="dim"></div>
+<div class="drawer" id="drawer"><h4>Assets</h4><div class="item"><span>👜 Balance</span><span>$0.03 ›</span></div><h4>Personal tools</h4><div class="item"><span>🕒 Activity center</span><span>›</span></div><div class="item"><span>⬇️ Offline videos</span><span>›</span></div><div class="item"><span>⊞ Your QR code</span><span>›</span></div><h4>Creation</h4><div class="item" onclick="openSettings()"><span>⚙️ Settings and privacy</span><span>›</span></div></div>
+<div class="page" id="p-settings"><div class="settings" style="flex:1"><div style="padding:14px;display:flex;gap:12px;font-weight:700"><span id="backBtn">←</span> Settings and privacy</div><div style="padding:12px"><div class="set-group"><div class="set-item"><span>▶️ Manage posts</span><span>›</span></div><div class="set-item"><span>🔔 Notifications</span><span>›</span></div><div class="set-item"><span>🔒 Private account</span><span>›</span></div><div class="set-item"><span>❤️ Liked videos</span><span>Only you ›</span></div><div class="set-item"><span>⬇️ Offline videos</span><span>›</span></div><div class="set-item" onclick="logout()"><span>↩️ Log out</span><span>›</span></div></div></div></div></div>
+<div class="modal center" id="authM" hidden><div class="mbox light"><h2 id="authTitle">Log in</h2><input id="aName" placeholder="Magaca (Sign Up)"><input id="aEmail" placeholder="Email ama Number"><input id="aPass" type="password" placeholder="Password"><button class="btn" id="aSubmit">Log in</button><button class="btn" style="background:#fff;color:#000;border:1px solid #ddd" id="aToggle">Sign Up</button><button class="btn" style="background:#f1f1f1;color:#000" id="aClose">Close</button></div></div>
+<div class="modal" id="cmtM" hidden><div class="mbox"><h3>Comments <span id="cmtCnt"></span> <span style="float:right" id="cmtX">✕</span></h3><div id="cmtList" style="max-height:45vh;overflow-y:auto;margin:12px 0"></div><div style="display:flex;gap:8px"><input id="cmtIn" placeholder="Add comment..." style="flex:1"><button class="btn" id="cmtSend" style="width:70px">Send</button></div></div></div>
+<div class="modal center" id="postM" hidden><div class="mbox light"><h3>Create ☆</h3><input id="pLink" placeholder="YouTube link"><input id="pTitle" placeholder="Caption"><button class="btn" id="pSave">Post</button><button class="btn" style="background:#f1f1f1;color:#000" id="pClose">Cancel</button></div></div>
+<script>
+const BASE=[
+{id:"gJAnKsyu5Tk",title:"Waxbarashu maaha wax caajis ah marka aad xaqiiqsato inay tahay tigidka xornimada.",user:"Ahmed",type:"text",bg:"#1a1a1a"},
+{id:"xPAOUCS0v-4",title:"Hees kaban macaan 🎸 #kaban",user:"liibaan_music",type:"video"},
+{id:"oQT9j610FI8",title:"IXTIRAAMKU waa toban...",user:"bahal_ceyjiye",type:"video"},
+{id:"jNQXAC9IVRw",title:"Kaban dhaqan - Muqdisho live 😍",user:"soomaalink",type:"video"},
+{id:"dQw4w9WgXcQ",title:"Qosolkii maanta 😂",user:"qosol_tv",type:"video"},
+];
+let mine=[];try{mine=JSON.parse(localStorage.getItem("mine")||"[]")}catch(e){}
+const V=()=>BASE.concat(mine);
+const thumb=id=>`https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+const $=id=>document.getElementById(id);
+let likes={};try{likes=JSON.parse(localStorage.getItem("likes")||"{}")}catch(e){}
+let follows={};try{follows=JSON.parse(localStorage.getItem("follows")||"{}")}catch(e){}
+let cdata={};try{cdata=JSON.parse(localStorage.getItem("cdata")||"{}")}catch(e){}
+let users=[];try{users=JSON.parse(localStorage.getItem("users")||"[]")}catch(e){}
+let cur=null;try{cur=JSON.parse(localStorage.getItem("cur")||"null")}catch(e){}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function renderFeed(){
+$("feed").innerHTML=V().map(v=>{
+if(v.type==="text"){return `<div class="post" data-id="${v.title}" style="background:${v.bg}"><div class="text-post">${esc(v.title)}</div><div style="position:absolute;right:8px;bottom:14px;display:flex;flex-direction:column;gap:14px;align-items:center"><div class="av"><img src="https://i.pravatar.cc/100?u=${v.user}"><div class="plus">+</div></div><button class="rbtn ${likes[v.title]?'liked':''}" data-like="${esc(v.title)}">♡</button><div style="font-size:11px">${likes[v.title]?'1':'0'}</div><button class="rbtn" data-cmt="${esc(v.title)}">💬</button><div style="font-size:11px">Add 1st</div><button class="rbtn">🔖</button><div style="font-size:11px">0</div><button class="rbtn" data-share>↗</button><div style="font-size:11px">1</div></div><div style="position:absolute;left:12px;bottom:10px;right:80px"><div style="font-weight:700">${esc(v.user)} Text</div><div style="font-size:14px">${esc(v.title)}</div></div></div>`}
+else{return `<div class="post" data-id="${v.id}"><div style="position:absolute;inset:0;background-image:url(${thumb(v.id)});background-size:cover;filter:blur(20px) brightness(.4)"></div><img src="${thumb(v.id)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" class="thumb"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;background:rgba(0,0,0,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px" class="play">▶</div><div style="position:absolute;right:8px;bottom:14px;display:flex;flex-direction:column;gap:14px;align-items:center"><div class="av"><img src="https://i.pravatar.cc/100?u=${v.user}"><div class="plus">${follows[v.user]?'✓':'+'}</div></div><button class="rbtn ${likes[v.id]?'liked':''}" data-like="${v.id}">♥</button><div style="font-size:12px">${likes[v.id]?'12.5K':'279K'}</div><button class="rbtn" data-cmt="${v.id}">💬</button><div style="font-size:12px">${(cdata[v.id]||[]).length||693}</div><button class="rbtn">🔖</button><div style="font-size:12px">5,068</div><button class="rbtn" data-share="${v.id}">↗</button><div style="font-size:12px">3,786</div></div><div style="position:absolute;left:12px;bottom:10px;right:80px"><div style="font-weight:700">@${esc(v.user)}</div><div style="font-size:14px">${esc(v.title)}</div><div style="font-size:12px;opacity:.8">♫ Original sound - ${esc(v.user)}</div></div></div>`}
+}).join("");
+document.querySelectorAll(".post").forEach(p=>{
+let last=0;
+p.addEventListener("click",e=>{
+if(e.target.closest(".rbtn")||e.target.closest(".av"))return;
+let now=Date.now();
+if(now-last<300){let id=p.dataset.id;likes[id]=true;save("likes",likes);renderFeed();let h=document.createElement("div");h.textContent="❤️";h.style.cssText="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:80px;z-index:20;animation:pop.8s forwards";p.appendChild(h);setTimeout(()=>h.remove(),800);}
+else{if(p.querySelector("iframe")){p.querySelector("iframe").remove();p.querySelector(".thumb").style.display="block";p.querySelector(".play").style.display="flex"}else if(p.dataset.id.length===11){let id=p.dataset.id;p.querySelector(".thumb").style.display="none";p.querySelector(".play").style.display="none";let f=document.createElement("iframe");f.style.cssText="position:absolute;inset:0;width:100%;height:100%;border:0";f.src=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&controls=0&loop=1&playlist=${id}&modestbranding=1&playsinline=1`;f.allow="autoplay; encrypted-media";p.prepend(f)}}
+last=now;
+});
+});
+$("feed").onclick=e=>{
+let lb=e.target.closest("[data-like]");if(lb){if(!cur){$("authM").hidden=false;return}let id=lb.dataset.like;likes[id]=!likes[id];if(!likes[id])delete likes[id];save("likes",likes);lb.classList.toggle("liked",!!likes[id]);return}
+let cb=e.target.closest("[data-cmt]");if(cb){curCmt=cb.dataset.cmt;$("cmtM").hidden=false;drawC();return}
+let sb=e.target.closest("[data-share]");if(sb){if(navigator.share)navigator.share({url:`https://youtu.be/${sb.dataset.share||''}`}).catch(()=>{});else alert("Link copied")}
+};
+}
+let curCmt=null;
+function drawC(){let list=cdata[curCmt]||[];$("cmtCnt").textContent="("+list.length+")";$("cmtList").innerHTML=list.length?list.map(c=>`<div style="padding:10px 0;border-bottom:1px solid #222"><b>${esc(c.u)}</b><br><span style="color:#ccc">${esc(c.t)}</span></div>`).join(""):`<p style="padding:20px;text-align:center;color:#777">No comments yet</p>`}
+$("cmtX").onclick=()=>{$("cmtM").hidden=true}
+$("cmtSend").onclick=()=>{if(!cur){$("authM").hidden=false;return}let t=$("cmtIn").value.trim();if(!t)return;if(!cdata[curCmt])cdata[curCmt]=[];cdata[curCmt].push({u:cur.name,t});save("cdata",cdata);$("cmtIn").value="";drawC();renderFeed()}
+function renderShop(){$("shopGrid").innerHTML=[1,2,3,4].map(i=>`<div style="background:#f9f9f9;border-radius:6px;overflow:hidden"><img src="https://picsum.photos/300/300?random=${i}" style="width:100%;height:180px;object-fit:cover"><div style="padding:6px;color:#000;font-size:12px">Mixed Color Phone...</div></div>`).join("")}
+function show(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));$("p-"+p).classList.add("on")}
+document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{if(b.dataset.p==="friends"){alert("Friends coming soon");return}if(b.dataset.p==="inbox"&&!cur){$("authM").hidden=false;return}show(b.dataset.p)})
+$("menuBtn").onclick=()=>{$("drawer").classList.add("on");$("dim").classList.add("on")}
+$("dim").onclick=()=>{$("drawer").classList.remove("on");$("dim").classList.remove("on")}
+function openSettings(){show("settings");$("drawer").classList.remove("on");$("dim").classList.remove("on")}
+$("backBtn").onclick=()=>show("profile")
+function logout(){cur=null;save("cur",null);show("feed")}
+let isSU=false;
+$("addBtn").onclick=()=>{if(!cur){$("authM").hidden=false;return}$("postM").hidden=false}
+$("aClose").onclick=()=>{$("authM").hidden=true}
+$("aToggle").onclick=()=>{isSU=!isSU;$("authTitle").textContent=isSU?"Sign up":"Log in";$("aSubmit").textContent=isSU?"Sign up":"Log in";$("aToggle").textContent=isSU?"Log in":"Sign Up"}
+$("aSubmit").onclick=()=>{let e=$("aEmail").value.trim(),p=$("aPass").value.trim(),n=$("aName").value.trim();if(!e||p.length<6){alert("Email/Number + 6 chars");return}if(isSU){if(users.find(u=>u.email===e)){alert("Exists");return}let u={email:e,pass:p,name:n||e.split("@")[0]};users.push(u);save("users",users);cur=u;save("cur",cur);$("authM").hidden=true;renderFeed()}else{let u=users.find(u=>u.email===e&&u.pass===p);if(!u){alert("Wrong");return}cur=u;save("cur",cur);$("authM").hidden=true;renderFeed()}}
+$("pClose").onclick=()=>{$("postM").hidden=true}
+$("pSave").onclick=()=>{let m=($("pLink").value.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([A-Za-z0-9_-]{11})/)||[])[1];if(!m&&!$("pTitle").value){alert("Link or caption");return}if(m){mine.push({id:m,title:$("pTitle").value||"Muuqaal",user:cur?cur.name:"You",type:"video"})}else{mine.push({title:$("pTitle").value,user:cur?cur.name:"You",type:"text",bg:"#222"})}save("mine",mine);$("postM").hidden=true;$("pLink").value="";$("pTitle").value="";renderFeed();show("feed")}
+renderFeed();renderShop();
+let s=document.createElement("style");s.textContent="@keyframes pop{0%{transform:translate(-50%,-50%) scale(0)}50%{transform:translate(-50%,-50%) scale(1.2)}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}";document.head.appendChild(s);
+</script>
+</body>
+</html>
