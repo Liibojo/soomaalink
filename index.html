@@ -993,3 +993,109 @@ wrap.innerHTML=`<img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" class=
 p.querySelector('.play').style.display='flex';
 }else{
 wrap.innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?autoplay
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SoomaaLink TikTok</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;overflow:hidden;height:100vh}
+.top{height:50px;background:#000;display:flex;align-items:center;gap:12px;padding:0 12px;border-bottom:1px solid #222;overflow-x:auto;white-space:nowrap}
+.top b{border:2px solid #fff;padding:3px 7px;border-radius:6px;font-size:11px;font-weight:900}
+.top span{color:#777;font-weight:700;font-size:14px}.top span.on{color:#fff;border-bottom:3px solid #fff;padding-bottom:6px}
+.feed{height:calc(100dvh - 110px);overflow-y:scroll;scroll-snap-type:y mandatory;background:#000}
+.post{height:calc(100dvh - 110px);scroll-snap-align:start;position:relative;background:#111;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.big{font-size:34px;font-weight:900;text-align:center;padding:28px;line-height:1.3;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.right{position:absolute;right:10px;bottom:24px;display:flex;flex-direction:column;gap:12px;align-items:center;z-index:5}
+.icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.18);border:0;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center}
+.ava{width:48px;height:48px;border-radius:50%;border:2px solid #fff;overflow:hidden;background:#333;position:relative}
+.ava img{width:100%;height:100%;object-fit:cover}
+.plus{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:#fe2c55;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff}
+.num{font-size:11px;font-weight:700;margin-top:2px}
+.bot{position:absolute;left:12px;bottom:12px;right:80px;z-index:5;text-shadow:0 1px 6px #000}
+.bot b{font-size:14px}
+.bot small{font-size:12px;opacity:.85;display:block;margin-top:3px}
+.nav{height:60px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center}
+.nav button{background:none;border:0;color:#777;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nav button.on{color:#fff}.nav b{font-size:22px}
+.add{background:#fff;color:#000;width:44px;height:28px;border-radius:8px;font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:-3px 0 0 #25f4ee,3px 0 0 #fe2c55}
+</style>
+</head>
+<body>
+
+<div class="top"><b>LIVE</b><span>Community</span><span>Sarthe</span><span>Following</span><span>Shop</span><span class="on">For You</span></div>
+
+<div class="feed">
+
+<!-- 1 - QORAAL WEYN (sida sawirkaagii hore) -->
+<div class="post" style="background:radial-gradient(circle at center,#2a2a2a,#000)">
+<div class="big">Waxbarashu maaha wax caajis ah marka aad xaqiiqsato inay tahay tigidka xornimada.</div>
+<div class="right"><div class="ava"><img src="https://i.pravatar.cc/100?u=ahmed"><div class="plus">+</div></div><button class="icon">♡</button><div class="num">0</div><button class="icon">💬</button><div class="num">Add 1st</div><button class="icon">🔖</button><div class="num">0</div><button class="icon">↗</button><div class="num">1</div></div>
+<div class="bot"><b>@Ahmed • Text</b><small>Waxbarashu waa iftiin • 🎵 Has Any Gob</small></div>
+</div>
+
+<!-- 2 - VIDEO KABAN -->
+<div class="post" style="background:#000">
+<img src="https://i.ytimg.com/vi/jNQXAC9IVRw/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.85" class="th">
+<div style="position:absolute;inset:0;background:linear-gradient(transparent 60%,rgba(0,0,0,.8))"></div>
+<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:rgba(0,0,0,.45);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px" class="pl">▶</div>
+<div class="right"><div class="ava"><img src="https://i.pravatar.cc/100?u=liibaan"><div class="plus">+</div></div><button class="icon">♥</button><div class="num">279K</div><button class="icon">💬</button><div class="num">693</div><button class="icon">🔖</button><div class="num">5K</div><button class="icon">↗</button><div class="num">3K</div></div>
+<div class="bot"><b>@liibaan_music</b><small>Hees kaban macaan 🎸 #kaban #soomaali<br>♫ Original sound - liibaan_music</small></div>
+</div>
+
+<!-- 3 - QORAAL -->
+<div class="post" style="background:radial-gradient(circle at center,#1e2a1e,#000)">
+<div class="big">IXTIRAAMKU waa toban, Sagaal Ka mid ah waa Aamusnaan ❤️</div>
+<div class="right"><div class="ava"><img src="https://i.pravatar.cc/100?u=bahal"><div class="plus">+</div></div><button class="icon">♡</button><div class="num">8K</div><button class="icon">💬</button><div class="num">120</div><button class="icon">🔖</button><button class="icon">↗</button></div>
+<div class="bot"><b>@bahal_ceyjiye</b><small>IXTIRAAMKU waa toban... • 3,739 Followers</small></div>
+</div>
+
+<!-- 4 - VIDEO -->
+<div class="post" style="background:#000">
+<img src="https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" class="th">
+<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:rgba(0,0,0,.45);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px" class="pl">▶</div>
+<div class="right"><div class="ava"><img src="https://i.pravatar.cc/100?u=qosol"><div class="plus">+</div></div><button class="icon">♥</button><div class="num">12K</div><button class="icon">💬</button><div class="num">98</div><button class="icon">🔖</button><button class="icon">↗</button></div>
+<div class="bot"><b>@qosol_tv</b><small>Qosolkii maanta 😂 #qosol #somali</small></div>
+</div>
+
+<!-- 5 - QORAAL -->
+<div class="post" style="background:radial-gradient(circle at center,#2a1e1e,#000)">
+<div class="big">Soomaalinimo waa sharaf, dhaqanka waa hidde, luuqadda waa astaan 🇸🇴</div>
+<div class="right"><div class="ava"><img src="https://i.pravatar.cc/100?u=somali"></div><button class="icon">♡</button><button class="icon">💬</button><button class="icon">🔖</button><button class="icon">↗</button></div>
+<div class="bot"><b>@soomaalink</b><small>Soomaalinimo waa sharaf 🇸🇴</small></div>
+</div>
+
+</div>
+
+<div class="nav">
+<button class="on"><b>⌂</b>Home</button>
+<button><b>👥</b>Friends</button>
+<button><div class="add">+</div></button>
+<button><b>💬</b>Inbox</button>
+<button onclick="alert('Profile: 3,763 Following / 3,739 Followers / 8,702 Likes\n@bahal_ceyjiye')"><b>👤</b>Profile</button>
+</div>
+
+<script>
+document.querySelectorAll('.post').forEach(p=>{
+ p.addEventListener('click',()=>{
+  if(p.querySelector('iframe')){p.querySelector('iframe').remove();let th=p.querySelector('.th');if(th)th.style.display='block';let pl=p.querySelector('.pl');if(pl)pl.style.display='flex';return;}
+  let th=p.querySelector('.th');
+  if(th){
+    let m=th.src.match(/vi\/([^\/]+)\//);
+    if(!m)return;
+    th.style.display='none';
+    let pl=p.querySelector('.pl');if(pl)pl.style.display='none';
+    let f=document.createElement('iframe');
+    f.style='position:absolute;inset:0;width:100%;height:100%;border:0;z-index:2';
+    f.src='https://www.youtube.com/embed/'+m[1]+'?autoplay=1&playsinline=1&rel=0';
+    f.allow='autoplay;fullscreen;encrypted-media';
+    f.allowFullscreen=true;
+    p.appendChild(f);
+  }
+ });
+});
+</script>
+</body>
+</html>
