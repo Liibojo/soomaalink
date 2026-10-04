@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SoomaaLink - Full Final</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:system-ui,sans-serif;height:100dvh;overflow:hidden}
+.top{height:48px;background:#000;display:flex;align-items:center;gap:12px;padding:0 12px;border-bottom:1px solid #222;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.top::-webkit-scrollbar{display:none}.top b{border:2px solid #fff;padding:4px 10px;border-radius:8px;font-size:11px;cursor:pointer}.top span{color:#555;font-weight:700;font-size:13px;cursor:pointer;padding:6px 2px}.top span.on{color:#fff;border-bottom:3px solid #fff}
+.feed{height:calc(100dvh - 108px);overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}.feed::-webkit-scrollbar{display:none}
+.post{height:calc(100dvh - 108px);scroll-snap-align:start;position:relative;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.big{font-size:28px;font-weight:900;text-align:center;padding:24px;line-height:1.3;z-index:2;text-shadow:0 3px 15px #000}
+video,.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.right{position:absolute;right:8px;bottom:90px;display:flex;flex-direction:column;gap:10px;align-items:center;z-index:10}
+.r{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.20);border:0;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px)}.r.liked{background:#ff2d55}
+.av{width:46px;height:46px;border-radius:50%;border:2px solid #fff;overflow:hidden;background:#222;cursor:pointer}.av img{width:100%;height:100%;object-fit:cover}
+.bot{position:absolute;left:12px;bottom:16px;right:78px;z-index:10;text-shadow:0 2px 10px #000;line-height:1.3}
+.bot b{font-size:14px}.bot p{font-size:13px;opacity:.9;margin-top:3px}
+.play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:85px;height:85px;background:rgba(255,255,255,.95);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#000;z-index:15;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.nav{height:60px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center}
+.nav button{background:none;border:0;color:#777;font-size:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:50px}.nav button.on{color:#fff}.nav button.plus{background:#fff;color:#000;width:50px;height:34px;border-radius:10px;justify-content:center;font-weight:900;font-size:22px}
+.count{font-size:11px;font-weight:700;margin-top:-6px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:200;display:none;flex-direction:column}.modal.show{display:flex}
+.modal-head{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #222;font-weight:800;font-size:16px}
+.modal-body{flex:1;overflow-y:auto;padding:16px}
+.input{width:100%;background:#151515;border:1px solid #333;border-radius:12px;padding:14px;color:#fff;font-size:14px;margin-bottom:12px;outline:none}.input:focus{border-color:#fff}
+.btn{width:100%;background:#fff;color:#000;border:0;border-radius:12px;padding:14px;font-weight:800;cursor:pointer;font-size:15px}
+.btn2{background:#222;color:#fff;margin-top:8px}
+.user-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #111;cursor:pointer}
+.label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px 2px}
+.uploadBox{border:2px dashed #444;border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;background:#0a0a0a}.uploadBox:active{border-color:#fff}
+</style></head><body>
+
+<div class="top">
+<b id="liveBtn">LIVE</b>
+<span data-tab="community">Community</span>
+<span>Sarthe</span>
+<span data-tab="following">Following</span>
+<span>Shop</span>
+<span class="on" data-tab="foryou">For You</span>
+<span id="authBtn" style="margin-left:auto;color:#fff;font-weight:800">Login</span>
+</div>
+
+<div class="feed" id="feed"></div>
+
+<div class="nav">
+<button class="on" data-nav="home"><span style="font-size:18px">⌂</span>Home</button>
+<button data-nav="friends"><span style="font-size:18px">👥</span>Friends</button>
+<button class="plus" data-nav="post">+</button>
+<button data-nav="inbox"><span style="font-size:18px">💬</span>Inbox</button>
+<button data-nav="profile"><span style="font-size:18px">👤</span>Profile</button>
+</div>
+
+<!-- MODALS -->
+<div class="modal" id="commentModal"><div class="modal-head"><span id="cmtTitle">Comments</span><span onclick="closeM('commentModal')" style="font-size:28px;cursor:pointer">×</span></div><div class="modal-body" id="commentList"></div><div style="padding:12px;display:flex;gap:8px;border-top:1px solid #222;background:#000"><input id="cmtInput" class="input" style="margin:0" placeholder="Qor comment..."><button class="btn" style="width:70px" onclick="addComment()">Dir</button></div></div>
+
+<div class="modal" id="pageModal"><div class="modal-head"><span id="pageTitle"></span><span onclick="closeM('pageModal')" style="font-size:28px;cursor:pointer">×</span></div><div class="modal-body" id="pageBody"></div></div>
+
+<div class="modal" id="postModal"><div class="modal-head"><span>Post Cusub +</span><span onclick="closeM('postModal')" style="font-size:28px;cursor:pointer">×</span></div><div class="modal-body"><textarea id="postText" class="input" rows="3" placeholder="Maxaa cusub?"></textarea><input id="postMedia" class="input" placeholder="Link muuqaal/sawir (optional)"><button class="btn" onclick="createPost()">Post 🚀</button></div></div>
+
+<!-- AUTH GMAIL + NUMBER -->
+<div class="modal" id="authModal"><div class="modal-head"><span id="authTitle">Login - Gmail & Number</span><span onclick="closeM('authModal')" style="font-size:28px;cursor:pointer">×</span></div>
+<div class="modal-body">
+<div style="text-align:center;margin-bottom:18px"><div style="font-size:48px">🔗</div><h2 style="margin-top:6px">SoomaaLink</h2><p style="opacity:.6;font-size:13px">Gmail iyo Number ku gal</p></div>
+<div id="signupExtra" style="display:none"><input id="aName" class="input" placeholder="Magaca buuxa"></div>
+<input id="aEmail" class="input" type="email" placeholder="Gmail - tusaale: ahmed@gmail.com">
+<input id="aPhone" class="input" type="tel" placeholder="Number - +33 6 12 34 56 78">
+<input id="aPass" class="input" type="password" placeholder="Password">
+<button class="btn" id="authAction" onclick="doAuth()">Login</button>
+<button class="btn btn2" id="toggleBtn" onclick="toggleAuth()">Ma leedahay account? Sign Up</button>
+<p style="text-align:center;font-size:11px;opacity:.4;margin-top:14px">🔒 Gmail & Number waa ammaan</p>
+</div></div>
+
+<!-- EDIT PROFILE + SAWIR + GMAIL + NUMBER -->
+<div class="modal" id="editModal"><div class="modal-head"><span>Edit Profile</span><span onclick="closeM('editModal')" style="font-size:28px;cursor:pointer">×</span></div>
+<div class="modal-body">
+<div style="text-align:center"><div class="av" style="width:110px;height:110px;margin:0 auto;border:3px solid #fff;cursor:pointer" onclick="document.getElementById('avatarFile').click()"><img id="editPreview" src=""></div><p style="font-size:12px;color:#0af;margin-top:8px">Taabo sawirka si aad u beddesho 📸</p></div>
+<div class="uploadBox" onclick="document.getElementById('avatarFile').click()">📸 <b>Dooro Sawir Gallery</b><br><small style="opacity:.6">Sawirkaaga profile</small></div>
+<input type="file" id="avatarFile" accept="image/*" style="display:none">
+<div class="label">Magac</div><input id="eName" class="input">
+<div class="label">Gmail</div><input id="eEmail" class="input" type="email">
+<div class="label">Number</div><input id="ePhone" class="input" type="tel">
+<div class="label">Bio</div><textarea id="eBio" class="input" rows="2"></textarea>
+<button class="btn" onclick="saveProfile()">Save Changes ✅</button>
+</div></div>
+
+<script>
+let currentUser=JSON.parse(localStorage.getItem('sl_user')||'null');
+let posts=JSON.parse(localStorage.getItem('sl_posts')||'null')||[
+{id:1,user:'soomaalink',avatar:'https://i.pravatar.cc/100?u=beach',text:'Qorrax dhac qurux badan - Badda iyo shimbiraha 🌅',media:'VID-20261004-WA0144.mp4',type:'video',likes:3200,liked:true,comments:[{user:'Ahmed',text:'Mashallah!'}],time:'Xeebta • Original audio'},
+{id:2,user:'Ahmed',avatar:'https://i.pravatar.cc/100?u=1',text:'Waxbarashu maaha wax caajis ah marka aad xaqiiqsato inay tahay tigidka xornimada.',media:'',type:'text',bg:'#111',likes:890,liked:false,comments:[],time:'Waxbarashu ✨'},
+{id:3,user:'liibaan_music',avatar:'https://i.pravatar.cc/100?u=kaban',text:'Hees kaban macaan 🎸 #kaban',media:'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=900',type:'image',likes:279000,liked:false,comments:[],time:'Music'},
+{id:4,user:'bahal_ceyjiye',avatar:'https://i.pravatar.cc/100?u=bahal',text:'IXTIRAAMKU waa toban, Sagaal Ka mid ah waa Aamusnaan ❤️',media:'',type:'text',bg:'#0f1f15',likes:1200,liked:false,comments:[],time:'Xikmad'}
+];
+let friends=[{name:'Ahmed',handle:'@Ahmed',followers:'12K',following:true},{name:'Sahra',handle:'@sahra',followers:'45K',following:false},{name:'Liibaan',handle:'@liibaan',followers:'89K',following:true}];
+let currentPostId=null, authMode='login', newAvatarData=null, currentFilter='foryou';
+function save(){localStorage.setItem('sl_posts',JSON.stringify(posts));localStorage.setItem('sl_user',JSON.stringify(currentUser));}
+function fmt(n){return n>=1000?(n/1000).toFixed(1)+'K':n}
+function renderFeed(filter){
+ if(filter) currentFilter=filter;
+ let f=document.getElementById('feed'); f.innerHTML='';
+ let list=[...posts];
+ if(currentFilter==='following') list=list.filter(p=>p.liked);
+ if(currentFilter==='community') list=[...posts].reverse();
+ list.forEach(p=>{
+  let media=p.type==='video'?`<video loop playsinline preload="metadata" src="${p.media}" poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800"></video><div class="play" onclick="playV(event,this)">▶</div>`:p.type==='image'?`<img class="bg" src="${p.media}">`:`<div class="big">${p.text}</div>`;
+  let el=document.createElement('div'); el.className='post'; if(p.bg) el.style.background=p.bg;
+  el.innerHTML=media+`<div class="right"><div class="av" onclick="openProfile('${p.user}')"><img src="${p.avatar}"></div><div class="r ${p.liked?'liked':''}" onclick="like(${p.id})">${p.liked?'♥':'♡'}</div><div class="count">${fmt(p.likes)}</div><div class="r" onclick="openComments(${p.id})">💬</div><div class="count">${p.comments.length}</div><div class="r" onclick="savePost(${p.id})">🔖</div><div class="r" onclick="share(${p.id})">↗</div></div><div class="bot"><b>@${p.user} • ${p.time}</b><p>${p.text}</p><p style="opacity:.7">♫ Original audio</p></div>`;
+  f.appendChild(el);
+ }); updateAuthBtn();
+}
+function playV(e,el){e.stopPropagation(); let v=el.parentElement.querySelector('video'); if(!v) return; let pl=el; if(v.paused){v.muted=false; v.play().catch(()=>{}); pl.style.display='none';} else {v.pause(); pl.style.display='flex';}}
+function like(id){let p=posts.find(x=>x.id===id); if(!p) return; p.liked=!p.liked; p.likes+=p.liked?1:-1; save(); renderFeed();}
+function openComments(id){currentPostId=id; let p=posts.find(x=>x.id===id); document.getElementById('cmtTitle').innerText='Comments • '+p.comments.length; document.getElementById('commentList').innerHTML=p.comments.map(c=>`<div style="padding:10px 0;border-bottom:1px solid #111"><b>@${c.user}</b><p style="opacity:.8;margin-top:2px">${c.text}</p></div>`).join('')||'<p style="opacity:.5;text-align:center;padding:20px">Comment ma jiro - noqo kii ugu horeeya!</p>'; document.getElementById('commentModal').classList.add('show');}
+function addComment(){let t=document.getElementById('cmtInput').value.trim(); if(!t) return; if(!currentUser) return showAuth(); let p=posts.find(x=>x.id===currentPostId); p.comments.push({user:currentUser.name,text:t}); document.getElementById('cmtInput').value=''; save(); openComments(currentPostId); renderFeed();}
+function share(id){let p=posts.find(x=>x.id===id); let url=location.origin+location.pathname+'#post-'+id; if(navigator.share){navigator.share({title:'SoomaaLink',text:p.text,url}).catch(()=>{});} else {navigator.clipboard.writeText(url).then(()=>alert('Link copied! 🔗\n'+url));}}
+function savePost(id){alert('Saved! 🔖 Post #'+id+' wuu ku kaydsan yahay');}
+function closeM(id){document.getElementById(id).classList.remove('show');}
+function showAuth(){document.getElementById('authModal').classList.add('show');}
+function toggleAuth(){authMode=authMode==='login'?'signup':'login'; document.getElementById('authTitle').innerText=authMode==='login'?'Login - Gmail & Number':'Sign Up - Gmail & Number'; document.getElementById('authAction').innerText=authMode==='login'?'Login':'Create Account'; document.getElementById('toggleBtn').innerText=authMode==='login'?'Ma leedahay account? Sign Up':'Horey u leedahay? Login'; document.getElementById('signupExtra').style.display=authMode==='signup'?'block':'none';}
+function doAuth(){
+ let email=document.getElementById('aEmail').value.trim(), phone=document.getElementById('aPhone').value.trim(), pass=document.getElementById('aPass').value.trim(), name=document.getElementById('aName').value.trim();
+ if(!email||!phone||!pass) return alert('Fadlan Gmail, Number iyo Password dhammaan geli!');
+ if(!email.includes('@')) return alert('Gmail sax ah geli - waa inuu leeyahay @');
+ if(authMode==='signup'&&!name) return alert('Magaca buuxa geli');
+ let displayName=authMode==='signup'?name:(currentUser?.name||email.split('@')[0]);
+ currentUser={name:displayName,email:email,phone:phone,bio:currentUser?.bio||'Le Grand-Quevilly, France',avatar:currentUser?.avatar||'https://i.pravatar.cc/200?u='+email};
+ save(); closeM('authModal'); alert('Ku soo dhawoow @'+displayName+'! ✅\n📧 '+email+'\n📱 '+phone); renderFeed();
+}
+function updateAuthBtn(){let b=document.getElementById('authBtn'); b.innerText=currentUser?'@'+currentUser.name:'Login';}
+function openPage(t,h){document.getElementById('pageTitle').innerText=t; document.getElementById('pageBody').innerHTML=h; document.getElementById('pageModal').classList.add('show');}
+function openProfile(user){
+ let isMe=currentUser&&user===currentUser.name; let av=isMe?currentUser.avatar:(posts.find(p=>p.user===user)?.avatar||'https://i.pravatar.cc/100?u='+user);
+ openPage('@'+user,`<div style="text-align:center;padding:20px"><div class="av" style="width:110px;height:110px;margin:0 auto;border:3px solid #fff"><img src="${av}"></div><h2 style="margin-top:12px">${user}</h2>${isMe?`<p style="font-size:13px;opacity:.7;margin-top:4px">📧 ${currentUser.email||''}</p><p style="font-size:13px;opacity:.7">📱 ${currentUser.phone||''}</p><p style="font-size:12px;opacity:.6;margin-top:8px">${currentUser.bio||''}</p>`:''}<div style="display:flex;justify-content:center;gap:28px;margin:18px 0"><div style="cursor:pointer" onclick="openPage('Following','<p>128 accounts - Following</p>')"><b>128</b><br><small style="opacity:.6">Following</small></div><div style="cursor:pointer" onclick="openPage('Followers','<p>3420 followers</p>')"><b>3420</b><br><small style="opacity:.6">Followers</small></div><div><b>${posts.filter(p=>p.user===user).length}</b><br><small style="opacity:.6">Posts</small></div></div>${isMe?`<button class="btn" onclick="openEdit()">✏️ Edit Profile - Gmail, Number & Sawir</button><button class="btn btn2" onclick="if(confirm('Logout?')){localStorage.clear();location.reload()}">Logout</button>`:`<button class="btn" onclick="alert('Followed @${user} ✅')">Follow</button><button class="btn btn2" onclick="openPage('Followers','Followers list')">Followers</button>`}</div><div style="margin-top:10px"><h4 style="margin-bottom:8px">Posts</h4>${posts.filter(p=>p.user===user).map(p=>`<div style="padding:10px;border-bottom:1px solid #111"><b>${p.type}</b> - ${p.text.slice(0,70)}<br><small>❤ ${fmt(p.likes)} | 💬 ${p.comments.length}</small></div>`).join('')||'<p style="opacity:.5">Post ma jiro</p>'}</div>`);
+}
+function openEdit(){
+ if(!currentUser) return showAuth();
+ document.getElementById('eName').value=currentUser.name||''; document.getElementById('eEmail').value=currentUser.email||''; document.getElementById('ePhone').value=currentUser.phone||''; document.getElementById('eBio').value=currentUser.bio||''; document.getElementById('editPreview').src=currentUser.avatar||'https://i.pravatar.cc/200'; newAvatarData=currentUser.avatar;
+ document.getElementById('editModal').classList.add('show');
+}
+document.getElementById('avatarFile').addEventListener('change',function(e){let file=e.target.files[0]; if(!file) return; if(file.size>2*1024*1024) return alert('Sawirku waa weyn yahay - 2MB ka yar dooro'); let r=new FileReader(); r.onload=function(ev){newAvatarData=ev.target.result; document.getElementById('editPreview').src=newAvatarData;}; r.readAsDataURL(file);});
+function saveProfile(){
+ let n=document.getElementById('eName').value.trim(), em=document.getElementById('eEmail').value.trim(), ph=document.getElementById('ePhone').value.trim(), b=document.getElementById('eBio').value.trim();
+ if(!n) return alert('Magac geli'); if(!em.includes('@')) return alert('Gmail sax ah geli - @ waa inuu leeyahay'); if(!ph) return alert('Number geli');
+ currentUser.name=n; currentUser.email=em; currentUser.phone=ph; currentUser.bio=b; currentUser.avatar=newAvatarData||currentUser.avatar;
+ save(); closeM('editModal'); closeM('pageModal'); updateAuthBtn(); renderFeed(); alert('Profile updated! ✅\n📧 '+em+'\n📱 '+ph+'\n📸 Sawir saved!');
+}
+document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('[data-nav]').forEach(x=>x.classList.remove('on')); btn.classList.add('on');
+ let nav=btn.dataset.nav;
+ if(nav==='home') renderFeed('foryou');
+ if(nav==='friends') openPage('Friends 👥',friends.map(f=>`<div class="user-row"><div class="av"><img src="https://i.pravatar.cc/100?u=${f.name}"></div><div style="flex:1"><b>${f.name}</b><br><small style="opacity:.6">${f.handle} • ${f.followers} followers</small></div><button class="btn" style="width:85px;padding:8px;font-size:12px" onclick="this.innerText=this.innerText==='Follow'?'Following ✅':'Follow';">${f.following?'Following ✅':'Follow'}</button></div>`).join('')+`<div style="margin-top:16px;padding:12px;background:#111;border-radius:10px"><b>Following:</b> 128 | <b>Followers:</b> 3420</div>`);
+ if(nav==='inbox') openPage('Inbox 💬',friends.map(f=>`<div class="user-row"><div class="av"><img src="https://i.pravatar.cc/100?u=${f.name}"></div><div style="flex:1"><b>${f.name}</b><br><small style="opacity:.6">Salaam saaxiib! Sidee tahay? 👋</small></div><small style="opacity:.5">2m</small></div>`).join('')+`<p style="opacity:.5;text-align:center;margin-top:20px">Inbox demo - chat dhab ah waa soo socdaa!</p>`);
+ if(nav==='profile'){if(!currentUser) return showAuth(); openProfile(currentUser.name);}
+ if(nav==='post'){if(!currentUser) return showAuth(); document.getElementById('postModal').classList.add('show');}
+}));
+document.querySelectorAll('.top span').forEach(s=>s.addEventListener('click',()=>{document.querySelectorAll('.top span').forEach(x=>x.classList.remove('on')); s.classList.add('on'); renderFeed(s.dataset.tab||'foryou');}));
+document.getElementById('liveBtn').addEventListener('click',()=>openPage('LIVE 🔴',`<div style="text-align:center;padding:20px"><div style="display:inline-block;width:10px;height:10px;background:#ff2d55;border-radius:50%;animation:pulse 1s infinite"></div> <b>LIVE NOW</b><br><br><div style="background:#111;padding:24px;border-radius:14px"><p>🎥 ${currentUser?currentUser.name:'User'} is LIVE</p><p style="opacity:.6;font-size:12px;margin-top:6px">128 viewers watching</p><br><button class="btn" onclick="alert('LIVE wuu bilaabmayaa! (demo) - wuxuu u baahan yahay server')">Go LIVE 🔴</button></div><div style="margin-top:20px;text-align:left"><b>Live-yaasha kale:</b><br><br>${friends.map(f=>`<div class="user-row"><div class="av" style="border-color:#ff2d55"><img src="https://i.pravatar.cc/100?u=${f.name}"></div><div><b>${f.name} 🔴 LIVE</b><br><small>1.2K viewers</small></div></div>`).join('')}</div></div><style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}</style>`));
+document.getElementById('authBtn').addEventListener('click',()=>{if(currentUser) document.querySelector('[data-nav=profile]').click(); else showAuth();});
+function createPost(){let t=document.getElementById('postText').value.trim(), m=document.getElementById('postMedia').value.trim(); if(!t&&!m) return alert('Qoraal ama link geli'); let type='text'; if(m){ type=m.match(/\.mp4|video/i)?'video':'image'; } posts.unshift({id:Date.now(),user:currentUser.name,avatar:currentUser.avatar,text:t||'Post cusub',media:m,type:type,likes:0,liked:false,comments:[],time:'Just now'}); save(); closeM('postModal'); document.getElementById('postText').value=''; document.getElementById('postMedia').value=''; renderFeed(); alert('Post wuu baxay! 🎉');}
+renderFeed('foryou');
+</script></body></html>
