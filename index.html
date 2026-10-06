@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoomaaLink 👨‍👩‍👧‍👦</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #161616;
+    --surface2: #1f1f1f;
+    --accent: #e8344a;
+    --accent2: #25d366;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: #2a2a2a;
+    --safe: #25d366;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* TOP NAV */
+  .topnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-size: 18px; font-weight: 700; }
+  .nav-icons { display: flex; gap: 10px; align-items: center; }
+  .nav-btn {
+    background: var(--surface2);
+    border: none;
+    color: var(--text);
+    border-radius: 50%;
+    width: 38px; height: 38px;
+    font-size: 18px;
+    cursor: pointer;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lang-toggle {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* SEARCH BAR */
+  .search-wrap {
+    padding: 10px 16px;
+    background: var(--bg);
+    position: sticky;
+    top: 65px;
+    z-index: 99;
+  }
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 8px 14px;
+    gap: 8px;
+  }
+  .search-bar input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 14px;
+  }
+  .search-bar input::placeholder { color: var(--muted); }
+  .search-icon { font-size: 16px; color: var(--muted); }
+
+  /* CATEGORIES */
+  .categories {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .categories::-webkit-scrollbar { display: none; }
+  .cat-btn {
+    white-space: nowrap;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cat-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* VIDEO FEED */
+  .feed { padding: 0 12px 80px; }
+  .video-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .video-thumb {
+    position: relative;
+    background: linear-gradient(135deg, #1a2a1a 0%, #0d1f2d 100%);
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .video-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .safe-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: var(--safe);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+  .play-btn {
+    position: absolute;
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+  /* UPLOAD PROGRESS */
+  .upload-bar-wrap {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.5);
+    padding: 6px 10px;
+  }
+  .upload-label { font-size: 10px; color: #ccc; margin-bottom: 3px; }
+  .upload-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .upload-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: progress 2s ease-in-out infinite alternate;
+  }
+  @keyframes progress { from { width: 30%; } to { width: 90%; } }
+
+  .video-info { padding: 10px 12px; }
+  .video-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .video-meta {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .video-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface2);
+    border: none;
+    color: var(--muted);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .action-btn:hover { color: var(--text); }
+  .action-btn.liked { color: var(--accent); }
+  .action-btn.saved { color: #f0c040; }
+  .share-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 0 14px;
+    z-index: 200;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--muted);
+    font-size: 10px;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-item.active { color: var(--text); }
+  .nav-icon { font-size: 22px; }
+  .nav-plus {
+    width: 50px; height: 50px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 4px 20px rgba(232,52,74,0.4);
+    margin-top: -20px;
+    cursor: pointer;
+  }
+  .notif-dot {
+    position: absolute;
+    top: -2px; right: -4px;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* DARK/LIGHT TOGGLE */
+  body.light {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --surface2: #ebebeb;
+    --text: #111;
+    --muted: #666;
+    --border: #ddd;
+  }
+
+  /* NOTIFICATION PANEL */
+  .notif-panel {
+    display: none;
+    position: fixed;
+    top: 65px; right: 0;
+    width: 300px;
+    max-height: 400px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow-y: auto;
+    z-index: 300;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    margin: 8px;
+  }
+  .notif-panel.open { display: block; }
+  .notif-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .notif-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-icon { font-size: 20px; }
+  .notif-text { color: var(--muted); line-height: 1.4; }
+  .notif-time { font-size: 11px; color: var(--accent); margin-top: 3px; }
+
+  /* SHARE MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 400;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 430px;
+    padding: 20px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .share-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .share-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .share-icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .share-opt span { font-size: 11px; color: var(--muted); }
+  .modal-close {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--surface2);
+    border: none;
+    color: var(--text);
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* PROFILE TAB */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .profile-section {
+    padding: 20px 16px 80px;
+  }
+  .profile-header {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #ff8c00);
+    font-size: 36px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px;
+  }
+  .profile-name { font-size: 18px; font-weight: 700; }
+  .profile-handle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 16px 0;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 18px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: var(--muted); }
+  .follow-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 40px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+  }
+  .saved-section { margin-top: 20px; }
+  .saved-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; padding: 0 4px; }
+  .saved-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .saved-item {
+    background: var(--surface2);
+    border-radius: 10px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .saved-label {
+    position: absolute;
+    bottom: 6px; left: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* THEME TOGGLE BUTTON */
+  .theme-btn {
+    font-size: 18px;
+  }
+
+  /* UPLOAD MODAL */
+  .upload-modal {
+    padding: 20px;
+  }
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .upload-zone-icon { font-size: 40px; margin-bottom: 8px; }
+  .upload-zone-text { font-size: 14px; color: var(--muted); }
+  .upload-progress-section { margin-top: 10px; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.2s;
+  }
+  .upload-submit {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <div class="logo">SoomaaLink 👨‍👩‍👧‍👦</div>
+  <div class="nav-icons">
+    <button class="lang-toggle" onclick="toggleLang()" id="langBtn">EN</button>
+    <button class="nav-btn theme-btn" onclick="toggleTheme()" title="Muuqaalka">🌙</button>
+    <button class="nav-btn" onclick="toggleNotif()" title="Ogeysiisyada">
+      🔔
+      <span class="badge">3</span>
+    </button>
+  </div>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">🔔 Ogeysiisyada</div>
+  <div class="notif-item">
+    <span class="notif-icon">❤️</span>
+    <div>
+      <div class="notif-text">@axmed_somaali wuxuu jeclaaday videokaaga</div>
+      <div class="notif-time">2 daqiiqo kahor</div>
+    </div>
+  </div>
+  <div class="notif-item">
+    <span class="notif-icon">💬</span>
+    <div>
+      <div class="notif-text">@xalimo123 waxay faallo ku sameysay: "Xeebta waa qurux badan tahay!"</div>
+      <div class="notif-time">15 daqiiqo kahor</div>
+    </div>
+  </div>
+  <div class="notif-item">
+    <span class="notif-icon">👤</span>
+    <div>
+      <div class="notif-text">@cabdi_mogadishu wuxuu kugu raacay</div>
+      <div class="notif-time">1 saac kahor</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH BAR -->
+<div class="search-wrap">
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Raadi video, heeso, wararka..." id="searchInput" oninput="filterVideos(this.value)">
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="categories">
+  <button class="cat-btn active" onclick="setCategory(this,'Dhammaan')">✅ Dhammaan</button>
+  <button class="cat-btn" onclick="setCategory(this,'Dabeecad')">🌿 Dabeecad</button>
+  <button class="cat-btn" onclick="setCategory(this,'Hees')">🎵 Hees</button>
+  <button class="cat-btn" onclick="setCategory(this,'Quraan')">📖 Quraan</button>
+  <button class="cat-btn" onclick="setCategory(this,'Warar')">📰 Warar</button>
+  <button class="cat-btn" onclick="setCategory(this,'Qosol')">😄 Qosol</button>
+</div>
+
+<!-- HOME FEED TAB -->
+<div id="homeTab" class="tab-content active">
+  <div class="feed" id="videoFeed">
+
+    <!-- VIDEO CARD 1 -->
+    <div class="video-card" data-cat="Dabeecad" data-title="Xeebta Liido">
+      <div class="video-thumb">
+        <div style="width:100%;height:100%;background:linear-gradient(180deg,#ff8c00 0%,#ffd700 40%,#c2956c 70%,#8b6914 100%);display:flex;align-items:center;justify-content:center;font-size:60px;">🌅</div>
+        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
+        <div class="play-btn">▶️</div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">Xeebta Liido — Muqdisho</div>
+        <div class="video-meta">@masuulsare784 · Dabeecad · 🕐 2 sac kahor</div>
+        <div class="video-actions">
+          <button class="action-btn" onclick="toggleLike(this)">❤️ 142</button>
+          <button class="action-btn" onclick="toggleComment()">💬 8</button>
+          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
+          <button class="share-btn" onclick="openShare()">↗️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEO CARD 2 — with upload progress -->
+    <div class="video-card" data-cat="Quraan" data-title="Surah Al-Fatixa">
+      <div class="video-thumb">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;align-items:center;justify-content:center;font-size:60px;">📖</div>
+        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
+        <div class="play-btn">▶️</div>
+        <div class="upload-bar-wrap">
+          <div class="upload-label">Soo gelinta video... 67%</div>
+          <div class="upload-bar"><div class="upload-fill" style="width:67%"></div></div>
+        </div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">Surah Al-Fatixa — Akhri</div>
+        <div class="video-meta">@sheekh_omar · Quraan · 🕐 3 sac kahor</div>
+        <div class="video-actions">
+          <button class="action-btn" onclick="toggleLike(this)">❤️ 890</button>
+          <button class="action-btn" onclick="toggleComment()">💬 34</button>
+          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
+          <button class="share-btn" onclick="openShare()">↗️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEO CARD 3 -->
+    <div class="video-card" data-cat="Hees" data-title="Hees Soomali Cusub">
+      <div class="video-thumb">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0533,#6b21a8,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:60px;">🎵</div>
+        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
+        <div class="play-btn">▶️</div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">Hees Soomali Cusub 2024</div>
+        <div class="video-meta">@heesaha_somaali · Hees · 🕐 1 maalin kahor</div>
+        <div class="video-actions">
+          <button class="action-btn" onclick="toggleLike(this)">❤️ 2.4k</button>
+          <button class="action-btn" onclick="toggleComment()">💬 91</button>
+          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
+          <button class="share-btn" onclick="openShare()">↗️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEO CARD 4 -->
+    <div class="video-card" data-cat="Qosol" data-title="Xafladda Qoyska">
+      <div class="video-thumb">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#134e0f,#22863a,#34d058);display:flex;align-items:center;justify-content:center;font-size:60px;">😂</div>
+        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
+        <div class="play-btn">▶️</div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">Xafladda Qoyska — Qosol Nadiif</div>
+        <div class="video-meta">@fariida_funny · Qosol · 🕐 5 saac kahor</div>
+        <div class="video-actions">
+          <button class="action-btn" onclick="toggleLike(this)">❤️ 512</button>
+          <button class="action-btn" onclick="toggleComment()">💬 22</button>
+          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
+          <button class="share-btn" onclick="openShare()">↗️</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DISCOVER TAB -->
+<div id="discoverTab" class="tab-content">
+  <div style="padding:30px 16px 80px; text-align:center; color:var(--muted);">
+    <div style="font-size:48px;margin-bottom:12px">🔍</div>
+    <div style="font-size:15px">Raadinta ayaa soo socon doonta</div>
+  </div>
+</div>
+
+<!-- UPLOAD TAB -->
+<div id="uploadTab" class="tab-content">
+  <div class="upload-modal" style="padding-bottom:80px">
+    <div style="font-size:17px;font-weight:700;margin-bottom:14px">📤 Soo Geli Video</div>
+    <div class="upload-zone">
+      <div class="upload-zone-icon">🎬</div>
+      <div class="upload-zone-text">Riix halkan oo video dooro</div>
+    </div>
+    <div>
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Cinwaanka Video</label>
+      <input type="text" placeholder="Tusaale: Xeebta Liido..." style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;outline:none;">
+    </div>
+    <div style="margin-top:12px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Qaybta</label>
+      <select style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;outline:none;">
+        <option>🌿 Dabeecad</option>
+        <option>🎵 Hees</option>
+        <option>📖 Quraan</option>
+        <option>📰 Warar</option>
+        <option>😄 Qosol</option>
+      </select>
+    </div>
+    <div class="upload-progress-section" id="uploadProgress" style="display:none;margin-top:16px">
+      <div class="progress-label">
+        <span>Soo gelinta...</span>
+        <span id="uploadPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="uploadFill"></div>
+      </div>
+    </div>
+    <button class="upload-submit" onclick="startUpload()">📤 Bilow Soo Gelinta</button>
+  </div>
+</div>
+
+<!-- INBOX TAB -->
+<div id="inboxTab" class="tab-content">
+  <div style="padding:16px 16px 80px">
+    <div style="font-size:17px;font-weight:700;margin-bottom:14px">💬 Farriimaha</div>
+    <div style="background:var(--surface);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid var(--border);">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="font-size:28px">👨</div>
+        <div>
+          <div style="font-size:14px;font-weight:600">@axmed_somaali</div>
+          <div style="font-size:12px;color:var(--muted)">Video-gaagu waa qurux badan yahay!</div>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:var(--muted)">2q</div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border-radius:var(--radius);padding:14px;border:1px solid var(--border);">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="font-size:28px">👩</div>
+        <div>
+          <div style="font-size:14px;font-weight:600">@xalimo123</div>
+          <div style="font-size:12px;color:var(--muted)">Mahadsanid wadaagista!</div>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:var(--muted)">1s</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE TAB -->
+<div id="profileTab" class="tab-content">
+  <div class="profile-section">
+    <div class="profile-header">
+      <div class="avatar">👤</div>
+      <div class="profile-name">Masuulsare784</div>
+      <div class="profile-handle">@masuulsare784</div>
+    </div>
+    <div class="profile-stats">
+      <div class="stat">
+        <div class="stat-num">39</div>
+        <div class="stat-label">Videos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1.2k</div>
+        <div class="stat-label">Raacayaasha</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">340</div>
+        <div class="stat-label">Raacaya</div>
+      </div>
+    </div>
+    <button class="follow-btn">➕ Raac</button>
+    <div class="saved-section">
+      <div class="saved-title">🔖 Videos La Keydiyo</div>
+      <div class="saved-grid" id="savedGrid">
+        <div class="saved-item">🌅<span class="saved-label">Xeebta Liido</span></div>
+        <div class="saved-item">📖<span class="saved-label">Surah Fatixa</span></div>
+        <div style="background:var(--surface2);border-radius:10px;height:120px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;border:2px dashed var(--border)">+ Keydi</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareModal" onclick="closeShare(event)">
+  <div class="modal">
+    <div class="modal-title">↗️ La Wadaag</div>
+    <div class="share-grid">
+      <div class="share-opt"><div class="share-icon-wrap">📱</div><span>WhatsApp</span></div>
+      <div class="share-opt"><div class="share-icon-wrap">✈️</div><span>Telegram</span></div>
+      <div class="share-opt"><div class="share-icon-wrap">📧</div><span>Email</span></div>
+      <div class="share-opt"><div class="share-icon-wrap">🔗</div><span>Xiriirka</span></div>
+    </div>
+    <button class="modal-close" onclick="closeShare()">Xir</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="showTab('home',this)">
+    <span class="nav-icon">🏠</span>
+    <span id="label-home">Hoyga</span>
+  </div>
+  <div class="nav-item" onclick="showTab('discover',this)">
+    <span class="nav-icon">🔍</span>
+    <span id="label-discover">Raadi</span>
+  </div>
+  <div class="nav-plus" onclick="showTab('upload',null)">+</div>
+  <div class="nav-item" onclick="showTab('inbox',this)">
+    <span class="nav-icon">💬</span>
+    <span id="label-inbox">Farriimo</span>
+    <span class="notif-dot"></span>
+  </div>
+  <div class="nav-item" onclick="showTab('profile',this)">
+    <span class="nav-icon">👤</span>
+    <span id="label-profile">Xisaabta</span>
+  </div>
+</nav>
+
+<script>
+  let isEnglish = false;
+  let isDark = true;
+  const soLabels = { home:'Hoyga', discover:'Raadi', inbox:'Farriimo', profile:'Xisaabta' };
+  const enLabels = { home:'Home', discover:'Discover', inbox:'Inbox', profile:'Profile' };
+
+  function toggleLang() {
+    isEnglish = !isEnglish;
+    const btn = document.getElementById('langBtn');
+    const labels = isEnglish ? enLabels : soLabels;
+    btn.textContent = isEnglish ? 'SO' : 'EN';
+    Object.keys(labels).forEach(k => {
+      const el = document.getElementById('label-' + k);
+      if (el) el.textContent = labels[k];
+    });
+    document.getElementById('searchInput').placeholder = isEnglish
+      ? 'Search videos, songs, news...'
+      : 'Raadi video, heeso, wararka...';
+  }
+
+  function toggleTheme() {
+    isDark = !isDark;
+    document.body.classList.toggle('light', !isDark);
+    document.querySelector('.theme-btn').textContent = isDark ? '🌙' : '☀️';
+  }
+
+  function toggleNotif() {
+    document.getElementById('notifPanel').classList.toggle('open');
+  }
+
+  function showTab(tab, navEl) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(tab + 'Tab').classList.add('active');
+    if (navEl) navEl.classList.add('active');
+    document.getElementById('notifPanel').classList.remove('open');
+  }
+
+  function setCategory(btn, cat) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('.video-card');
+    cards.forEach(c => {
+      if (cat === 'Dhammaan' || c.dataset.cat === cat) {
+        c.style.display = '';
+      } else {
+        c.style.display = 'none';
+      }
+    });
+  }
+
+  function filterVideos(val) {
+    const v = val.toLowerCase();
+    document.querySelectorAll('.video-card').forEach(c => {
+      const title = (c.dataset.title || '').toLowerCase();
+      c.style.display = (!v || title.includes(v)) ? '' : 'none';
+    });
+  }
+
+  function toggleLike(btn) {
+    btn.classList.toggle('liked');
+    const txt = btn.textContent;
+    const match = txt.match(/(\d[\d.,k]*)/);
+    if (match) {
+      const isLiked = btn.classList.contains('liked');
+      btn.textContent = isLiked
+        ? '❤️ ' + match[0] + ' ✓'
+        : '❤️ ' + match[0].replace(' ✓','');
+    }
+  }
+
+  function toggleComment() {
+    alert(isEnglish ? 'Comments coming soon!' : 'Faallooyinka ayaa soo socon doona!');
+  }
+
+  function toggleSave(btn) {
+    btn.classList.toggle('saved');
+    btn.textContent = btn.classList.contains('saved') ? '🔖 Keydiday' : '🔖 Keydi';
+  }
+
+  function openShare() {
+    document.getElementById('shareModal').classList.add('open');
+  }
+
+  function closeShare(e) {
+    if (!e || e.target === document.getElementById('shareModal')) {
+      document.getElementById('shareModal').classList.remove('open');
+    }
+  }
+
+  let uploadInterval;
+  function startUpload() {
+    const progress = document.getElementById('uploadProgress');
+    const fill = document.getElementById('uploadFill');
+    const pct = document.getElementById('uploadPct');
+    progress.style.display = 'block';
+    let val = 0;
+    clearInterval(uploadInterval);
+    uploadInterval = setInterval(() => {
+      val += Math.random() * 8;
+      if (val >= 100) {
+        val = 100;
+        clearInterval(uploadInterval);
+        pct.textContent = '✅ Dhammaatay!';
+      } else {
+        pct.textContent = Math.round(val) + '%';
+      }
+      fill.style.width = val + '%';
+    }, 200);
+  }
+
+  document.addEventListener('click', (e) => {
+    const panel = document.getElementById('notifPanel');
+    if (!e.target.closest('.nav-btn') && !e.target.closest('.notif-panel')) {
+      panel.classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>
