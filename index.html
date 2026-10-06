@@ -1,129 +1,17 @@
-<!DOCTYPE html>
-<html lang="so">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SoomaaLink</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;background:#000;color:#fff;font-family:system-ui,sans-serif;overflow:hidden}
-.header{position:fixed;top:0;left:0;right:0;height:50px;background:rgba(0,0,0,.9);display:flex;align-items:center;gap:10px;padding:0 12px;z-index:20}
-.header img{width:30px;height:30px;border-radius:8px}
-.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20}
-.nav button{background:none;border:0;color:#9aa;font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px}
-.nav button span{font-size:1.3rem}
-.nav button.on{color:#fff}
-.nav.mid{background:#fe2c55;color:#fff;border-radius:50%;width:52px;height:52px;justify-content:center}
-.page{position:fixed;top:50px;bottom:64px;left:0;right:0;display:none;overflow-y:auto}
-.page.on{display:block}
-#feed{scroll-snap-type:y mandatory;height:100%;overflow-y:auto}
-.post{height:100%;scroll-snap-align:start;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.post.bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(24px) brightness(.5);transform:scale(1.2)}
-.stage{position:relative;width:100%;height:100%;background:#000;overflow:hidden}
-.stage img,.stage video{width:100%;height:100%;object-fit:cover;display:block}
-.info{position:absolute;left:14px;bottom:18px;right:90px;text-shadow:0 1px 4px #000;z-index:10}
-.side{position:absolute;right:10px;bottom:14px;display:flex;flex-direction:column;gap:12px;align-items:center;z-index:10}
-.side button{background:rgba(70,70,70,.8);border:0;color:#fff;width:52px;height:52px;border-radius:50%;font-size:1.5rem}
-.side small{font-size:.72rem;margin-top:3px;text-align:center}
-.side.liked{color:#fe2c55}
-.side.fl{background:#fe2c55}
-.side.fl.on{background:rgba(70,70,70,.8)}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:14px}
-.chip{flex:none;border:1px solid #333;background:none;color:#fff;padding:8px 16px;border-radius:99px}
-.chip.on{background:#2563eb;border-color:#2563eb}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 20px}
-.tile{background:#111;border:0;border-radius:12px;overflow:hidden;color:#fff;text-align:left}
-.tile img,.tile video{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-.tile p{padding:8px 10px;font-size:.85rem}
-.txt{padding:20px 16px;max-width:640px;margin:auto;line-height:1.6;color:#cfd6e4}
-.txt h2{color:#fff;margin-bottom:10px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal[hidden]{display:none!important}
-.mbox{width:100%;max-width:420px;background:#111;border-radius:16px;padding:18px}
-.mbox input,.mbox select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
-.mbox input[type=file]{padding:8px}
-.btn{width:100%;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;margin-bottom:8px}
-.btn.alt{background:#222}
-.btn.red{background:#fe2c55}
-</style>
-</head>
-<body>
+<!DOCTYPE html><html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SoomaaLink</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;background:#000;color:#fff;font-family:system-ui;overflow:hidden}.header{position:fixed;top:0;left:0;right:0;height:50px;background:rgba(0,0,0,.9);display:flex;align-items:center;gap:10px;padding:0 12px;z-index:20}.header img{width:30px;height:30px;border-radius:8px}.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20}.nav button{background:none;border:0;color:#9aa;font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px}.nav button span{font-size:1.3rem}.nav button.on{color:#fff}.nav.mid{background:#fe2c55;color:#fff;border-radius:50%;width:52px;height:52px;justify-content:center}.page{position:fixed;top:50px;bottom:64px;left:0;right:0;display:none;overflow-y:auto}.page.on{display:block}#feed{scroll-snap-type:y mandatory;height:100%;overflow-y:auto}.post{height:100%;scroll-snap-align:start;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}.stage{position:relative;width:100%;height:100%;background:#000}.stage img,.stage video{width:100%;height:100%;object-fit:cover;display:block}.info{position:absolute;left:14px;bottom:18px;right:90px;text-shadow:0 1px 4px #000;z-index:10}.side{position:absolute;right:10px;bottom:14px;display:flex;flex-direction:column;gap:12px;align-items:center;z-index:10}.side button{background:rgba(70,70,70,.8);border:0;color:#fff;width:52px;height:52px;border-radius:50%;font-size:1.5rem}.side small{font-size:.72rem;margin-top:3px}.chips{display:flex;gap:8px;overflow-x:auto;padding:14px}.chip{flex:none;border:1px solid #333;background:none;color:#fff;padding:8px 16px;border-radius:99px}.chip.on{background:#2563eb;border-color:#2563eb}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 20px}.tile{background:#111;border:0;border-radius:12px;overflow:hidden;color:#fff;text-align:left}.tile img,.tile video{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}.tile p{padding:8px 10px;font-size:.85rem}.txt{padding:20px 16px;max-width:640px;margin:auto;line-height:1.6;color:#cfd6e4}.txt h2{color:#fff;margin-bottom:10px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}.modal[hidden]{display:none!important}.mbox{width:100%;max-width:420px;background:#111;border-radius:16px;padding:18px}.mbox input,.mbox select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}.btn{width:100%;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;margin-bottom:8px}.btn.alt{background:#222}.btn.red{background:#fe2c55}</style></head><body>
 <div class="header"><img src="icon-192.png"><b>SoomaaLink</b></div>
 <div class="page on" id="p-home"><div id="feed"></div></div>
 <div class="page" id="p-discover"><div class="chips" id="chips"></div><div class="grid" id="grid"></div></div>
-<div class="page" id="p-inbox"><div class="txt"><h2>Inbox</h2><p>Ku soo dhawow SoomaaLink 👋</p></div></div>
-<div class="page" id="p-profile"><div class="txt"><h2>Profile</h2><p id="st">0 video</p><button class="btn alt" id="del">Tirtir dhammaan</button></div></div>
-
-<div class="modal" id="postm" hidden><div class="mbox"><h2>Ku dar muuqaal</h2>
-<input type="file" id="pfile" accept="video/*,image/*">
-<input id="pt" placeholder="Magac muuqaalka">
-<select id="pc"><option>Hees</option><option>Qosol</option><option>Wararka</option><option>Quraan</option><option>Kale</option></select>
-<button class="btn red" id="psave">Ku dar Gallery</button>
-<button class="btn alt" id="pclose">Xidh</button>
-<p style="font-size:.75rem;color:#888;margin-top:8px">* Video/sawir Gallery-ga ka dooro</p>
-</div></div>
-
+<div class="page" id="p-inbox"><div class="txt"><h2>Inbox</h2><p>Ku soo dhawow 👋</p></div></div>
+<div class="page" id="p-profile"><div class="txt"><h2>Profile</h2><p id="st"></p><button class="btn alt" id="del">Tirtir</button></div></div>
+<div class="modal" id="postm" hidden><div class="mbox"><h2>Ku dar muuqaal</h2><input type="file" id="pfile" accept="video/*,image/*"><input id="pt" placeholder="Magac"><select id="pc"><option>Hees</option><option>Dabeecadda</option><option>Wararka</option><option>Qosol</option><option>Quraan</option></select><button class="btn red" id="psave">Ku dar</button><button class="btn alt" id="pclose">Xidh</button></div></div>
 <div class="nav"><button data-p="home" class="on"><span>🏠</span>Home</button><button data-p="discover"><span>🔍</span>Discover</button><button class="mid" id="midpost"><span>＋</span></button><button data-p="inbox"><span>💬</span>Inbox</button><button data-p="profile"><span>👤</span>Profile</button></div>
-
 <script>
-let VIDEOS=[];try{VIDEOS=JSON.parse(localStorage.getItem("soomaal_videos")||"[]")}catch(e){}
-const $=id=>document.getElementById(id);
-const feed=$("feed");
-function renderFeed(){
-  if(VIDEOS.length===0){
-    feed.innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#888;padding:20px;text-align:center"><div style="font-size:3rem;margin-bottom:12px">📸</div><h3>Weli muuqaal ma jiro</h3><p>Guji + si aad Gallery ka soo qaadato</p></div>`;return
-  }
-  feed.innerHTML=VIDEOS.map((v,i)=>{
-    let media=v.type==="image"?`<img src="${v.src}">`:`<video src="${v.src}" loop muted playsinline></video>`;
-    let bgStyle=v.type==="image"?`background-image:url(${v.src})`:`background:#111`;
-    return `<section class="post"><div class="bg" style="${bgStyle}"></div><div class="stage">${media}</div><div class="info"><h3>${v.title}</h3><small>@SoomaaLink · ${v.cat}</small></div><div class="side"><div><button class="fl" data-i="${i}">+</button><small>Follow</small></div><div><button class="lk" data-i="${i}">♥</button><small>Like</small></div><div><button class="sh" data-i="${i}">↗</button><small>Share</small></div></div></section>`
-  }).join("");
-  document.querySelectorAll(".stage video").forEach(v=>{v.play().catch(()=>{})});
-  $("st").textContent=VIDEOS.length+" muuqaal";
-}
-renderFeed();
-
-const CATS=["Dhammaan","Hees","Qosol","Wararka","Quraan","Kale"];let cat="Dhammaan";
-function drawDiscover(){
-  $("chips").innerHTML=CATS.map(c=>`<button class="chip ${c===cat?'on':''}" data-c="${c}">${c}</button>`).join("");
-  let list=VIDEOS.filter(v=>cat==="Dhammaan"||v.cat===cat);
-  $("grid").innerHTML=list.map((v,i)=>{
-    let m=v.type==="image"?`<img src="${v.src}">`:`<video src="${v.src}" muted></video>`;
-    return `<button class="tile">${m}<p>${v.title}</p></button>`
-  }).join("");
-}
-drawDiscover();
-$("chips").onclick=e=>{let c=e.target.dataset.c;if(c){cat=c;drawDiscover()}};
-
-function show(p){
-  document.querySelectorAll(".page").forEach(x=>x.classList.toggle("on",x.id==="p-"+p));
-  document.querySelectorAll(".nav button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p===p));
-}
-document.querySelectorAll(".nav button[data-p]").forEach(b=>b.onclick=()=>show(b.dataset.p));
-
-$("midpost").onclick=()=>{$("postm").hidden=false};
-$("pclose").onclick=()=>{$("postm").hidden=true};
-
-$("psave").onclick=()=>{
-  let file=$("pfile").files[0];
-  if(!file){alert("Fadlan Gallery ka dooro video ama sawir");return}
-  let title=$("pt").value.trim()||file.name;
-  let cat=$("pc").value;
-  let reader=new FileReader();
-  reader.onload=e=>{
-    let src=e.target.result;
-    let type=file.type.startsWith("image")?"image":"video";
-    VIDEOS.unshift({src,title,cat,type});
-    localStorage.setItem("soomaal_videos",JSON.stringify(VIDEOS));
-    renderFeed();drawDiscover();
-    $("postm").hidden=true;
-    $("pfile").value="";$("pt").value="";
-    show("home");
-  };
-  reader.readAsDataURL(file);
-};
-
-$("del").onclick=()=>{if(confirm("Dhammaan muuqaalada tirtir?")){localStorage.removeItem("soomaal_videos");VIDEOS=[];renderFeed();drawDiscover()}};
-</script>
-</body>
-</html>
+let local=JSON.parse(localStorage.getItem("soomaal_videos")||"[]");
+let defaults=[{src:"video1.mp4",title:"Xeebta Berbera - Sunset 🌅",cat:"Dabeecadda",type:"video"}];
+let VIDEOS=defaults.concat(local);
+const $=id=>document.getElementById(id);const feed=$("feed");
+function renderFeed(){if(VIDEOS.length==0){feed.innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#888;padding:20px;text-align:center"><div style="font-size:3rem">📸</div><h3>Weli muuqaal ma jiro</h3><p>Guji +</p></div>`;return}feed.innerHTML=VIDEOS.map((v,i)=>{let media=v.type=="image"?`<img src="${v.src}">`:`<video src="${v.src}" loop muted playsinline autoplay></video>`;return`<section class="post"><div class="stage">${media}</div><div class="info"><h3>${v.title}</h3><small>@SoomaaLink · ${v.cat}</small></div><div class="side"><div><button class="fl">+</button><small>Follow</small></div><div><button class="lk">♥</button><small>Like</small></div><div><button class="sh">↗</button><small>Share</small></div></div></section>`}).join("");$("st").textContent=VIDEOS.length+" muuqaal"}
+renderFeed();const CATS=["Dhammaan","Hees","Dabeecadda","Wararka","Qosol","Quraan"];let cat="Dhammaan";function drawDiscover(){$("chips").innerHTML=CATS.map(c=>`<button class="chip ${c===cat?'on':''}" data-c="${c}">${c}</button>`).join("");let list=VIDEOS.filter(v=>cat==="Dhammaan"||v.cat===cat);$("grid").innerHTML=list.map(v=>{let m=v.type=="image"?`<img src="${v.src}">`:`<video src="${v.src}" muted></video>`;return`<div class="tile">${m}<p>${v.title}</p></div>`}).join("")}drawDiscover();$("chips").onclick=e=>{let c=e.target.dataset.c;if(c){cat=c;drawDiscover()}};function show(p){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("on",x.id==="p-"+p));document.querySelectorAll(".nav button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p===p))}document.querySelectorAll(".nav button[data-p]").forEach(b=>b.onclick=()=>show(b.dataset.p));$("midpost").onclick=()=>{$("postm").hidden=false};$("pclose").onclick=()=>{$("postm").hidden=true};$("psave").onclick=()=>{let file=$("pfile").files[0];if(!file){alert("Gallery ka dooro");return}let title=$("pt").value.trim()||file.name;let catV=$("pc").value;let reader=new FileReader();reader.onload=e=>{let src=e.target.result;let type=file.type.startsWith("image")?"image":"video";local.unshift({src,title,cat:catV,type});localStorage.setItem("soomaal_videos",JSON.stringify(local));VIDEOS=defaults.concat(local);renderFeed();drawDiscover();$("postm").hidden=true;show("home")};reader.readAsDataURL(file)};$("del").onclick=()=>{if(confirm("Tirtir?")){localStorage.removeItem("soomaal_videos");local=[];VIDEOS=defaults.concat(local);renderFeed();drawDiscover()}};
+</script></body></html>
