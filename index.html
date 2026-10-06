@@ -2,905 +2,674 @@
 <html lang="so">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SoomaaLink 👨‍👩‍👧‍👦</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>SoomaaLink</title>
 <style>
-  :root {
-    --bg: #0a0a0a;
-    --surface: #161616;
-    --surface2: #1f1f1f;
-    --accent: #e8344a;
-    --accent2: #25d366;
-    --text: #f0f0f0;
-    --muted: #888;
-    --border: #2a2a2a;
-    --safe: #25d366;
-    --radius: 14px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Noto Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    max-width: 430px;
-    margin: 0 auto;
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-  }
-
-  /* TOP NAV */
-  .topnav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: var(--bg);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 1px solid var(--border);
-  }
-  .logo { font-size: 18px; font-weight: 700; }
-  .nav-icons { display: flex; gap: 10px; align-items: center; }
-  .nav-btn {
-    background: var(--surface2);
-    border: none;
-    color: var(--text);
-    border-radius: 50%;
-    width: 38px; height: 38px;
-    font-size: 18px;
-    cursor: pointer;
-    position: relative;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .badge {
-    position: absolute;
-    top: -4px; right: -4px;
-    background: var(--accent);
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    border-radius: 50%;
-    width: 18px; height: 18px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .lang-toggle {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--accent);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  /* SEARCH BAR */
-  .search-wrap {
-    padding: 10px 16px;
-    background: var(--bg);
-    position: sticky;
-    top: 65px;
-    z-index: 99;
-  }
-  .search-bar {
-    display: flex;
-    align-items: center;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 30px;
-    padding: 8px 14px;
-    gap: 8px;
-  }
-  .search-bar input {
-    flex: 1;
-    background: none;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-size: 14px;
-  }
-  .search-bar input::placeholder { color: var(--muted); }
-  .search-icon { font-size: 16px; color: var(--muted); }
-
-  /* CATEGORIES */
-  .categories {
-    display: flex;
-    gap: 8px;
-    padding: 10px 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .categories::-webkit-scrollbar { display: none; }
-  .cat-btn {
-    white-space: nowrap;
-    padding: 6px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .cat-btn.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-
-  /* VIDEO FEED */
-  .feed { padding: 0 12px 80px; }
-  .video-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    margin-bottom: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .video-thumb {
-    position: relative;
-    background: linear-gradient(135deg, #1a2a1a 0%, #0d1f2d 100%);
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  .video-thumb img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-  }
-  .safe-badge {
-    position: absolute;
-    top: 10px; left: 10px;
-    background: var(--safe);
-    color: white;
-    font-size: 11px;
-    font-weight: 700;
-    border-radius: 20px;
-    padding: 3px 10px;
-  }
-  .play-btn {
-    position: absolute;
-    width: 52px; height: 52px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    backdrop-filter: blur(4px);
-    cursor: pointer;
-  }
-  /* UPLOAD PROGRESS */
-  .upload-bar-wrap {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: rgba(0,0,0,0.5);
-    padding: 6px 10px;
-  }
-  .upload-label { font-size: 10px; color: #ccc; margin-bottom: 3px; }
-  .upload-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .upload-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    animation: progress 2s ease-in-out infinite alternate;
-  }
-  @keyframes progress { from { width: 30%; } to { width: 90%; } }
-
-  .video-info { padding: 10px 12px; }
-  .video-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .video-meta {
-    font-size: 12px;
-    color: var(--muted);
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .video-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .action-btn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--surface2);
-    border: none;
-    color: var(--muted);
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .action-btn:hover { color: var(--text); }
-  .action-btn.liked { color: var(--accent); }
-  .action-btn.saved { color: #f0c040; }
-  .share-btn {
-    margin-left: auto;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 18px;
-    cursor: pointer;
-  }
-
-  /* BOTTOM NAV */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 430px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 10px 0 14px;
-    z-index: 200;
-  }
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    color: var(--muted);
-    font-size: 10px;
-    cursor: pointer;
-    position: relative;
-  }
-  .nav-item.active { color: var(--text); }
-  .nav-icon { font-size: 22px; }
-  .nav-plus {
-    width: 50px; height: 50px;
-    background: var(--accent);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px;
-    color: white;
-    box-shadow: 0 4px 20px rgba(232,52,74,0.4);
-    margin-top: -20px;
-    cursor: pointer;
-  }
-  .notif-dot {
-    position: absolute;
-    top: -2px; right: -4px;
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-  }
-
-  /* DARK/LIGHT TOGGLE */
-  body.light {
-    --bg: #f5f5f5;
-    --surface: #ffffff;
-    --surface2: #ebebeb;
-    --text: #111;
-    --muted: #666;
-    --border: #ddd;
-  }
-
-  /* NOTIFICATION PANEL */
-  .notif-panel {
-    display: none;
-    position: fixed;
-    top: 65px; right: 0;
-    width: 300px;
-    max-height: 400px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow-y: auto;
-    z-index: 300;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    margin: 8px;
-  }
-  .notif-panel.open { display: block; }
-  .notif-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    font-weight: 700;
-    font-size: 15px;
-  }
-  .notif-item {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .notif-item:last-child { border-bottom: none; }
-  .notif-icon { font-size: 20px; }
-  .notif-text { color: var(--muted); line-height: 1.4; }
-  .notif-time { font-size: 11px; color: var(--accent); margin-top: 3px; }
-
-  /* SHARE MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 400;
-    align-items: flex-end;
-    justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-width: 430px;
-    padding: 20px;
-    animation: slideUp 0.3s ease;
-  }
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-  .share-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .share-opt {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-  .share-icon-wrap {
-    width: 52px; height: 52px;
-    border-radius: 14px;
-    background: var(--surface2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-  }
-  .share-opt span { font-size: 11px; color: var(--muted); }
-  .modal-close {
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    background: var(--surface2);
-    border: none;
-    color: var(--text);
-    font-size: 15px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-
-  /* PROFILE TAB */
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-  .profile-section {
-    padding: 20px 16px 80px;
-  }
-  .profile-header {
-    text-align: center;
-    padding: 20px 0;
-  }
-  .avatar {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), #ff8c00);
-    font-size: 36px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 10px;
-  }
-  .profile-name { font-size: 18px; font-weight: 700; }
-  .profile-handle { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .profile-stats {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin: 16px 0;
-  }
-  .stat { text-align: center; }
-  .stat-num { font-size: 18px; font-weight: 700; }
-  .stat-label { font-size: 12px; color: var(--muted); }
-  .follow-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 40px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    margin: 0 auto;
-    display: block;
-  }
-  .saved-section { margin-top: 20px; }
-  .saved-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; padding: 0 4px; }
-  .saved-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .saved-item {
-    background: var(--surface2);
-    border-radius: 10px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    position: relative;
-    overflow: hidden;
-  }
-  .saved-label {
-    position: absolute;
-    bottom: 6px; left: 8px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  /* THEME TOGGLE BUTTON */
-  .theme-btn {
-    font-size: 18px;
-  }
-
-  /* UPLOAD MODAL */
-  .upload-modal {
-    padding: 20px;
-  }
-  .upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 30px;
-    text-align: center;
-    margin-bottom: 14px;
-  }
-  .upload-zone-icon { font-size: 40px; margin-bottom: 8px; }
-  .upload-zone-text { font-size: 14px; color: var(--muted); }
-  .upload-progress-section { margin-top: 10px; }
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 6px;
-  }
-  .progress-track {
-    height: 6px;
-    background: var(--surface2);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 3px;
-    width: 0%;
-    transition: width 0.2s;
-  }
-  .upload-submit {
-    width: 100%;
-    padding: 13px;
-    background: var(--accent);
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 12px;
-  }
+:root{--bg:#000;--s1:#161616;--s2:#252525;--ac:#fe2c55;--ok:#25d366;--tx:#fff;--mu:#9a9a9a;--bd:#2a2a2a}
+body.light{--bg:#f6f6f6;--s1:#fff;--s2:#ebebeb;--tx:#111;--mu:#666;--bd:#ddd}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#000}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx)}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:11px 14px;width:100%;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+textarea{resize:none}
+#app{position:fixed;inset:0;max-width:480px;margin:0 auto;background:var(--bg);overflow:hidden}
+.page{position:absolute;inset:0 0 calc(58px + env(safe-area-inset-bottom)) 0;overflow-y:auto;display:none;background:var(--bg);-webkit-overflow-scrolling:touch}
+.page.on{display:block}
+#home{background:#000;overflow:hidden}
+.pad{padding:14px}
+/* NAV */
+.nav{position:absolute;bottom:0;left:0;right:0;height:calc(58px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#000;border-top:1px solid #222;display:flex;align-items:center;justify-content:space-around;z-index:60;color:#fff}
+body.light .nav.lt{background:#fff;color:#111;border-color:#ddd}
+.ni{display:flex;flex-direction:column;align-items:center;font-size:10px;opacity:.6;position:relative;min-width:54px;gap:1px}
+.ni span:first-child{font-size:21px}.ni.on{opacity:1;font-weight:700}
+.plus{width:46px;height:32px;border-radius:9px;background:#fff;color:#000;font-size:24px;font-weight:700;position:relative;line-height:30px}
+.plus:before,.plus:after{content:"";position:absolute;top:0;bottom:0;width:8px;border-radius:9px}
+.plus:before{left:-4px;background:#25f4ee;z-index:-1}.plus:after{right:-4px;background:var(--ac);z-index:-1}
+.dot{position:absolute;top:0;right:12px;min-width:16px;height:16px;border-radius:8px;background:var(--ac);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;font-style:normal}
+/* HOME TOP */
+.htop{position:absolute;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 12px 18px;background:linear-gradient(#0008,transparent);color:#fff}
+.htabs{display:flex;gap:18px;font-weight:700;font-size:16px}
+.htabs button{opacity:.6;padding:4px 2px;border-bottom:2px solid transparent}
+.htabs button.on{opacity:1;border-color:#fff}
+.tb{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:#0005}
+.livebtn{background:var(--ac);font-size:11px;font-weight:800;border-radius:6px;padding:5px 9px;letter-spacing:.5px;color:#fff}
+/* FEED */
+.feed{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;overscroll-behavior:contain}
+.feed::-webkit-scrollbar{display:none}
+.reel{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;background:#000;color:#fff}
+.reel video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bgdemo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:hue 8s linear infinite alternate}
+.bgdemo .em{font-size:110px;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-14px) scale(1.06)}}
+@keyframes hue{to{filter:hue-rotate(40deg) brightness(1.1)}}
+.shade{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(transparent,#000b);pointer-events:none}
+.tap{position:absolute;inset:0;z-index:2}
+.pp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);font-size:70px;opacity:0;z-index:3;pointer-events:none;transition:.2s}
+.pp.on{opacity:.85;transform:translate(-50%,-50%) scale(1)}
+.heart{position:absolute;font-size:80px;z-index:5;pointer-events:none;animation:pop .8s ease-out forwards}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(.3) rotate(-12deg);opacity:1}50%{transform:translate(-50%,-70%) scale(1.2) rotate(8deg);opacity:1}100%{transform:translate(-50%,-140%) scale(1) rotate(0);opacity:0}}
+.rail{position:absolute;right:8px;bottom:84px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:15px}
+.rb{display:flex;flex-direction:column;align-items:center;font-size:12px;font-weight:600;text-shadow:0 1px 4px #0008;gap:2px}
+.rb i{font-style:normal;font-size:31px;line-height:1;filter:drop-shadow(0 1px 3px #0007)}
+.rb.on i{color:var(--ac)}.rb.sv.on i{color:#ffc928}
+.avw{position:relative;margin-bottom:8px}
+.avc{width:48px;height:48px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,var(--ac),#ff9a3c);display:flex;align-items:center;justify-content:center;font-size:22px}
+.fp{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:var(--ac);color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.disc{width:42px;height:42px;border-radius:50%;background:conic-gradient(#222,#555,#222,#555,#222);border:8px solid #111;display:flex;align-items:center;justify-content:center;animation:spin 5s linear infinite}
+.disc.pause{animation-play-state:paused}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rinfo{position:absolute;left:12px;right:84px;bottom:18px;z-index:6;text-shadow:0 1px 4px #0009}
+.rinfo .u{font-weight:800;font-size:16px;margin-bottom:5px}
+.rinfo .cap{font-size:14px;line-height:1.4;margin-bottom:7px;max-height:84px;overflow:hidden}
+.rinfo .cap a{font-weight:700}
+.rinfo .mu{font-size:13px;display:flex;gap:8px;align-items:center}
+.safe{background:var(--ok);font-size:10px;font-weight:800;border-radius:9px;padding:2px 8px;text-shadow:none}
+.bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:#fff3;z-index:7}
+.bar div{height:100%;width:0;background:#fff}
+.empty{text-align:center;color:var(--mu);padding:60px 24px;font-size:14px;line-height:1.7}
+.empty b{display:block;font-size:48px;margin-bottom:8px}
+#home .empty{color:#bbb;height:100%;display:flex;flex-direction:column;justify-content:center}
+/* GENERIC UI */
+.h{font-size:20px;font-weight:800;margin-bottom:12px}
+.btn{background:var(--ac);color:#fff;border-radius:12px;padding:13px 18px;font-weight:700;width:100%}
+.btn.sm{width:auto;padding:10px 18px}.btn.g{background:var(--s2);color:var(--tx)}.btn:disabled{opacity:.5}
+.row{display:flex;gap:8px;align-items:center}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:7px 15px;border-radius:20px;background:var(--s2);color:var(--mu);font-size:13px}
+.chip.on{background:var(--ac);color:#fff}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.tl{aspect-ratio:3/4;background:var(--s2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;border-radius:4px;color:#fff}
+.tl video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tl .bgd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.tl span{position:absolute;bottom:4px;left:6px;font-size:11px;font-weight:700;text-shadow:0 1px 3px #000}
+.sec{font-weight:800;margin:16px 0 8px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.tag{background:var(--s2);border-radius:18px;padding:6px 13px;font-size:13px;font-weight:600}
+.usr{display:flex;align-items:center;gap:10px;padding:8px 0}
+.usr .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--ac),#ff9a3c);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.usr .nm{flex:1;font-weight:700;font-size:14px;min-width:0}
+.usr small{display:block;color:var(--mu);font-weight:400;font-size:12px}
+.fl{font-size:13px;font-weight:700;background:var(--ac);color:#fff;border-radius:8px;padding:7px 16px}
+.fl.on{background:var(--s2);color:var(--tx)}
+.stabs{display:flex;border-bottom:1px solid var(--bd);margin:14px 0 6px}
+.stabs button{flex:1;padding:11px;color:var(--mu);font-weight:700;border-bottom:2px solid transparent}
+.stabs button.on{color:var(--tx);border-color:var(--tx)}
+.prof{text-align:center;padding-top:6px}
+.pav{width:92px;height:92px;border-radius:50%;background:linear-gradient(135deg,var(--ac),#ff9a3c);display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 8px}
+.stats{display:flex;justify-content:center;gap:28px;margin:14px 0}
+.stats b{display:block;font-size:18px}.stats small{color:var(--mu);font-size:12px}
+.bio{color:var(--mu);font-size:14px;margin:8px 20px 14px;line-height:1.5}
+.ptop{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.ic{width:40px;height:40px;border-radius:50%;background:var(--s2);font-size:18px;display:flex;align-items:center;justify-content:center}
+.drop{border-radius:18px;background:var(--s1);border:1px solid var(--bd);padding:26px 16px;text-align:center;margin-bottom:12px;cursor:pointer}
+.drop b{display:block;font-size:42px;margin-bottom:6px}.drop small{color:var(--mu)}
+.lbl{font-size:12px;color:var(--mu);margin:12px 0 6px;display:block}
+.pb{height:7px;background:var(--s2);border-radius:4px;overflow:hidden;margin:6px 0}
+.pb div{height:100%;width:0;background:var(--ac);transition:width .15s}
+.nt{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--bd);font-size:14px;align-items:center}
+.nt.un{font-weight:700}.nt small{display:block;color:var(--mu);font-weight:400;font-size:12px;margin-top:2px}
+.nt .ico{width:40px;height:40px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.th{display:flex;gap:11px;padding:12px 0;align-items:center;cursor:pointer}
+.th .m{flex:1;min-width:0;font-weight:700;font-size:14px}
+.th small{display:block;color:var(--mu);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg{max-width:78%;padding:9px 13px;border-radius:16px;margin-bottom:8px;font-size:14px;line-height:1.35}
+.msg.me{background:var(--ac);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.msg.o{background:var(--s2);border-bottom-left-radius:4px}
+/* SHEETS */
+.ov{display:none;position:absolute;inset:0;background:#0009;z-index:100;align-items:flex-end}
+.ov.on{display:flex}
+.sheet{background:var(--s1);color:var(--tx);width:100%;border-radius:20px 20px 0 0;padding:16px;max-height:80%;overflow:auto;animation:up .22s}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sh{font-weight:800;font-size:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.so{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;color:var(--mu)}
+.so i{font-style:normal;width:52px;height:52px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:24px}
+.cm{display:flex;gap:10px;margin-bottom:14px;font-size:14px}
+.cm .a{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ac),#ff9a3c);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cm .b{flex:1;min-width:0}.cm small{color:var(--mu);font-size:12px}
+.cm .lk{display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--mu)}.cm .lk.on{color:var(--ac)}
+.li{display:flex;justify-content:space-between;align-items:center;padding:14px 4px;border-bottom:1px solid var(--bd);font-size:15px;width:100%;text-align:left}
+.full{position:absolute;inset:0;background:#000;z-index:150;display:none;color:#fff}
+.full.on{display:block}
+.full video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ftop{position:absolute;top:0;left:0;right:0;padding:calc(12px + env(safe-area-inset-top)) 14px;display:flex;justify-content:space-between;align-items:center;z-index:3;background:linear-gradient(#0008,transparent)}
+.fbot{position:absolute;bottom:0;left:0;right:0;padding:14px 14px calc(18px + env(safe-area-inset-bottom));z-index:3;background:linear-gradient(transparent,#000a)}
+.recb{width:76px;height:76px;border-radius:50%;border:5px solid #fff;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.recb i{width:56px;height:56px;border-radius:50%;background:var(--ac);transition:.2s}
+.recb.on i{width:30px;height:30px;border-radius:8px}
+.lchat{max-height:34vh;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;margin-bottom:10px;font-size:14px;text-shadow:0 1px 3px #000}
+.lchat div{margin-top:4px}
+.toast{position:absolute;bottom:calc(76px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(16px);background:#333;color:#fff;padding:10px 18px;border-radius:22px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:300;max-width:88%;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.about p{color:var(--mu);line-height:1.7;margin-bottom:12px;font-size:14px}
+.box{background:var(--s2);border-left:4px solid var(--ok);border-radius:12px;padding:12px;margin-bottom:10px;font-size:14px}.box b{display:block;margin-bottom:3px}
+.fh{position:absolute;font-size:34px;z-index:4;animation:fl 2.2s ease-out forwards;pointer-events:none}
+@keyframes fl{to{transform:translateY(-300px);opacity:0}}
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- TOP NAV -->
-<div class="topnav">
-  <div class="logo">SoomaaLink 👨‍👩‍👧‍👦</div>
-  <div class="nav-icons">
-    <button class="lang-toggle" onclick="toggleLang()" id="langBtn">EN</button>
-    <button class="nav-btn theme-btn" onclick="toggleTheme()" title="Muuqaalka">🌙</button>
-    <button class="nav-btn" onclick="toggleNotif()" title="Ogeysiisyada">
-      🔔
-      <span class="badge">3</span>
-    </button>
+<!-- HOME -->
+<div id="home" class="page on">
+  <div class="htop">
+    <button class="livebtn" onclick="openLive()">● LIVE</button>
+    <div class="htabs"><button id="tFol" onclick="setFeed('following')"></button><button id="tFyp" class="on" onclick="setFeed('foryou')"></button></div>
+    <div class="row" style="gap:6px"><button class="tb" id="muteB" onclick="toggleMute()">🔊</button><button class="tb" onclick="go('discover')">🔍</button></div>
   </div>
+  <div class="feed" id="feed"></div>
 </div>
 
-<!-- NOTIFICATION PANEL -->
-<div class="notif-panel" id="notifPanel">
-  <div class="notif-header">🔔 Ogeysiisyada</div>
-  <div class="notif-item">
-    <span class="notif-icon">❤️</span>
-    <div>
-      <div class="notif-text">@axmed_somaali wuxuu jeclaaday videokaaga</div>
-      <div class="notif-time">2 daqiiqo kahor</div>
-    </div>
-  </div>
-  <div class="notif-item">
-    <span class="notif-icon">💬</span>
-    <div>
-      <div class="notif-text">@xalimo123 waxay faallo ku sameysay: "Xeebta waa qurux badan tahay!"</div>
-      <div class="notif-time">15 daqiiqo kahor</div>
-    </div>
-  </div>
-  <div class="notif-item">
-    <span class="notif-icon">👤</span>
-    <div>
-      <div class="notif-text">@cabdi_mogadishu wuxuu kugu raacay</div>
-      <div class="notif-time">1 saac kahor</div>
-    </div>
-  </div>
-</div>
+<!-- DISCOVER -->
+<div id="discover" class="page"><div class="pad">
+  <input id="q" type="search" oninput="renderDiscover()">
+  <div class="chips" id="dChips" style="margin-top:10px"></div>
+  <div class="sec" data-i="trendTags"></div><div class="tags" id="dTags"></div>
+  <div class="sec" data-i="trending"></div><div class="tg" id="dGrid"></div>
+  <div class="sec" data-i="creators"></div><div id="dUsers"></div>
+</div></div>
 
-<!-- SEARCH BAR -->
-<div class="search-wrap">
-  <div class="search-bar">
-    <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Raadi video, heeso, wararka..." id="searchInput" oninput="filterVideos(this.value)">
+<!-- UPLOAD -->
+<div id="upload" class="page"><div class="pad">
+  <div class="h" data-i="newVideo"></div>
+  <div id="upStart">
+    <div class="drop" onclick="openCam()"><b>📹</b><div style="font-weight:700" data-i="record"></div><small data-i="recSub"></small></div>
+    <div class="drop" onclick="$('file').click()"><b>🖼️</b><div style="font-weight:700" data-i="gallery"></div><small data-i="galSub"></small></div>
   </div>
-</div>
-
-<!-- CATEGORIES -->
-<div class="categories">
-  <button class="cat-btn active" onclick="setCategory(this,'Dhammaan')">✅ Dhammaan</button>
-  <button class="cat-btn" onclick="setCategory(this,'Dabeecad')">🌿 Dabeecad</button>
-  <button class="cat-btn" onclick="setCategory(this,'Hees')">🎵 Hees</button>
-  <button class="cat-btn" onclick="setCategory(this,'Quraan')">📖 Quraan</button>
-  <button class="cat-btn" onclick="setCategory(this,'Warar')">📰 Warar</button>
-  <button class="cat-btn" onclick="setCategory(this,'Qosol')">😄 Qosol</button>
-</div>
-
-<!-- HOME FEED TAB -->
-<div id="homeTab" class="tab-content active">
-  <div class="feed" id="videoFeed">
-
-    <!-- VIDEO CARD 1 -->
-    <div class="video-card" data-cat="Dabeecad" data-title="Xeebta Liido">
-      <div class="video-thumb">
-        <div style="width:100%;height:100%;background:linear-gradient(180deg,#ff8c00 0%,#ffd700 40%,#c2956c 70%,#8b6914 100%);display:flex;align-items:center;justify-content:center;font-size:60px;">🌅</div>
-        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
-        <div class="play-btn">▶️</div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">Xeebta Liido — Muqdisho</div>
-        <div class="video-meta">@masuulsare784 · Dabeecad · 🕐 2 sac kahor</div>
-        <div class="video-actions">
-          <button class="action-btn" onclick="toggleLike(this)">❤️ 142</button>
-          <button class="action-btn" onclick="toggleComment()">💬 8</button>
-          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
-          <button class="share-btn" onclick="openShare()">↗️</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIDEO CARD 2 — with upload progress -->
-    <div class="video-card" data-cat="Quraan" data-title="Surah Al-Fatixa">
-      <div class="video-thumb">
-        <div style="width:100%;height:100%;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;align-items:center;justify-content:center;font-size:60px;">📖</div>
-        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
-        <div class="play-btn">▶️</div>
-        <div class="upload-bar-wrap">
-          <div class="upload-label">Soo gelinta video... 67%</div>
-          <div class="upload-bar"><div class="upload-fill" style="width:67%"></div></div>
-        </div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">Surah Al-Fatixa — Akhri</div>
-        <div class="video-meta">@sheekh_omar · Quraan · 🕐 3 sac kahor</div>
-        <div class="video-actions">
-          <button class="action-btn" onclick="toggleLike(this)">❤️ 890</button>
-          <button class="action-btn" onclick="toggleComment()">💬 34</button>
-          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
-          <button class="share-btn" onclick="openShare()">↗️</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIDEO CARD 3 -->
-    <div class="video-card" data-cat="Hees" data-title="Hees Soomali Cusub">
-      <div class="video-thumb">
-        <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0533,#6b21a8,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:60px;">🎵</div>
-        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
-        <div class="play-btn">▶️</div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">Hees Soomali Cusub 2024</div>
-        <div class="video-meta">@heesaha_somaali · Hees · 🕐 1 maalin kahor</div>
-        <div class="video-actions">
-          <button class="action-btn" onclick="toggleLike(this)">❤️ 2.4k</button>
-          <button class="action-btn" onclick="toggleComment()">💬 91</button>
-          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
-          <button class="share-btn" onclick="openShare()">↗️</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIDEO CARD 4 -->
-    <div class="video-card" data-cat="Qosol" data-title="Xafladda Qoyska">
-      <div class="video-thumb">
-        <div style="width:100%;height:100%;background:linear-gradient(135deg,#134e0f,#22863a,#34d058);display:flex;align-items:center;justify-content:center;font-size:60px;">😂</div>
-        <span class="safe-badge">👨‍👩‍👧‍👦 SAFE</span>
-        <div class="play-btn">▶️</div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">Xafladda Qoyska — Qosol Nadiif</div>
-        <div class="video-meta">@fariida_funny · Qosol · 🕐 5 saac kahor</div>
-        <div class="video-actions">
-          <button class="action-btn" onclick="toggleLike(this)">❤️ 512</button>
-          <button class="action-btn" onclick="toggleComment()">💬 22</button>
-          <button class="action-btn" onclick="toggleSave(this)">🔖 Keydi</button>
-          <button class="share-btn" onclick="openShare()">↗️</button>
-        </div>
-      </div>
-    </div>
-
+  <input type="file" id="file" accept="video/*" hidden onchange="fileChosen(this.files[0])">
+  <div id="upForm" style="display:none">
+    <video id="prev" controls playsinline style="width:100%;border-radius:16px;max-height:300px;background:#000;object-fit:contain"></video>
+    <label class="lbl" data-i="caption"></label><textarea id="uCap" rows="3" maxlength="200" data-ph="capPh"></textarea>
+    <label class="lbl" data-i="category"></label><select id="uCat"></select>
+    <label class="lbl" data-i="music"></label><input id="uMus" maxlength="60" data-ph="musPh">
+    <div id="upProg" style="display:none;margin-top:12px"><div class="row" style="justify-content:space-between;font-size:12px"><span data-i="uploading"></span><b id="upPct">0%</b></div><div class="pb"><div id="upFill"></div></div></div>
+    <div class="row" style="margin-top:16px"><button class="btn g sm" onclick="resetUpload()" data-i="change"></button><button class="btn" id="upBtn" onclick="doUpload()" data-i="post"></button></div>
   </div>
-</div>
+</div></div>
 
-<!-- DISCOVER TAB -->
-<div id="discoverTab" class="tab-content">
-  <div style="padding:30px 16px 80px; text-align:center; color:var(--muted);">
-    <div style="font-size:48px;margin-bottom:12px">🔍</div>
-    <div style="font-size:15px">Raadinta ayaa soo socon doonta</div>
-  </div>
-</div>
+<!-- INBOX -->
+<div id="inbox" class="page"><div class="pad">
+  <div class="h" data-i="inboxT"></div>
+  <div class="stabs" style="margin-top:0"><button id="ibAct" class="on" onclick="ibTab('act')" data-i="activity"></button><button id="ibMsg" onclick="ibTab('msg')" data-i="messages"></button></div>
+  <div id="ibBody"></div>
+</div></div>
 
-<!-- UPLOAD TAB -->
-<div id="uploadTab" class="tab-content">
-  <div class="upload-modal" style="padding-bottom:80px">
-    <div style="font-size:17px;font-weight:700;margin-bottom:14px">📤 Soo Geli Video</div>
-    <div class="upload-zone">
-      <div class="upload-zone-icon">🎬</div>
-      <div class="upload-zone-text">Riix halkan oo video dooro</div>
-    </div>
-    <div>
-      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Cinwaanka Video</label>
-      <input type="text" placeholder="Tusaale: Xeebta Liido..." style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;outline:none;">
-    </div>
-    <div style="margin-top:12px">
-      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Qaybta</label>
-      <select style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;outline:none;">
-        <option>🌿 Dabeecad</option>
-        <option>🎵 Hees</option>
-        <option>📖 Quraan</option>
-        <option>📰 Warar</option>
-        <option>😄 Qosol</option>
-      </select>
-    </div>
-    <div class="upload-progress-section" id="uploadProgress" style="display:none;margin-top:16px">
-      <div class="progress-label">
-        <span>Soo gelinta...</span>
-        <span id="uploadPct">0%</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="uploadFill"></div>
-      </div>
-    </div>
-    <button class="upload-submit" onclick="startUpload()">📤 Bilow Soo Gelinta</button>
-  </div>
-</div>
+<!-- PROFILE -->
+<div id="profile" class="page"><div class="pad" id="pBody"></div></div>
 
-<!-- INBOX TAB -->
-<div id="inboxTab" class="tab-content">
-  <div style="padding:16px 16px 80px">
-    <div style="font-size:17px;font-weight:700;margin-bottom:14px">💬 Farriimaha</div>
-    <div style="background:var(--surface);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid var(--border);">
-      <div style="display:flex;gap:10px;align-items:center">
-        <div style="font-size:28px">👨</div>
-        <div>
-          <div style="font-size:14px;font-weight:600">@axmed_somaali</div>
-          <div style="font-size:12px;color:var(--muted)">Video-gaagu waa qurux badan yahay!</div>
-        </div>
-        <div style="margin-left:auto;font-size:11px;color:var(--muted)">2q</div>
-      </div>
-    </div>
-    <div style="background:var(--surface);border-radius:var(--radius);padding:14px;border:1px solid var(--border);">
-      <div style="display:flex;gap:10px;align-items:center">
-        <div style="font-size:28px">👩</div>
-        <div>
-          <div style="font-size:14px;font-weight:600">@xalimo123</div>
-          <div style="font-size:12px;color:var(--muted)">Mahadsanid wadaagista!</div>
-        </div>
-        <div style="margin-left:auto;font-size:11px;color:var(--muted)">1s</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- PROFILE TAB -->
-<div id="profileTab" class="tab-content">
-  <div class="profile-section">
-    <div class="profile-header">
-      <div class="avatar">👤</div>
-      <div class="profile-name">Masuulsare784</div>
-      <div class="profile-handle">@masuulsare784</div>
-    </div>
-    <div class="profile-stats">
-      <div class="stat">
-        <div class="stat-num">39</div>
-        <div class="stat-label">Videos</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">1.2k</div>
-        <div class="stat-label">Raacayaasha</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">340</div>
-        <div class="stat-label">Raacaya</div>
-      </div>
-    </div>
-    <button class="follow-btn">➕ Raac</button>
-    <div class="saved-section">
-      <div class="saved-title">🔖 Videos La Keydiyo</div>
-      <div class="saved-grid" id="savedGrid">
-        <div class="saved-item">🌅<span class="saved-label">Xeebta Liido</span></div>
-        <div class="saved-item">📖<span class="saved-label">Surah Fatixa</span></div>
-        <div style="background:var(--surface2);border-radius:10px;height:120px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;border:2px dashed var(--border)">+ Keydi</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SHARE MODAL -->
-<div class="modal-overlay" id="shareModal" onclick="closeShare(event)">
-  <div class="modal">
-    <div class="modal-title">↗️ La Wadaag</div>
-    <div class="share-grid">
-      <div class="share-opt"><div class="share-icon-wrap">📱</div><span>WhatsApp</span></div>
-      <div class="share-opt"><div class="share-icon-wrap">✈️</div><span>Telegram</span></div>
-      <div class="share-opt"><div class="share-icon-wrap">📧</div><span>Email</span></div>
-      <div class="share-opt"><div class="share-icon-wrap">🔗</div><span>Xiriirka</span></div>
-    </div>
-    <button class="modal-close" onclick="closeShare()">Xir</button>
-  </div>
-</div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <div class="nav-item active" onclick="showTab('home',this)">
-    <span class="nav-icon">🏠</span>
-    <span id="label-home">Hoyga</span>
-  </div>
-  <div class="nav-item" onclick="showTab('discover',this)">
-    <span class="nav-icon">🔍</span>
-    <span id="label-discover">Raadi</span>
-  </div>
-  <div class="nav-plus" onclick="showTab('upload',null)">+</div>
-  <div class="nav-item" onclick="showTab('inbox',this)">
-    <span class="nav-icon">💬</span>
-    <span id="label-inbox">Farriimo</span>
-    <span class="notif-dot"></span>
-  </div>
-  <div class="nav-item" onclick="showTab('profile',this)">
-    <span class="nav-icon">👤</span>
-    <span id="label-profile">Xisaabta</span>
-  </div>
+<nav class="nav" id="nav">
+  <button class="ni on" data-go="home" onclick="go('home')"><span>🏠</span><span data-i="home"></span></button>
+  <button class="ni" data-go="discover" onclick="go('discover')"><span>🔍</span><span data-i="discover"></span></button>
+  <button class="plus" onclick="go('upload')">+</button>
+  <button class="ni" data-go="inbox" onclick="go('inbox')"><span>💬</span><span data-i="inbox"></span><i class="dot" id="iDot" style="display:none">0</i></button>
+  <button class="ni" data-go="profile" onclick="openMe()"><span>👤</span><span data-i="profile"></span></button>
 </nav>
 
+<!-- COMMENTS -->
+<div class="ov" id="cmOv" onclick="closeOv(event,'cmOv')"><div class="sheet" style="height:72%;display:flex;flex-direction:column">
+  <div class="sh"><span><span data-i="comments"></span> <span id="cmCount"></span></span><button onclick="closeOv(null,'cmOv')">✕</button></div>
+  <div id="cmList" style="flex:1;overflow:auto"></div>
+  <div class="row" style="margin-top:8px"><input id="cmIn" maxlength="200" data-ph="writeCm" onkeydown="if(event.key==='Enter')addComment()"><button class="btn sm" onclick="addComment()">➤</button></div>
+</div></div>
+
+<!-- SHARE -->
+<div class="ov" id="shOv" onclick="closeOv(event,'shOv')"><div class="sheet">
+  <div class="sh"><span data-i="share"></span><button onclick="closeOv(null,'shOv')">✕</button></div>
+  <div class="grid4">
+    <button class="so" onclick="shareTo('wa')"><i>📱</i>WhatsApp</button>
+    <button class="so" onclick="shareTo('tg')"><i>✈️</i>Telegram</button>
+    <button class="so" onclick="shareTo('mail')"><i>📧</i>Email</button>
+    <button class="so" onclick="shareTo('copy')"><i>🔗</i><span data-i="copy"></span></button>
+  </div>
+  <button class="btn g" id="natSh" onclick="shareTo('native')" data-i="more"></button>
+  <div class="sh" style="margin-top:16px" data-i="moreOpts"></div>
+  <button class="li" onclick="reportOpen()"><span data-i="report"></span><span>🚩</span></button>
+</div></div>
+
+<!-- REPORT -->
+<div class="ov" id="rpOv" onclick="closeOv(event,'rpOv')"><div class="sheet">
+  <div class="sh"><span data-i="report"></span><button onclick="closeOv(null,'rpOv')">✕</button></div>
+  <button class="li" onclick="sendReport()"><span data-i="rp1"></span></button>
+  <button class="li" onclick="sendReport()"><span data-i="rp2"></span></button>
+  <button class="li" onclick="sendReport()"><span data-i="rp3"></span></button>
+  <button class="li" onclick="sendReport()"><span data-i="rp4"></span></button>
+</div></div>
+
+<!-- CHAT -->
+<div class="ov" id="chOv" onclick="closeOv(event,'chOv')"><div class="sheet" style="height:80%;display:flex;flex-direction:column">
+  <div class="sh"><span id="chName"></span><button onclick="closeOv(null,'chOv')">✕</button></div>
+  <div id="chBody" style="flex:1;overflow:auto"></div>
+  <div class="row" style="margin-top:8px"><input id="chIn" maxlength="300" data-ph="writeMsg" onkeydown="if(event.key==='Enter')sendChat()"><button class="btn sm" onclick="sendChat()">➤</button></div>
+</div></div>
+
+<!-- SETTINGS -->
+<div class="ov" id="stOv" onclick="closeOv(event,'stOv')"><div class="sheet">
+  <div class="sh"><span data-i="settings"></span><button onclick="closeOv(null,'stOv')">✕</button></div>
+  <button class="li" onclick="toggleLang()"><span data-i="language"></span><b id="langV"></b></button>
+  <button class="li" onclick="toggleTheme()"><span data-i="theme"></span><b id="themeV"></b></button>
+  <button class="li" onclick="closeOv(null,'stOv');$('abOv').classList.add('on')"><span data-i="aboutT"></span><span>ℹ️</span></button>
+  <button class="li" onclick="alert(T('rules'))"><span data-i="rulesBtn"></span><span>📜</span></button>
+  <button class="li" onclick="resetAll()" style="color:var(--ac)"><span data-i="reset"></span><span>🗑️</span></button>
+</div></div>
+
+<!-- ABOUT -->
+<div class="ov" id="abOv" onclick="closeOv(event,'abOv')"><div class="sheet about">
+  <div class="sh"><span>ℹ️ SoomaaLink</span><button onclick="closeOv(null,'abOv')">✕</button></div>
+  <p data-i="aboutTxt"></p>
+  <div class="box"><b data-i="goal"></b><span data-i="goalTxt"></span></div>
+  <div class="box"><b>👨‍👩‍👧‍👦 Family First</b><span data-i="famTxt"></span></div>
+</div></div>
+
+<!-- EDIT PROFILE -->
+<div class="ov" id="edOv" onclick="closeOv(event,'edOv')"><div class="sheet">
+  <div class="sh"><span data-i="edit"></span><button onclick="closeOv(null,'edOv')">✕</button></div>
+  <label class="lbl" data-i="nameL"></label><input id="eName" maxlength="30">
+  <label class="lbl" data-i="bioL"></label><textarea id="eBio" rows="3" maxlength="120"></textarea>
+  <button class="btn" style="margin-top:14px" onclick="saveProfile()" data-i="saveB"></button>
+</div></div>
+
+<!-- CAMERA -->
+<div class="full" id="camOv">
+  <video id="camV" autoplay muted playsinline></video>
+  <div class="ftop"><button class="tb" onclick="closeCam()">✕</button><b id="camT">0:00</b><button class="tb" onclick="flipCam()">🔄</button></div>
+  <div class="fbot"><button class="recb" id="recB" onclick="toggleRec()"><i></i></button><div style="text-align:center;margin-top:8px;font-size:12px;opacity:.8" data-i="maxLen"></div></div>
+</div>
+
+<!-- LIVE -->
+<div class="full" id="liveOv">
+  <video id="liveV" autoplay muted playsinline></video>
+  <div class="ftop"><div class="row"><span class="livebtn">● LIVE</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveT">0:00</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px">👁 1</span></div><button class="tb" onclick="endLive()">✕</button></div>
+  <div style="position:absolute;top:calc(64px + env(safe-area-inset-top));left:14px;right:14px;background:#0008;border-radius:10px;padding:8px 12px;font-size:12px;z-index:3" data-i="liveNote"></div>
+  <div class="fbot"><div class="lchat" id="liveChat"></div>
+    <div class="row"><input id="liveIn" maxlength="120" data-ph="writeCm" style="background:#0007;border-color:#fff3;color:#fff" onkeydown="if(event.key==='Enter')liveSend()"><button class="tb" onclick="liveHeart()">❤️</button><button class="tb" onclick="liveSend()">➤</button></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
 <script>
-  let isEnglish = false;
-  let isDark = true;
-  const soLabels = { home:'Hoyga', discover:'Raadi', inbox:'Farriimo', profile:'Xisaabta' };
-  const enLabels = { home:'Home', discover:'Discover', inbox:'Inbox', profile:'Profile' };
+/* ============ TEXT ============ */
+const L={
+so:{home:'Hoyga',discover:'Raadi',inbox:'Farriimo',profile:'Aniga',following:'Raacaya',foryou:'Adiga ku Habboon',
+trendTags:'🔥 Hashtag-yada caansan',trending:'🎬 Ugu caansan',creators:'👥 Abuur-yaqaanno',search:'Raadi video, qof, #hashtag...',
+newVideo:'🎬 Video cusub',record:'Duub kamarada',recSub:'Ka duub video si toos ah',gallery:'Ka dooro taleefanka',galSub:'Soo geli video hore u jiray',
+caption:'Sharaxaad',capPh:'Qor sharaxaad iyo #hashtag...',category:'Qaybta',music:'Muusiga / codka',musPh:'Tusaale: Cod asal ah',uploading:'Soo gelinta...',change:'Beddel',post:'Daabac',
+inboxT:'Farriimo',activity:'Dhaqdhaqaaq',messages:'Farriimo',noAct:'Wax dhaqdhaqaaq ah ma jiro weli',noMsg:'Farriin ma jirto',
+comments:'Faallooyin',writeCm:'Ku dar faallo...',writeMsg:'Qor farriin...',noCm:'Faallo ma jirto. Noqo kii ugu horreeya!',
+share:'La wadaag',copy:'Nuqul',more:'Dheeraad...',moreOpts:'Doorashooyin',report:'Soo sheeg (Report)',
+rp1:'Nuxur aan qoys ahaan loo daawan karin',rp2:'Rabshad ama nacayb',rp3:'Warar been abuur ah',rp4:'Spam',
+reported:'Mahadsanid, warbixintaada waa la helay',settings:'Habaynta',language:'Luqadda',theme:'Muuqaalka',aboutT:'Ku saabsan SoomaaLink',rulesBtn:'Shuruudaha Community',reset:'Tirtir xogta app-ka',
+dark:'Madow',light:'Iftiin',edit:'Wax ka beddel profile-ka',nameL:'Magaca',bioL:'Bio',saveB:'Keydi',
+videos:'Videos',likes:'Jecel',followers:'Raacayaal',follow:'Raac',followingB:'Waad raacday',message:'Farriin',
+myVideos:'Videos',saved:'La keydiyay',liked:'La jeclaaday',noVids:'Video ma jiro halkan',noSaved:'Wax la keydiyay ma jiro',noLiked:'Wax la jeclaaday ma jiro',
+noFol:'Weli ma raacin qof.\nKu laabo "Adiga ku Habboon" oo raac abuur-yaqaanno.',noRes:'Wax lagu helay ma jiro',
+back:'Dib',bioDef:'Soo dhawoow SoomaaLink 👨‍👩‍👧‍👦',demo:'Demo',
+pickFirst:'Marka hore video dooro',tooBig:'Video-gu aad buu u weyn yahay (ugu badnaan 300MB)',uploaded:'✅ Video waa la daabacay!',
+copied:'Xiriirka waa la koobiyeeyay',saveT:'La keydiyay',unsaveT:'Waa laga saaray',confirmReset:'Dhammaan xogta waa la tirtirayaa. Ma hubtaa?',
+camErr:'Kamarada lama furi karo. Ogolow ogolaanshaha, oo u isticmaal https.',maxLen:'Ugu badnaan 60 ilbiriqsi',
+liveNote:'Tijaabo: kamarada waa la furay, laakiin dadka kale ma arki karaan ilaa server la ku xidho.',liveEnd:'Live wuu dhammaaday',liveStart:'Live waa bilowday',
+welcome:'Soo dhawoow SoomaaLink! 👨‍👩‍👧‍👦 Halkan waxaa laga helaa kaliya nuxur qoys ahaan loo daawan karo.',nUp:'Video-gaaga waa la daabacay',nCm:'Faallo ayaad ku dartay',nFol:'Waad raacday',
+bot:['Mahadsanid farriintaada! 🙏','Waan ku helnay. Wax kale ma ku caawin karnaa?','Waad ku mahadsan tahay isticmaalka SoomaaLink 👨‍👩‍👧‍👦'],
+aboutTxt:'SoomaaLink waa TikTok Soomaali loogu talagalay qoyska Soomaaliyeed. Madal ammaan ah oo lagu wadaago dabeecadda, hees dhaqameed, qosol nadiif, warar sax ah iyo Quraan.',
+goal:'🎯 Ujeedkeena',goalTxt:'Jawi nadiif ah oo carruurta iyo waalidka wada daawan karaan - 0% anshax xumo.',famTxt:'Video kasta waa inuu yahay mid qoyska oo dhan daawan karo.',
+rules:'Shuruudaha:\n1. Nadiif oo qoys ahaan loo daawan karo\n2. Anshax xumo, rabshad ama nacayb ma jiro\n3. Ixtiraam dadka kale\n4. Warar been abuur ah ha faafin',
+cats:{all:'✅ Dhammaan',Dabeecad:'🌿 Dabeecad',Hees:'🎵 Hees',Quraan:'📖 Quraan',Warar:'📰 Warar',Qosol:'😄 Qosol'}},
+en:{home:'Home',discover:'Discover',inbox:'Inbox',profile:'Me',following:'Following',foryou:'For You',
+trendTags:'🔥 Trending hashtags',trending:'🎬 Trending',creators:'👥 Creators',search:'Search videos, people, #hashtags...',
+newVideo:'🎬 New video',record:'Record with camera',recSub:'Record a video right now',gallery:'Choose from phone',galSub:'Upload an existing video',
+caption:'Caption',capPh:'Write a caption and #hashtags...',category:'Category',music:'Sound / music',musPh:'e.g. Original sound',uploading:'Uploading...',change:'Change',post:'Post',
+inboxT:'Inbox',activity:'Activity',messages:'Messages',noAct:'No activity yet',noMsg:'No messages',
+comments:'Comments',writeCm:'Add a comment...',writeMsg:'Write a message...',noCm:'No comments yet. Be the first!',
+share:'Share',copy:'Copy',more:'More...',moreOpts:'Options',report:'Report',
+rp1:'Not family-friendly',rp2:'Violence or hate',rp3:'False information',rp4:'Spam',
+reported:'Thanks, your report was received',settings:'Settings',language:'Language',theme:'Appearance',aboutT:'About SoomaaLink',rulesBtn:'Community rules',reset:'Clear app data',
+dark:'Dark',light:'Light',edit:'Edit profile',nameL:'Name',bioL:'Bio',saveB:'Save',
+videos:'Videos',likes:'Likes',followers:'Followers',follow:'Follow',followingB:'Following',message:'Message',
+myVideos:'Videos',saved:'Saved',liked:'Liked',noVids:'No videos here',noSaved:'Nothing saved yet',noLiked:'No liked videos yet',
+noFol:'You are not following anyone yet.\nGo back to "For You" and follow creators.',noRes:'No results found',
+back:'Back',bioDef:'Welcome to SoomaaLink 👨‍👩‍👧‍👦',demo:'Demo',
+pickFirst:'Choose a video first',tooBig:'Video is too large (max 300MB)',uploaded:'✅ Video posted!',
+copied:'Link copied',saveT:'Saved',unsaveT:'Removed',confirmReset:'All data will be deleted. Are you sure?',
+camErr:'Cannot open camera. Allow permission and use https.',maxLen:'Max 60 seconds',
+liveNote:'Test mode: your camera is on, but others cannot see it until a server is connected.',liveEnd:'Live ended',liveStart:'Live started',
+welcome:'Welcome to SoomaaLink! 👨‍👩‍👧‍👦 Only family-friendly content lives here.',nUp:'Your video was posted',nCm:'You added a comment',nFol:'You followed',
+bot:['Thanks for your message! 🙏','Got it. Can we help with anything else?','Thanks for using SoomaaLink 👨‍👩‍👧‍👦'],
+aboutTxt:'SoomaaLink is the Somali TikTok built for Somali families. A safe platform to share nature, traditional music, clean comedy, true news and Quran.',
+goal:'🎯 Our goal',goalTxt:'Clean content kids and parents can watch together - 0% inappropriate material.',famTxt:'Every video must be something the whole family can watch.',
+rules:'Rules:\n1. Clean, family-friendly content\n2. No obscenity, violence or hate\n3. Respect others\n4. Do not spread false news',
+cats:{all:'✅ All',Dabeecad:'🌿 Nature',Hees:'🎵 Music',Quraan:'📖 Quran',Warar:'📰 News',Qosol:'😄 Comedy'}}
+};
+const CATS=['Dabeecad','Hees','Quraan','Warar','Qosol'];
 
-  function toggleLang() {
-    isEnglish = !isEnglish;
-    const btn = document.getElementById('langBtn');
-    const labels = isEnglish ? enLabels : soLabels;
-    btn.textContent = isEnglish ? 'SO' : 'EN';
-    Object.keys(labels).forEach(k => {
-      const el = document.getElementById('label-' + k);
-      if (el) el.textContent = labels[k];
-    });
-    document.getElementById('searchInput').placeholder = isEnglish
-      ? 'Search videos, songs, news...'
-      : 'Raadi video, heeso, wararka...';
+/* ============ STATE ============ */
+const KEY='soomaalink_tt1';
+const demo=()=>[
+ {id:'d1',caption:'Xeebta Liido gelinkii hore 🌅 #dabeecad #muqdisho',cat:'Dabeecad',owner:'masuulsare784x',emoji:'🌅',grad:'linear-gradient(180deg,#ff9a3c,#e9c27b 50%,#6b4f2f)',music:'Cod asal ah',likes:1420,comments:[{id:'c1',u:'xalimo123',t:'Xeebta waa qurux badan tahay!',likes:12,liked:false}],shares:44},
+ {id:'d2',caption:'Quraan quruxsan 📖 #quraan #iimaan',cat:'Quraan',owner:'sheekh_omar',emoji:'📖',grad:'linear-gradient(135deg,#0f2027,#2c5364)',music:'Tilaawo',likes:8900,comments:[],shares:310},
+ {id:'d3',caption:'Hees Soomaali cusub 🎵 #hees #soomaali',cat:'Hees',owner:'heesaha_somaali',emoji:'🎵',grad:'linear-gradient(135deg,#1a0533,#7c3aed)',music:'Heesaha Soomaaliyeed',likes:24000,comments:[],shares:900},
+ {id:'d4',caption:'Xafladda qoyska 😂 #qosol #qoys',cat:'Qosol',owner:'fariida_funny',emoji:'😂',grad:'linear-gradient(135deg,#134e0f,#34d058)',music:'Cod asal ah',likes:5120,comments:[],shares:120},
+ {id:'d5',caption:'Wararka maanta 📰 #warar #soomaaliya',cat:'Warar',owner:'war_sax',emoji:'📰',grad:'linear-gradient(135deg,#7f1d1d,#f97316)',music:'Cod asal ah',likes:760,comments:[],shares:20}
+].map((v,i)=>({liked:false,saved:false,views:0,demo:true,ts:Date.now()-(i+1)*36e5*3,...v}));
+function fresh(){return{lang:'so',theme:'dark',muted:false,me:{name:'Masuulsare784',handle:'masuulsare784',bio:''},videos:demo(),following:[],
+ notifs:[{k:'welcome',ts:Date.now(),un:true}],chats:{team:[{me:false,k:'welcome'}]},unread:1}}
+let S=(()=>{try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.videos)return s}catch(e){}return fresh()})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Storage full')}};
+const dbp=new Promise((res,rej)=>{try{const r=indexedDB.open('soomaalink_tt',1);r.onupgradeneeded=()=>r.result.createObjectStore('v');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});
+const idb=(m,k,v)=>dbp.then(db=>new Promise((res,rej)=>{const tx=db.transaction('v',m==='get'?'readonly':'readwrite');const st=tx.objectStore('v');const rq=m==='get'?st.get(k):m==='put'?st.put(v,k):st.clear();rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error)}));
+const urls={};
+async function urlFor(id){if(urls[id])return urls[id];const b=await idb('get',id);if(!b)return null;return urls[id]=URL.createObjectURL(b)}
+
+const $=id=>document.getElementById(id);
+const T=k=>L[S.lang][k]??k;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const vid=id=>S.videos.find(v=>v.id===id);
+const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(n>=1e4?0:1)+'K':n;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2300)}
+function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return S.lang==='so'?'hadda':'now';const m=s/60;if(m<60)return Math.floor(m)+(S.lang==='so'?' daq':'m');const h=m/60;if(h<24)return Math.floor(h)+(S.lang==='so'?' saac':'h');return Math.floor(h/24)+(S.lang==='so'?' maalin':'d')}
+function addNotif(k,extra){S.notifs.unshift({k,extra:extra||'',ts:Date.now(),un:true});S.notifs=S.notifs.slice(0,50);save();updDot()}
+function updDot(){const n=S.notifs.filter(x=>x.un).length+(S.unread||0);const d=$('iDot');d.style.display=n?'flex':'none';d.textContent=n>9?'9+':n}
+function closeOv(e,id){if(!e||e.target===$(id))$(id).classList.remove('on')}
+
+/* ============ NAV ============ */
+let cur='home',feedTab='foryou',viewUser=null,pTab='mine',ibT='act',dCat='all',focusId=null,activeId=null;
+function go(t){
+  cur=t;
+  document.querySelectorAll('.page').forEach(e=>e.classList.toggle('on',e.id===t));
+  document.querySelectorAll('.ni').forEach(e=>e.classList.toggle('on',e.dataset.go===t));
+  $('nav').classList.toggle('lt',t!=='home');
+  document.querySelectorAll('video').forEach(v=>{if(t!=='home'||v.closest('.page')!==$('home'))v.pause()});
+  if(t==='inbox'){S.notifs.forEach(n=>n.un=false);S.unread=0;save();updDot()}
+  render();
+}
+function openMe(){viewUser=null;go('profile')}
+function openUser(h){if(h===S.me.handle){openMe();return}viewUser=h;pTab='mine';go('profile')}
+
+/* ============ APPLY ============ */
+function applyStatic(){
+  document.documentElement.lang=S.lang;
+  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=T(e.dataset.i));
+  document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=T(e.dataset.ph));
+  $('q').placeholder=T('search');
+  $('tFol').textContent=T('following');$('tFyp').textContent=T('foryou');
+  document.body.classList.toggle('light',S.theme==='light');
+  $('langV').textContent=S.lang==='so'?'Soomaali':'English';
+  $('themeV').textContent=S.theme==='light'?T('light'):T('dark');
+  $('muteB').textContent=S.muted?'🔇':'🔊';
+  const sel=$('uCat').value;
+  $('uCat').innerHTML=CATS.map(c=>`<option value="${c}">${L[S.lang].cats[c]}</option>`).join('');
+  if(sel)$('uCat').value=sel;
+}
+function toggleLang(){S.lang=S.lang==='so'?'en':'so';save();applyStatic();render()}
+function toggleTheme(){S.theme=S.theme==='light'?'dark':'light';save();applyStatic()}
+function toggleMute(){S.muted=!S.muted;save();$('muteB').textContent=S.muted?'🔇':'🔊';document.querySelectorAll('.reel video').forEach(v=>v.muted=S.muted)}
+
+/* ============ FEED ============ */
+function setFeed(t){feedTab=t;$('tFol').classList.toggle('on',t==='following');$('tFyp').classList.toggle('on',t==='foryou');renderFeed()}
+function feedList(){return feedTab==='following'?S.videos.filter(v=>S.following.includes(v.owner)):S.videos}
+function railHTML(v){
+  const me=v.owner===S.me.handle,fol=S.following.includes(v.owner);
+  return `<div class="avw" onclick="openUser('${v.owner}')"><div class="avc">👤</div>${me||fol?'':`<span class="fp" onclick="event.stopPropagation();toggleFollow('${v.owner}')">+</span>`}</div>
+   <button class="rb ${v.liked?'on':''}" onclick="like('${v.id}')"><i>${v.liked?'❤️':'🤍'}</i>${fmt(v.likes)}</button>
+   <button class="rb" onclick="openComments('${v.id}')"><i>💬</i>${fmt(v.comments.length)}</button>
+   <button class="rb sv ${v.saved?'on':''}" onclick="saveVid('${v.id}')"><i>${v.saved?'🔖':'🏷️'}</i>${v.saved?T('saved'):T('saved')}</button>
+   <button class="rb" onclick="openShare('${v.id}')"><i>↗️</i>${fmt(v.shares||0)}</button>
+   <div class="disc ${''}"><span style="font-size:14px">🎵</span></div>`;
+}
+function capHTML(c){return esc(c).replace(/#([\p{L}\p{N}_]+)/gu,(m,t)=>`<a onclick="searchTag('${t}')">#${t}</a>`)}
+function reelHTML(v){
+  const media=v.demo?`<div class="bgdemo" style="background:${v.grad}"><span class="em">${v.emoji}</span></div>`:`<video data-vid="${v.id}" loop playsinline preload="metadata" ${S.muted?'muted':''}></video>`;
+  return `<section class="reel" data-id="${v.id}">${media}<div class="shade"></div>
+   <div class="tap" onclick="tapReel(event,'${v.id}')"></div><div class="pp">⏸️</div>
+   <div class="rail">${railHTML(v)}</div>
+   <div class="rinfo"><div class="u" onclick="openUser('${v.owner}')">@${esc(v.owner)} <span class="safe">👨‍👩‍👧‍👦 SAFE</span></div>
+    <div class="cap">${capHTML(v.caption)}</div>
+    <div class="mu">🎵 <span>${esc(v.music||'Original sound')}</span>${v.demo?`<span style="opacity:.6">· ${T('demo')}</span>`:''}</div></div>
+   <div class="bar"><div></div></div></section>`;
+}
+let io=null;
+function renderFeed(){
+  const list=feedList(),f=$('feed');
+  if(!list.length){f.innerHTML=`<div class="empty"><b>👥</b>${esc(T('noFol')).replace(/\n/g,'<br>')}</div>`;return}
+  f.innerHTML=list.map(reelHTML).join('');
+  if(io)io.disconnect();
+  io=new IntersectionObserver(es=>{es.forEach(e=>{
+    const el=e.target,id=el.dataset.id;
+    if(e.isIntersecting&&e.intersectionRatio>=.65){activateReel(el,id)}else{deactivateReel(el)}
+  })},{root:f,threshold:[0,.65,1]});
+  f.querySelectorAll('.reel').forEach(r=>io.observe(r));
+  f.querySelectorAll('video[data-vid]').forEach(async el=>{const u=await urlFor(el.dataset.vid);if(u){el.src=u;if(el.closest('.reel').dataset.id===activeId)tryPlay(el)}});
+  if(focusId){const t=f.querySelector(`.reel[data-id="${focusId}"]`);if(t)f.scrollTop=t.offsetTop;focusId=null}
+}
+function tryPlay(el){el.muted=S.muted;const p=el.play();if(p&&p.catch)p.catch(()=>{el.muted=true;el.play().catch(()=>{})})}
+function activateReel(el,id){
+  activeId=id;el.dataset.t=0;
+  const v=vid(id);if(v&&!v._viewed){v._viewed=1;v.views=(v.views||0)+1}
+  const vd=el.querySelector('video');if(vd&&vd.src)tryPlay(vd);
+}
+function deactivateReel(el){const vd=el.querySelector('video');if(vd){vd.pause()}const pp=el.querySelector('.pp');if(pp)pp.classList.remove('on')}
+setInterval(()=>{
+  if(cur!=='home')return;
+  const el=document.querySelector(`.reel[data-id="${activeId}"]`);if(!el)return;
+  const vd=el.querySelector('video'),b=el.querySelector('.bar div');
+  if(vd){b.style.width=vd.duration?(vd.currentTime/vd.duration*100)+'%':'0'}
+  else{let t=+el.dataset.t||0;if(!el.dataset.paused){t=(t+.1/10)%1;el.dataset.t=t}b.style.width=(t*100)+'%'}
+},100);
+let lastTap=0,tapT=null;
+function tapReel(e,id){
+  const el=e.currentTarget.parentElement,now=Date.now();
+  if(now-lastTap<300){
+    clearTimeout(tapT);lastTap=0;
+    const v=vid(id);if(!v.liked)like(id);
+    const r=el.getBoundingClientRect(),h=document.createElement('div');
+    h.className='heart';h.textContent='❤️';h.style.left=(e.clientX-r.left)+'px';h.style.top=(e.clientY-r.top)+'px';el.appendChild(h);setTimeout(()=>h.remove(),800);
+    return;
   }
+  lastTap=now;
+  tapT=setTimeout(()=>{
+    const vd=el.querySelector('video'),pp=el.querySelector('.pp');
+    if(vd){if(vd.paused){tryPlay(vd);pp.classList.remove('on')}else{vd.pause();pp.textContent='▶️';pp.classList.add('on')}}
+    else{if(el.dataset.paused){delete el.dataset.paused;pp.classList.remove('on')}else{el.dataset.paused=1;pp.textContent='▶️';pp.classList.add('on')}}
+  },300);
+}
+function refreshRail(id){const el=document.querySelector(`.reel[data-id="${id}"] .rail`);if(el)el.innerHTML=railHTML(vid(id))}
+function refreshOwner(h){S.videos.filter(v=>v.owner===h).forEach(v=>refreshRail(v.id))}
+function like(id){const v=vid(id);v.liked=!v.liked;v.likes+=v.liked?1:-1;save();refreshRail(id);if(cur==='profile')render()}
+function saveVid(id){const v=vid(id);v.saved=!v.saved;save();refreshRail(id);toast(v.saved?T('saveT'):T('unsaveT'))}
+function toggleFollow(h){
+  const i=S.following.indexOf(h);if(i>-1)S.following.splice(i,1);else{S.following.push(h);addNotif('nFol',h)}
+  save();refreshOwner(h);if(cur!=='home')render();else if(feedTab==='following'&&i>-1)renderFeed()
+}
+function searchTag(t){$('q').value='#'+t;dCat='all';go('discover')}
 
-  function toggleTheme() {
-    isDark = !isDark;
-    document.body.classList.toggle('light', !isDark);
-    document.querySelector('.theme-btn').textContent = isDark ? '🌙' : '☀️';
+/* ============ DISCOVER ============ */
+function tileHTML(v){
+  const inner=v.demo?`<div class="bgd" style="background:${v.grad}">${v.emoji}</div>`:`<video data-vid="${v.id}" muted playsinline preload="metadata"></video>`;
+  return `<div class="tl" onclick="openReel('${v.id}')">${inner}<span>▶ ${fmt(v.views||v.likes)}</span></div>`;
+}
+function hydrate(root){root.querySelectorAll('video[data-vid]').forEach(async el=>{const u=await urlFor(el.dataset.vid);if(u)el.src=u+'#t=0.1'})}
+function openReel(id){feedTab='foryou';$('tFol').classList.remove('on');$('tFyp').classList.add('on');focusId=id;go('home')}
+function renderDiscover(){
+  $('dChips').innerHTML=['all',...CATS].map(c=>`<button class="chip ${c===dCat?'on':''}" onclick="dCat='${c}';renderDiscover()">${L[S.lang].cats[c]}</button>`).join('');
+  const q=$('q').value.trim().toLowerCase();
+  const tagsAll={};S.videos.forEach(v=>(v.caption.match(/#[\p{L}\p{N}_]+/gu)||[]).forEach(t=>{t=t.toLowerCase();tagsAll[t]=(tagsAll[t]||0)+v.likes+1}));
+  $('dTags').innerHTML=Object.entries(tagsAll).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([t])=>`<button class="tag" onclick="$('q').value='${t}';renderDiscover()">${esc(t)}</button>`).join('');
+  const list=S.videos.filter(v=>(dCat==='all'||v.cat===dCat)&&(!q||(v.caption+' '+v.owner+' '+v.cat+' '+L[S.lang].cats[v.cat]).toLowerCase().includes(q))).sort((a,b)=>b.likes-a.likes);
+  $('dGrid').innerHTML=list.length?list.map(tileHTML).join(''):`<div class="empty" style="grid-column:1/-1;padding:30px">${T('noRes')}</div>`;
+  hydrate($('dGrid'));
+  const owners=[...new Set(S.videos.map(v=>v.owner))].filter(o=>o!==S.me.handle&&(!q||o.includes(q.replace('@',''))||!q.startsWith('#')&&!q));
+  $('dUsers').innerHTML=owners.map(userRow).join('');
+}
+function userRow(o){
+  const n=S.videos.filter(v=>v.owner===o).length,f=S.following.includes(o);
+  return `<div class="usr"><div class="av" onclick="openUser('${o}')">👤</div><div class="nm" onclick="openUser('${o}')">@${esc(o)}<small>${n} video</small></div><button class="fl ${f?'on':''}" onclick="toggleFollow('${o}')">${f?T('followingB'):T('follow')}</button></div>`;
+}
+
+/* ============ UPLOAD / CAMERA ============ */
+let fileObj=null,uploading=false;
+function fileChosen(f){
+  if(!f)return;
+  if(f.size>300*1024*1024){toast(T('tooBig'));return}
+  fileObj=f;$('prev').src=URL.createObjectURL(f);$('upStart').style.display='none';$('upForm').style.display='block';
+}
+function resetUpload(){fileObj=null;$('file').value='';$('prev').removeAttribute('src');$('upStart').style.display='';$('upForm').style.display='none';$('upProg').style.display='none'}
+async function doUpload(){
+  if(uploading)return;if(!fileObj){toast(T('pickFirst'));return}
+  uploading=true;$('upBtn').disabled=true;$('upProg').style.display='block';
+  const setP=p=>{$('upFill').style.width=p+'%';$('upPct').textContent=Math.round(p)+'%'};
+  try{
+    const size=fileObj.size,ch=1024*1024;let off=0;
+    while(off<size){await fileObj.slice(off,off+ch).arrayBuffer();off+=ch;setP(Math.min(off/size,1)*90)}
+    const id='v'+Date.now();await idb('put',id,fileObj);setP(100);
+    S.videos.unshift({id,caption:$('uCap').value.trim()||'🎬',cat:$('uCat').value,owner:S.me.handle,music:$('uMus').value.trim()||'Original sound',likes:0,liked:false,saved:false,comments:[],shares:0,views:0,demo:false,ts:Date.now()});
+    save();addNotif('nUp');toast(T('uploaded'));
+    $('uCap').value='';$('uMus').value='';resetUpload();
+    setTimeout(()=>{feedTab='foryou';$('tFol').classList.remove('on');$('tFyp').classList.add('on');focusId=id;go('home')},400);
+  }catch(e){toast('Error: '+(e&&e.message||e))}
+  uploading=false;$('upBtn').disabled=false;
+}
+const rec={stream:null,mr:null,chunks:[],facing:'user',t0:0,timer:null};
+async function getStream(){return navigator.mediaDevices.getUserMedia({video:{facingMode:rec.facing,width:{ideal:720},height:{ideal:1280}},audio:true})}
+async function openCam(){
+  try{rec.stream=await getStream();$('camV').srcObject=rec.stream;$('camOv').classList.add('on');$('camT').textContent='0:00'}catch(e){toast(T('camErr'))}
+}
+function stopStream(){if(rec.stream){rec.stream.getTracks().forEach(t=>t.stop());rec.stream=null}}
+function closeCam(){if(rec.mr&&rec.mr.state==='recording'){rec.mr.onstop=null;rec.mr.stop()}clearInterval(rec.timer);$('recB').classList.remove('on');stopStream();$('camOv').classList.remove('on')}
+async function flipCam(){if(rec.mr&&rec.mr.state==='recording')return;stopStream();rec.facing=rec.facing==='user'?'environment':'user';try{rec.stream=await getStream();$('camV').srcObject=rec.stream}catch(e){toast(T('camErr'))}}
+function toggleRec(){
+  if(rec.mr&&rec.mr.state==='recording'){rec.mr.stop();return}
+  const types=['video/webm;codecs=vp9,opus','video/webm','video/mp4'];
+  const mime=types.find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t))||'';
+  try{rec.mr=new MediaRecorder(rec.stream,mime?{mimeType:mime}:undefined)}catch(e){toast(T('camErr'));return}
+  rec.chunks=[];
+  rec.mr.ondataavailable=e=>{if(e.data.size)rec.chunks.push(e.data)};
+  rec.mr.onstop=()=>{
+    clearInterval(rec.timer);$('recB').classList.remove('on');
+    const type=rec.mr.mimeType||mime||'video/webm',ext=type.includes('mp4')?'mp4':'webm';
+    const f=new File([new Blob(rec.chunks,{type})],'rec-'+Date.now()+'.'+ext,{type});
+    stopStream();$('camOv').classList.remove('on');fileChosen(f);
+  };
+  rec.mr.start();rec.t0=Date.now();$('recB').classList.add('on');
+  rec.timer=setInterval(()=>{const s=Math.floor((Date.now()-rec.t0)/1000);$('camT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s>=60)rec.mr.stop()},250);
+}
+
+/* ============ LIVE (local preview) ============ */
+let live={stream:null,t0:0,timer:null,hearts:null};
+async function openLive(){
+  try{live.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true})}catch(e){toast(T('camErr'));return}
+  $('liveV').srcObject=live.stream;$('liveOv').classList.add('on');$('liveChat').innerHTML='';
+  live.t0=Date.now();live.timer=setInterval(()=>{const s=Math.floor((Date.now()-live.t0)/1000);$('liveT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},500);
+  toast(T('liveStart'));
+}
+function endLive(){clearInterval(live.timer);if(live.stream){live.stream.getTracks().forEach(t=>t.stop());live.stream=null}$('liveOv').classList.remove('on');toast(T('liveEnd'))}
+function liveSend(){const i=$('liveIn'),t=i.value.trim();if(!t)return;i.value='';const d=document.createElement('div');d.innerHTML=`<b>@${esc(S.me.handle)}</b> ${esc(t)}`;$('liveChat').appendChild(d);while($('liveChat').children.length>8)$('liveChat').firstChild.remove()}
+function liveHeart(){const h=document.createElement('div');h.className='fh';h.textContent='❤️';h.style.right=(14+Math.random()*40)+'px';h.style.bottom='90px';$('liveOv').appendChild(h);setTimeout(()=>h.remove(),2200)}
+
+/* ============ COMMENTS ============ */
+let cmId=null;
+function openComments(id){cmId=id;renderComments();$('cmOv').classList.add('on')}
+function renderComments(){
+  const v=vid(cmId);$('cmCount').textContent='('+v.comments.length+')';
+  $('cmList').innerHTML=v.comments.length?v.comments.map(c=>`<div class="cm"><div class="a">👤</div><div class="b"><small>@${esc(c.u)}</small><div>${esc(c.t)}</div>${c.u===S.me.handle?`<small onclick="delComment('${c.id}')" style="color:var(--ac)">🗑</small>`:''}</div><button class="lk ${c.liked?'on':''}" onclick="likeComment('${c.id}')"><span style="font-size:18px">${c.liked?'❤️':'🤍'}</span>${c.likes||''}</button></div>`).join(''):`<div class="empty" style="padding:30px">${T('noCm')}</div>`;
+}
+function addComment(){
+  const t=$('cmIn').value.trim();if(!t)return;
+  vid(cmId).comments.push({id:'c'+Date.now(),u:S.me.handle,t,likes:0,liked:false});$('cmIn').value='';save();renderComments();refreshRail(cmId);addNotif('nCm')
+}
+function likeComment(id){const c=vid(cmId).comments.find(x=>x.id===id);c.liked=!c.liked;c.likes=(c.likes||0)+(c.liked?1:-1);save();renderComments()}
+function delComment(id){const v=vid(cmId);v.comments=v.comments.filter(c=>c.id!==id);save();renderComments();refreshRail(cmId)}
+
+/* ============ SHARE / REPORT ============ */
+let shId=null;
+function openShare(id){shId=id;$('natSh').style.display=navigator.share?'':'none';$('shOv').classList.add('on')}
+function shareTo(w){
+  const v=vid(shId),url=location.href.split('#')[0],text=v.caption.slice(0,80)+' - SoomaaLink 👨‍👩‍👧‍👦',e=encodeURIComponent;
+  v.shares=(v.shares||0)+1;save();refreshRail(shId);
+  if(w==='wa')window.open('https://wa.me/?text='+e(text+' '+url),'_blank');
+  else if(w==='tg')window.open('https://t.me/share/url?url='+e(url)+'&text='+e(text),'_blank');
+  else if(w==='mail')location.href='mailto:?subject='+e(text)+'&body='+e(url);
+  else if(w==='native')navigator.share({title:'SoomaaLink',text,url}).catch(()=>{});
+  else{(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast(T('copied'))).catch(()=>prompt('Link:',url))}
+  if(w!=='native')closeOv(null,'shOv');
+}
+function reportOpen(){closeOv(null,'shOv');$('rpOv').classList.add('on')}
+function sendReport(){closeOv(null,'rpOv');toast(T('reported'))}
+
+/* ============ INBOX / CHAT ============ */
+function ibTab(t){ibT=t;renderInbox()}
+function notifText(n){return n.k==='welcome'?T('welcome'):n.k==='nUp'?T('nUp'):n.k==='nCm'?T('nCm'):n.k==='nFol'?T('nFol')+' @'+n.extra:n.k}
+function chatName(k){return k==='team'?'SoomaaLink Team':'@'+k}
+function renderInbox(){
+  $('ibAct').classList.toggle('on',ibT==='act');$('ibMsg').classList.toggle('on',ibT==='msg');
+  if(ibT==='act'){
+    $('ibBody').innerHTML=S.notifs.length?S.notifs.map(n=>`<div class="nt ${n.un?'un':''}"><div class="ico">🔔</div><div>${esc(notifText(n))}<small>${ago(n.ts)}</small></div></div>`).join(''):`<div class="empty">${T('noAct')}</div>`;
+  }else{
+    const ks=Object.keys(S.chats);
+    $('ibBody').innerHTML=ks.length?ks.map(k=>{const l=S.chats[k][S.chats[k].length-1];return `<div class="th" onclick="openChat('${k}')"><div class="usr" style="padding:0"><div class="av">${k==='team'?'👨‍👩‍👧‍👦':'👤'}</div></div><div class="m">${esc(chatName(k))}<small>${l?esc(l.k?T(l.k):l.t):''}</small></div></div>`}).join(''):`<div class="empty">${T('noMsg')}</div>`;
   }
+}
+let chatKey=null;
+function openChat(k){if(!S.chats[k]){S.chats[k]=[];save()}chatKey=k;$('chName').textContent=chatName(k);renderChat();$('chOv').classList.add('on')}
+function renderChat(){const b=$('chBody');b.innerHTML=S.chats[chatKey].map(m=>`<div class="msg ${m.me?'me':'o'}">${esc(m.k?T(m.k):m.t)}</div>`).join('');b.scrollTop=b.scrollHeight}
+function sendChat(){
+  const t=$('chIn').value.trim();if(!t)return;
+  S.chats[chatKey].push({me:true,t});$('chIn').value='';save();renderChat();
+  const k=chatKey;
+  setTimeout(()=>{const r=T('bot');S.chats[k].push({me:false,t:r[Math.floor(Math.random()*r.length)]});save();if(chatKey===k&&$('chOv').classList.contains('on'))renderChat();if(cur==='inbox')renderInbox()},900);
+}
 
-  function toggleNotif() {
-    document.getElementById('notifPanel').classList.toggle('open');
-  }
+/* ============ PROFILE ============ */
+function renderProfile(){
+  const mine=!viewUser,h=viewUser||S.me.handle;
+  const vids=S.videos.filter(v=>v.owner===h);
+  const likesTotal=vids.reduce((a,v)=>a+v.likes,0);
+  const fol=S.following.includes(h);
+  const followers=mine?0:Math.round(likesTotal/3);
+  let list=vids;
+  if(mine&&pTab==='saved')list=S.videos.filter(v=>v.saved);
+  if(mine&&pTab==='liked')list=S.videos.filter(v=>v.liked);
+  if(!mine)pTab='mine';
+  $('pBody').innerHTML=`
+   <div class="ptop">${mine?'<span></span>':`<button class="ic" onclick="openMe()">‹</button>`}<b>@${esc(h)}</b>${mine?`<button class="ic" onclick="$('stOv').classList.add('on')">⚙️</button>`:'<span style="width:40px"></span>'}</div>
+   <div class="prof"><div class="pav">👤</div><div style="font-size:19px;font-weight:800">${esc(mine?S.me.name:'@'+h)}</div>
+    <div class="stats"><div><b>${S.following.length&&mine?S.following.length:(mine?0:fmt(Math.round(followers/4)))}</b><small>${T('following')}</small></div><div><b>${fmt(followers)}</b><small>${T('followers')}</small></div><div><b>${fmt(likesTotal)}</b><small>${T('likes')}</small></div></div>
+    ${mine?`<div class="row" style="justify-content:center"><button class="btn g sm" onclick="editOpen()">${T('edit')}</button></div>`
+      :`<div class="row" style="justify-content:center"><button class="fl ${fol?'on':''}" style="padding:11px 30px;font-size:14px" onclick="toggleFollow('${h}')">${fol?T('followingB'):T('follow')}</button><button class="btn g sm" onclick="openChat('${h}')">${T('message')}</button></div>`}
+    <div class="bio">${esc(mine?(S.me.bio||T('bioDef')):T('bioDef'))}</div></div>
+   ${mine?`<div class="stabs"><button class="${pTab==='mine'?'on':''}" onclick="pTab='mine';renderProfile()">🎬 ${T('myVideos')}</button><button class="${pTab==='saved'?'on':''}" onclick="pTab='saved';renderProfile()">🔖 ${T('saved')}</button><button class="${pTab==='liked'?'on':''}" onclick="pTab='liked';renderProfile()">❤️ ${T('liked')}</button></div>`:'<div class="stabs"><button class="on">🎬</button></div>'}
+   <div class="tg">${list.length?list.map(tileHTML).join(''):`<div class="empty" style="grid-column:1/-1;padding:40px 10px">${pTab==='saved'?T('noSaved'):pTab==='liked'?T('noLiked'):T('noVids')}</div>`}</div>`;
+  hydrate($('pBody'));
+}
+function editOpen(){$('eName').value=S.me.name;$('eBio').value=S.me.bio||'';$('edOv').classList.add('on')}
+function saveProfile(){
+  const n=$('eName').value.trim();if(!n)return;
+  const old=S.me.handle,nh=n.toLowerCase().replace(/[^a-z0-9_]/g,'')||old;
+  S.me.name=n.slice(0,30);S.me.bio=$('eBio').value.trim();S.me.handle=nh;
+  S.videos.forEach(v=>{if(v.owner===old)v.owner=nh});
+  save();closeOv(null,'edOv');renderProfile();
+}
+async function resetAll(){
+  if(!confirm(T('confirmReset')))return;
+  try{await idb('clear')}catch(e){}
+  localStorage.removeItem(KEY);S=fresh();closeOv(null,'stOv');feedTab='foryou';applyStatic();go('home');
+}
 
-  function showTab(tab, navEl) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(tab + 'Tab').classList.add('active');
-    if (navEl) navEl.classList.add('active');
-    document.getElementById('notifPanel').classList.remove('open');
-  }
-
-  function setCategory(btn, cat) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const cards = document.querySelectorAll('.video-card');
-    cards.forEach(c => {
-      if (cat === 'Dhammaan' || c.dataset.cat === cat) {
-        c.style.display = '';
-      } else {
-        c.style.display = 'none';
-      }
-    });
-  }
-
-  function filterVideos(val) {
-    const v = val.toLowerCase();
-    document.querySelectorAll('.video-card').forEach(c => {
-      const title = (c.dataset.title || '').toLowerCase();
-      c.style.display = (!v || title.includes(v)) ? '' : 'none';
-    });
-  }
-
-  function toggleLike(btn) {
-    btn.classList.toggle('liked');
-    const txt = btn.textContent;
-    const match = txt.match(/(\d[\d.,k]*)/);
-    if (match) {
-      const isLiked = btn.classList.contains('liked');
-      btn.textContent = isLiked
-        ? '❤️ ' + match[0] + ' ✓'
-        : '❤️ ' + match[0].replace(' ✓','');
-    }
-  }
-
-  function toggleComment() {
-    alert(isEnglish ? 'Comments coming soon!' : 'Faallooyinka ayaa soo socon doona!');
-  }
-
-  function toggleSave(btn) {
-    btn.classList.toggle('saved');
-    btn.textContent = btn.classList.contains('saved') ? '🔖 Keydiday' : '🔖 Keydi';
-  }
-
-  function openShare() {
-    document.getElementById('shareModal').classList.add('open');
-  }
-
-  function closeShare(e) {
-    if (!e || e.target === document.getElementById('shareModal')) {
-      document.getElementById('shareModal').classList.remove('open');
-    }
-  }
-
-  let uploadInterval;
-  function startUpload() {
-    const progress = document.getElementById('uploadProgress');
-    const fill = document.getElementById('uploadFill');
-    const pct = document.getElementById('uploadPct');
-    progress.style.display = 'block';
-    let val = 0;
-    clearInterval(uploadInterval);
-    uploadInterval = setInterval(() => {
-      val += Math.random() * 8;
-      if (val >= 100) {
-        val = 100;
-        clearInterval(uploadInterval);
-        pct.textContent = '✅ Dhammaatay!';
-      } else {
-        pct.textContent = Math.round(val) + '%';
-      }
-      fill.style.width = val + '%';
-    }, 200);
-  }
-
-  document.addEventListener('click', (e) => {
-    const panel = document.getElementById('notifPanel');
-    if (!e.target.closest('.nav-btn') && !e.target.closest('.notif-panel')) {
-      panel.classList.remove('open');
-    }
-  });
+/* ============ RENDER ============ */
+function render(){
+  updDot();
+  if(cur==='home'){const keep=activeId;if(keep&&!focusId)focusId=keep;renderFeed()}
+  if(cur==='discover')renderDiscover();
+  if(cur==='inbox')renderInbox();
+  if(cur==='profile')renderProfile();
+}
+applyStatic();render();
+/* resume playback when returning to the tab */
+document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else if(cur==='home'){const el=document.querySelector(`.reel[data-id="${activeId}"] video`);if(el&&el.src)tryPlay(el)}});
 </script>
 </body>
 </html>
