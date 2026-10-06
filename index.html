@@ -1,4 +1,161 @@
-<!DOCTYPE html><html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SoomaaLink</title>
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SoomaaLink</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:system-ui;overflow:hidden;height:100vh}
+.header{position:fixed;top:0;left:0;right:0;height:54px;background:#000;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid #222;z-index:10}
+.nav{position:fixed;bottom:0;left:0;right:0;height:66px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:10}
+.nav button{background:0;border:0;color:#888;font-size:.7rem;display:flex;flex-direction:column;align-items:center}
+.nav button.on{color:#fff}.nav button.mid{background:#fe2c55;color:#fff;width:56px;height:56px;border-radius:50%;justify-content:center;font-size:1.8rem}
+.page{position:fixed;top:54px;bottom:66px;left:0;right:0;display:none;overflow:auto}.page.on{display:block}
+#feed{height:100%;overflow-y:auto;scroll-snap-type:y mandatory}
+.post{height:100%;scroll-snap-align:start;position:relative;background:#111;display:flex;align-items:center;justify-content:center}
+.post video,.post img{width:100%;height:100%;object-fit:cover}
+.info{position:absolute;left:12px;bottom:16px;right:80px;text-shadow:0 1px 5px #000}
+.side{position:absolute;right:10px;bottom:20px;display:flex;flex-direction:column;gap:16px}
+.side button{width:50px;height:50px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:1.4rem}.side button.on{background:#fe2c55}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}.modal[hidden]{display:none!important}
+.box{width:100%;max-width:380px;background:#1e1e1e;border-radius:20px;padding:20px;border:1px solid #333}
+.box input{width:100%;padding:14px;margin-bottom:12px;border-radius:12px;border:1px solid #333;background:#000;color:#fff;font-size:16px}
+.tabs{display:flex;gap:8px;margin:12px 0}.tabs button{flex:1;padding:12px;border-radius:12px;border:1px solid #333;background:#000;color:#fff;font-weight:700}.tabs button.on{background:#fff;color:#000}
+.btn{width:100%;padding:14px;border-radius:12px;border:0;background:#fe2c55;color:#fff;font-weight:800;font-size:16px}
+.btn.gray{background:#333;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="header"><b>SoomaaLink</b><small id="uLabel" style="color:#0f0"></small></div>
+<div class="page on" id="p-home"><div id="feed"></div></div>
+<div class="page" id="p-discover"><div style="padding:20px;color:#888;text-align:center">Discover - videos halkan</div><div id="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px"></div></div>
+<div class="page" id="p-inbox"><div id="inbox" style="padding:14px"></div></div>
+<div class="page" id="p-profile"><div id="prof" style="padding:14px"></div></div>
+
+<!-- AUTH FIXED -->
+<div class="modal" id="authModal">
+<div class="box">
+<h2 id="aTitle">Is Diiwaan Geli</h2>
+<div class="tabs">
+<button id="btnLogin" onclick="setMode('login')">Login</button>
+<button id="btnSignup" class="on" onclick="setMode('signup')">Sign Up</button>
+</div>
+<input id="aUser" placeholder="Email ama Number - tusaale: ali@gmail.com ama 063... " autocomplete="off">
+<input id="aPass" type="password" placeholder="Password (6 xaraf)">
+<button class="btn" id="aAction" onclick="doAuth()">Sign Up</button>
+<p style="font-size:.7rem;color:#666;text-align:center;margin-top:8px" id="aHint">Sign Up: Email ama Number cusub gali</p>
+</div>
+</div>
+
+<div class="modal" id="postModal" hidden><div class="box">
+<h3>Video cusub ku dar</h3><br>
+<input type="file" id="fFile" accept="video/*,image/*">
+<input id="fTitle" placeholder="Magac">
+<button class="btn" id="fSave">Ku dar</button>
+<button class="btn gray" onclick="closeModal('postModal')">Xidh</button>
+</div></div>
+
+<div class="modal" id="cmtModal" hidden><div class="box" style="max-height:80vh;display:flex;flex-direction:column">
+<h3>Comments</h3><div id="cmtList" style="flex:1;overflow:auto;margin:12px 0;max-height:40vh"></div>
+<div style="display:flex;gap:8px"><input id="cmtIn" placeholder="Comment..."><button class="btn" style="width:auto" onclick="addCmt()">Dir</button></div>
+<button class="btn gray" onclick="closeModal('cmtModal')">Xidh</button>
+</div></div>
+
+<div class="nav">
+<button data-p="home" class="on" onclick="showP('home')">🏠<br>Home</button>
+<button data-p="discover" onclick="showP('discover')">🔍<br>Discover</button>
+<button class="mid" onclick="openModal('postModal')">+</button>
+<button data-p="inbox" onclick="showP('inbox')">📥<br>Inbox</button>
+<button data-p="profile" onclick="showP('profile')">👤<br>Profile</button>
+</div>
+
+<script>
+let db,VIDS=[],CUR=null,MODE='signup',CUR_CMT=null;
+let likes=JSON.parse(localStorage.getItem('s_likes')||'{}');
+let follows=JSON.parse(localStorage.getItem('s_follows')||'{}');
+let cmts=JSON.parse(localStorage.getItem('s_cmts')||'{}');
+let users=JSON.parse(localStorage.getItem('s_users')||'{}');
+let inbox=JSON.parse(localStorage.getItem('s_inbox')||'[]');
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('s_likes',JSON.stringify(likes));localStorage.setItem('s_follows',JSON.stringify(follows));localStorage.setItem('s_cmts',JSON.stringify(cmts));localStorage.setItem('s_users',JSON.stringify(users));localStorage.setItem('s_inbox',JSON.stringify(inbox))}
+function openModal(id){$(id).hidden=false} function closeModal(id){$(id).hidden=true}
+function showP(p){document.querySelectorAll('.page').forEach(e=>e.classList.toggle('on',e.id==='p-'+p));document.querySelectorAll('.nav button[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p)); if(p==='profile')renderProf(); if(p==='discover')renderGrid()}
+function setMode(m){
+ MODE=m;
+ $('btnLogin').classList.toggle('on',m==='login');
+ $('btnSignup').classList.toggle('on',m==='signup');
+ $('aTitle').textContent=m==='login'?'Soo Gal':'Is Diiwaan Geli';
+ $('aAction').textContent=m==='login'?'Login':'Sign Up';
+ $('aHint').textContent=m==='login'?'Login: Email/Number horey u diiwaan gashan':'Sign Up: Email ama Number cusub gali';
+}
+function doAuth(){
+ let u=$('aUser').value.trim().toLowerCase();
+ let p=$('aPass').value.trim();
+ console.log('Auth try',MODE,u);
+ if(!u||!p){alert('Email/Number iyo Password qor!');return}
+ if(p.length<3){alert('Password ugu yaraan 3 xaraf');return}
+ if(u.length<4){alert('Email ama Number aad u gaaban');return}
+
+ if(MODE==='signup'){
+  if(users[u]){alert('Account-kan wuu jiraa! Hadda Login samee'); setMode('login'); return}
+  users[u]={pass:p,date:Date.now()};
+  save();
+  CUR=u;
+  localStorage.setItem('s_cur',CUR);
+  alert('✅ Account waa la sameeyay! '+u);
+  $('authModal').hidden=true;
+  checkAuth();
+ }else{
+  if(!users[u]){alert('Account-kan ma jiro! Sign Up samee'); setMode('signup'); return}
+  if(users[u].pass!==p){alert('Password khalad!');return}
+  CUR=u;
+  localStorage.setItem('s_cur',CUR);
+  alert('✅ Soo dhawow '+u);
+  $('authModal').hidden=true;
+  checkAuth();
+ }
+ $('aUser').value=''; $('aPass').value='';
+}
+function checkAuth(){
+ CUR=localStorage.getItem('s_cur');
+ if(!CUR){ $('authModal').hidden=false; setMode('signup'); }
+ else{ $('authModal').hidden=true; $('uLabel').textContent='@'+(CUR.includes('@')?CUR.split('@')[0]:CUR); }
+}
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open('sl',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('v',{keyPath:'id',autoIncrement:true});r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=rej})}
+function getAll(){return new Promise((res,rej)=>{let tx=db.transaction('v','readonly');let rq=tx.objectStore('v').getAll();rq.onsuccess=()=>res(rq.result);rq.onerror=rej})}
+function addV(o){return new Promise((res,rej)=>{let tx=db.transaction('v','readwrite');let rq=tx.objectStore('v').add(o);rq.onsuccess=()=>res(rq.result);rq.onerror=rej})}
+function renderFeed(){
+ let f=$('feed');
+ if(!VIDS.length){ f.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#666"><div style="font-size:3rem">📸</div><p>Weli video ma jiro<br>+ taabo ku dar</p></div>'; return}
+ f.innerHTML=VIDS.map(v=>{
+  let url=URL.createObjectURL(v.blob);
+  let media=v.type==='image'?`<img src="${url}">`:`<video src="${url}" loop muted autoplay playsinline onclick="this.muted=!this.muted"></video>`;
+  let lc=(cmts[v.id]||[]).length;
+  return `<div class="post">${media}<div class="info"><h3>${v.title}</h3><small>@${(v.owner||'').split('@')[0]} - Taabo video codka fur</small></div><div class="side"><button class="${follows[v.id]?'on':''}" onclick="togF(${v.id})">${follows[v.id]?'✓':'+'}</button><button class="${likes[v.id]?'on':''}" onclick="togL(${v.id})">♥</button><button onclick="openC(${v.id})">💬<br><small>${lc}</small></button><button onclick="share()">↗</button></div></div>`
+ }).join('');
+}
+function togL(id){if(!CUR){$('authModal').hidden=false;return} likes[id]=!likes[id]; save(); renderFeed()}
+function togF(id){if(!CUR){$('authModal').hidden=false;return} follows[id]=!follows[id]; save(); renderFeed()}
+function share(){if(navigator.share)navigator.share({title:'SoomaaLink',url:location.href});else{ navigator.clipboard.writeText(location.href); alert('Link copied')}}
+function openC(id){CUR_CMT=id; openModal('cmtModal'); renderC()}
+function renderC(){ let list=cmts[CUR_CMT]||[]; $('cmtList').innerHTML=list.length?list.map(c=>`<div style="padding:8px 0;border-bottom:1px solid #222"><b>@${c.u.split('@')[0]}</b><br>${c.t}</div>`).join(''):'<p style="color:#666">Weli comment ma jiro</p>'}
+function addCmt(){ let t=$('cmtIn').value.trim(); if(!t)return; if(!cmts[CUR_CMT])cmts[CUR_CMT]=[]; cmts[CUR_CMT].push({u:CUR,t,dt:Date.now()}); save(); $('cmtIn').value=''; renderC(); renderFeed()}
+function renderGrid(){ $('grid').innerHTML=VIDS.map(v=>{let url=URL.createObjectURL(v.blob);return `<div style="background:#111;border-radius:10px;overflow:hidden"><video src="${url}" muted style="width:100%;aspect-ratio:9/13;object-fit:cover"></video><p style="padding:6px;font-size:.8rem">${v.title}</p></div>`}).join('')}
+function renderProf(){ let my=VIDS.filter(v=>v.owner===CUR); $('prof').innerHTML=`<div style="text-align:center;padding:20px"><div style="width:70px;height:70px;background:#fe2c55;border-radius:50%;margin:auto;display:flex;align-items:center;justify-content:center;font-size:1.5rem">${(CUR||'?')[0].toUpperCase()}</div><h2>@${CUR?CUR.split('@')[0]:''}</h2><small>${CUR||''}</small><br><br><div style="display:flex;justify-content:space-around"><div><b>${my.length}</b><br>Videos</div><div><b>${Object.keys(follows).length}</b><br>Followers</div><div><b>${Object.keys(likes).length}</b><br>Likes</div></div><br><button class="btn gray" onclick="localStorage.removeItem('s_cur');location.reload()">Log Out</button></div>` }
+
+async function init(){ await openDB(); VIDS=(await getAll()).reverse(); checkAuth(); setMode('signup'); renderFeed(); } init();
+
+$('fSave').onclick=async()=>{
+ let file=$('fFile').files[0]; if(!file){alert('Dooro file');return}
+ let b=$('fSave'); b.disabled=true; b.textContent='...';
+ await addV({blob:file,title:$('fTitle').value||file.name,type:file.type.startsWith('image')?'image':'video',owner:CUR,date:Date.now()});
+ VIDS=(await getAll()).reverse(); renderFeed(); closeModal('postModal'); $('fFile').value=''; $('fTitle').value='';
+ b.disabled=false; b.textContent='Ku dar';
+};
+</script>
+</body>
+</html><!DOCTYPE html><html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SoomaaLink</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;background:#000;color:#fff;font-family:system-ui;overflow:hidden}.header{position:fixed;top:0;left:0;right:0;height:50px;background:rgba(0,0,0,.9);display:flex;align-items:center;gap:10px;padding:0 12px;z-index:20}.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20}.nav button{background:none;border:0;color:#9aa;font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px}.nav button span{font-size:1.3rem}.nav button.on{color:#fff}.nav.mid{background:#fe2c55;color:#fff;border-radius:50%;width:52px;height:52px;justify-content:center}.page{position:fixed;top:50px;bottom:64px;left:0;right:0;display:none;overflow-y:auto}.page.on{display:block}#feed{scroll-snap-type:y mandatory;height:100%;overflow-y:auto}.post{height:100%;scroll-snap-align:start;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}.stage{position:relative;width:100%;height:100%;background:#000}.stage img,.stage video{width:100%;height:100%;object-fit:cover;display:block}.info{position:absolute;left:14px;bottom:18px;right:90px;text-shadow:0 1px 4px #000;z-index:10}.side{position:absolute;right:10px;bottom:14px;display:flex;flex-direction:column;gap:12px;align-items:center;z-index:10}.side button{background:rgba(70,70,70,.8);border:0;color:#fff;width:52px;height:52px;border-radius:50%;font-size:1.5rem}.side small{font-size:.72rem;margin-top:3px}.mute{position:absolute;top:60px;right:14px;background:rgba(0,0,0,.6);border:0;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.1rem;z-index:11}.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}.modal[hidden]{display:none!important}.mbox{width:100%;max-width:420px;background:#111;border-radius:16px;padding:18px}.mbox input,.mbox select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}.btn{width:100%;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;margin-bottom:8px}.btn.alt{background:#222}.btn.red{background:#fe2c55}.chips{display:flex;gap:8px;overflow-x:auto;padding:14px}.chip{flex:none;border:1px solid #333;background:none;color:#fff;padding:8px 16px;border-radius:99px}.chip.on{background:#2563eb;border-color:#2563eb}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 20px}.tile{background:#111;border:0;border-radius:12px;overflow:hidden;color:#fff;text-align:left}.tile img,.tile video{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}.tile p{padding:8px 10px;font-size:.85rem}.txt{padding:20px 16px;max-width:640px;margin:auto;line-height:1.6;color:#cfd6e4}.txt h2{color:#fff;margin-bottom:10px}#status{font-size:.8rem;color:#0f0;text-align:center;margin-bottom:8px;display:none}
 </style></head><body>
 <div class="header"><b>SoomaaLink</b></div>
