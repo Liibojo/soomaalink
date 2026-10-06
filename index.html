@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SoomaaLink</title>
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#000;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+.header{position:fixed;top:0;left:0;right:0;height:50px;background:rgba(0,0,0,.85);display:flex;align-items:center;gap:10px;padding:0 12px;z-index:20}
+.header img{width:30px;height:30px;border-radius:8px}
+.header b{font-size:1.1rem}
+.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{background:none;border:0;color:#9aa;font:inherit;font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;cursor:pointer}
+.nav button span{font-size:1.3rem}
+.nav button.on{color:#fff}
+.nav .mid{background:#fe2c55;color:#fff;border-radius:50%;width:52px;height:52px;justify-content:center}
+.page{position:fixed;top:50px;bottom:64px;left:0;right:0;display:none;overflow-y:auto}
+.page.on{display:block}
+#feed{scroll-snap-type:y mandatory;overscroll-behavior:contain}
+.post{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.post .bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(24px) brightness(.5);transform:scale(1.2)}
+.stage{position:relative;width:100%;height:100%;background:#000;cursor:pointer;overflow:hidden}
+.stage img{width:100%;height:100%;object-fit:cover;display:block}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stage .pl{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);z-index:2}
+.stage .pl::after{content:"";position:absolute;left:25px;top:18px;border-left:22px solid #fff;border-top:14px solid transparent;border-bottom:14px solid transparent}
+.info{position:absolute;left:14px;bottom:18px;right:90px;text-shadow:0 1px 4px #000;z-index:10}
+.info h3{font-size:1.05rem}
+.info small{opacity:.8}
+.side{position:absolute;right:10px;bottom:14px;display:flex;flex-direction:column;gap:12px;align-items:center;z-index:10}
+.side button{background:rgba(70,70,
