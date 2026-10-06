@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SoomaaLink</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#000;color:#fff;font-family:system-ui,sans-serif;overflow:hidden}
+.header{position:fixed;top:0;left:0;right:0;height:54px;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:20;border-bottom:1px solid #111}
+.header b{font-size:1.1rem}.header small{color:#0f0;font-size:.75rem}
+.nav{position:fixed;bottom:0;left:0;right:0;height:66px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20}
+.nav button{background:none;border:0;color:#8a8a8a;font-size:.7rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px}
+.nav button span{font-size:1.4rem}.nav button.on{color:#fff}.nav button.mid{background:#fe2c55;color:#fff;border-radius:50%;width:54px;height:54px;justify-content:center}
+.page{position:fixed;top:54px;bottom:66px;left:0;right:0;display:none;overflow-y:auto;background:#000}
+.page.on{display:block}
+#feed{scroll-snap-type:y mandatory;height:100%;overflow-y:auto}
+.post{height:100%;scroll-snap-align:start;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.stage{width:100%;height:100%;position:relative;background:#000}
+.stage video,.stage img{width:100%;height:100%;object-fit:cover;display:block}
+.overlay{position:absolute;left:12px;bottom:12px;right:88px;z-index:10;text-shadow:0 1px 6px #000}
+.overlay h3{font-size:.95rem;margin-bottom:4px}.overlay p{font-size:.78rem;color:#ddd}
+.actions{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:14px;align-items:center;z-index:11}
+.act{display:flex;flex-direction:column;align-items:center}
+.act button{width:54px;height:54px;border-radius:50%;border:0;background:rgba(70,70,70,.85);color:#fff;font-size:1.5rem}
+.act button.on{background:#fe2c55;color:#fff}
+.act small{font-size:.68rem;margin-top:4px;text-align:center}
+.mute{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:1.1rem;z-index:12}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal.center{align-items:center;padding:16px}
+.modal[hidden]{display:none!important}
+.mbox{width:100%;max-width:420px;background:#111;border-radius:18px 18px 0 0;padding:18px;max-height:85vh;overflow-y:auto}
+.mbox.center{border-radius:18px}
+.mbox input,.mbox textarea{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
+.btn{width:100%;padding:12px;border:0;border-radius:10px;background:#fe2c55;color:#fff;font-weight:700;margin-bottom:8px}
+.btn.blue{background:#2563eb}.btn.gray{background:#222}.btn:disabled{opacity:.5}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{flex:1;padding:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}.tabs button.on{background:#fff;color:#000}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px}.chip{flex:none;border:1px solid #333;background:none;color:#fff;padding:8px 16px;border-radius:99px}.chip.on{background:#2563eb;border-color:#2563eb}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 20px}.tile{border-radius:12px;overflow:hidden;background:#111;border:0;color:#fff;text-align:left}.tile video,.tile img{width:100%;aspect-ratio:9/12;object-fit:cover;display:block}.tile p{padding:8px;font-size:.8rem}
+.list{padding:12px}.item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #111}.avatar{width:42px;height:42px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;font-weight:700}
+.cmt{padding:10px 0;border-bottom:1px solid #1a1a1a}.cmt b{font-size:.85rem}.cmt p{font-size:.85rem;color:#ccc;margin-top:2px}
+.stat{display:flex;justify-content:space-around;padding:16px 0;text-align:center;border-bottom:1px solid #111}.stat b{display:block;font-size:1.1rem}
+</style>
+</head>
+<body>
+<div class="header"><b>SoomaaLink</b><small id="userLabel"></small></div>
+
+<div class="page on" id="p-home"><div id="feed"></div></div>
+<div class="page" id="p-discover"><div class="chips" id="chips"></div><div class="grid" id="grid"></div></div>
+<div class="page" id="p-inbox"><div class="list" id="inboxList"></div></div>
+<div class="page" id="p-profile"><div id="profileBox"></div></div>
+
+<!-- AUTH MODAL -->
+<div class="modal center" id="authM"><div class="mbox center"><h2 id="authTitle">Soo Gal</h2><div class="tabs"><button class="on" id="tabLogin" onclick="setAuth('login')">Login</button><button id="tabSignup" onclick="setAuth('signup')">Sign Up</button></div><input id="au_user" placeholder="Magaca (username)"><input id="au_pass" type="password" placeholder="Password"><button class="btn" id="authBtn" onclick="doAuth()">Login</button><p style="font-size:.7rem;color:#888;text-align:center;margin-top:8px">Local account - telefoonkaaga ku kaydsan</p></div></div>
+
+<!-- POST MODAL -->
+<div class="modal center" id="postM" hidden><div class="mbox center"><h2>Ku dar muuqaal</h2><input type="file" id="pfile" accept="video/*,image/*"><input id="ptitle" placeholder="Magac"><select id="pcat" style="width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff"><option>Dabeecadda</option><option>Hees</option><option>Qosol</option><option>Wararka</option><option>Quraan</option></select><button class="btn" id="psave">Ku dar</button><button class="btn gray" onclick="closeM('postM')">Xidh</button></div></div>
+
+<!-- COMMENT MODAL -->
+<div class="modal" id="cmtM" hidden><div class="mbox"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h3>Comments</h3><button class="btn gray" style="width:auto;padding:6px 12px" onclick="closeM('cmtM')">X</button></div><div id="cmtList" style="max-height:50vh;overflow-y:auto"></div><div style="display:flex;gap:8px;margin-top:10px"><input id="cmtInput" placeholder="Qor comment..." style="flex:1"><button class="btn blue" style="width:auto;padding:12px 18px" onclick="addComment()">Dir</button></div></div></div>
+
+<div class="nav">
+<button data-p="home" class="on" onclick="showP('home')"><span>🏠</span>Home</button>
+<button data-p="discover" onclick="showP('discover')"><span>🔍</span>Discover</button>
+<button class="mid" onclick="openM('postM')"><span>＋</span></button>
+<button data-p="inbox" onclick="showP('inbox')"><span>💬</span>Inbox</button>
+<button data-p="profile" onclick="showP('profile')"><span>👤</span>Profile</button>
+</div>
+
+<script>
+let db, VIDEOS=[], CUR_USER=null, AUTH_MODE='login', CUR_CMT_ID=null;
+let likes=JSON.parse(localStorage.getItem('sl_likes')||'{}');
+let follows=JSON.parse(localStorage.getItem('sl_follows')||'{}');
+let comments=JSON.parse(localStorage.getItem('sl_comments')||'{}');
+let users=JSON.parse(localStorage.getItem('sl_users')||'{}');
+let inbox=JSON.parse(localStorage.getItem('sl_inbox')||'[]');
+
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open('sl_db',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('vids',{keyPath:'id',autoIncrement:true});r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=rej})}
+function getAll(){return new Promise((res,rej)=>{let tx=db.transaction('vids','readonly');let rq=tx.objectStore('vids').getAll();rq.onsuccess=()=>res(rq.result);rq.onerror=rej})}
+function addVid(o){return new Promise((res,rej)=>{let tx=db.transaction('vids','readwrite');let rq=tx.objectStore('vids').add(o);rq.onsuccess=()=>res(rq.result);rq.onerror=rej})}
+function clearVids(){return new Promise(r=>{let tx=db.transaction('vids','readwrite');tx.objectStore('vids').clear().onsuccess=r})}
+
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('sl_likes',JSON.stringify(likes));localStorage.setItem('sl_follows',JSON.stringify(follows));localStorage.setItem('sl_comments',JSON.stringify(comments));localStorage.setItem('sl_inbox',JSON.stringify(inbox));localStorage.setItem('sl_users',JSON.stringify(users))}
+function openM(id){$(id).hidden=false} function closeM(id){$(id).hidden=true}
+function showP(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id==='p-'+p));document.querySelectorAll('.nav button[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p)); if(p==='profile')renderProfile(); if(p==='inbox')renderInbox(); if(p==='discover')renderDiscover()}
+
+function setAuth(m){AUTH_MODE=m; $('tabLogin').classList.toggle('on',m==='login'); $('tabSignup').classList.toggle('on',m==='signup'); $('authTitle').textContent=m==='login'?'Soo Gal':'Is Diiwaan Geli'; $('authBtn').textContent=m==='login'?'Login':'Sign Up'}
+function doAuth(){
+ let u=$('au_user').value.trim(); let pw=$('au_pass').value.trim();
+ if(!u||!pw){alert('Magac iyo password qor');return}
+ if(AUTH_MODE==='signup'){ if(users[u]){alert('Magacani wuu jiraa');return} users[u]={pass:pw, followers:0, following:0}; }
+ else { if(!users[u]||users[u].pass!==pw){alert('Login khalad');return} }
+ CUR_USER=u; localStorage.setItem('sl_cur',u); save(); checkAuth();
+}
+function checkAuth(){ CUR_USER=localStorage.getItem('sl_cur'); if(!CUR_USER){ $('authM').hidden=false } else { $('authM').hidden=true; $('userLabel').textContent='@'+CUR_USER } }
+function logout(){localStorage.removeItem('sl_cur'); location.reload()}
+
+function renderFeed(){
+ let feed=$('feed');
+ if(VIDEOS.length===0){ feed.innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#888;padding:20px;text-align:center"><div style="font-size:3rem">📸</div><h3>Weli muuqaal ma jiro</h3><p>+ taabo si aad u soo darto</p></div>`; return }
+ feed.innerHTML=VIDEOS.map((v,i)=>{
+  let url=URL.createObjectURL(v.blob);
+  let isLiked=likes[v.id]; let isFollowed=follows[v.userId||v.id];
+  let cCount=(comments[v.id]||[]).length;
+  let media=v.type==='image'?`<img src="${url}">`:`<video id="vid${v.id}" src="${url}" loop playsinline autoplay muted></video><button class="mute" onclick="toggleMute(${v.id})" id="mute${v.id}">🔇</button>`;
+  return `<section class="post"><div class="stage" onclick="if(event.target.tagName!=='BUTTON') toggleMute(${v.id})">${media}</div>
+  <div class="overlay"><h3>${v.title}</h3><p>@${v.owner||'SoomaaLink'} · ${v.cat} · Taabo codka 🔊</p></div>
+  <div class="actions">
+   <div class="act"><button class="${isFollowed?'on':''}" onclick="toggleFollow(${v.id},'${v.owner||'SoomaaLink'}')">${isFollowed?'✓':'+'}</button><small>${isFollowed?'Following':'Follow'}</small></div>
+   <div class="act"><button class="${isLiked?'on':''}" onclick="toggleLike(${v.id})">♥</button><small>${(v.likeCount||0)+(isLiked?1:0)} Like</small></div>
+   <div class="act"><button onclick="openComments(${v.id})">💬</button><small>${cCount} Comment</small></div>
+   <div class="act"><button onclick="doShare(${v.id},'${v.title.replace(/'/g,'')}')">↗</button><small>Share</small></div>
+  </div></section>`
+ }).join('');
+}
+
+function toggleMute(id){let vid=$('vid'+id);let btn=$('mute'+id);if(!vid)return;vid.muted=!vid.muted;vid.volume=1;if(!vid.muted)vid.play();if(btn)btn.textContent=vid.muted?'🔇':'🔊'}
+function toggleLike(id){
+ likes[id]=!likes[id]; save(); renderFeed();
+ if(likes[id]){ inbox.unshift({type:'like',txt:CUR_USER+' liked your video',time:Date.now()}); save() }
+}
+function toggleFollow(id,owner){
+ follows[id]=!follows[id]; save(); renderFeed();
+ if(follows[id]){ inbox.unshift({type:'follow',txt:CUR_USER+' started following you',time:Date.now()}); save() }
+}
+function doShare(id,title){
+ if(navigator.share){ navigator.share({title:title, text:'Ka daawo SoomaaLink', url:location.href}) }
+ else { navigator.clipboard.writeText(location.href); alert('Link copied! '+title) }
+ inbox.unshift({type:'share',txt:CUR_USER+' shared '+title,time:Date.now()}); save();
+}
+function openComments(id){ CUR_CMT_ID=id; $('cmtM').hidden=false; renderCmt()}
+function renderCmt(){
+ let list=comments[CUR_CMT_ID]||[]; $('cmtList').innerHTML=list.length?list.map(c=>`<div class="cmt"><b>@${c.user}</b><p>${c.text}</p><small style="color:#666">${new Date(c.time).toLocaleString()}</small></div>`).join(''):`<p style="color:#666;text-align:center;padding:20px">Weli comment ma jiro - noqo kan ugu horeeya!</p>`;
+}
+function addComment(){
+ let txt=$('cmtInput').value.trim(); if(!txt)return;
+ if(!comments[CUR_CMT_ID])comments[CUR_CMT_ID]=[];
+ comments[CUR_CMT_ID].push({user:CUR_USER,text:txt,time:Date.now()}); save(); $('cmtInput').value=''; renderCmt(); renderFeed();
+ inbox.unshift({type:'comment',txt:CUR_USER+' commented: '+txt.slice(0,20),time:Date.now()}); save();
+}
+function renderInbox(){
+ $('inboxList').innerHTML=inbox.length?inbox.map(i=>`<div class="item"><div class="avatar">${i.type==='like'?'♥':i.type==='follow'?'+':'💬'}</div><div><b>${i.txt}</b><br><small style="color:#888">${new Date(i.time).toLocaleString()}</small></div></div>`).join(''):`<p style="color:#888;text-align:center;padding:40px">Inbox madhan</p>`;
+}
+function renderDiscover(){
+ const CATS=['Dhammaan','Dabeecadda','Hees','Wararka','Qosol','Quraan']; let cat='Dhammaan';
+ $('chips').innerHTML=CATS.map(c=>`<button class="chip ${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
+ function draw(f){ $('grid').innerHTML=f.map(v=>{let url=URL.createObjectURL(v.blob);let m=v.type==='image'?`<img src="${url}">`:`<video src="${url}" muted></video>`;return `<button class="tile" onclick="showP('home')">${m}<p>${v.title}</p></button>`}).join('')}
+ draw(VIDEOS);
+ $('chips').onclick=e=>{let c=e.target.dataset.c;if(!c)return;document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.dataset.c===c));let fil=c==='Dhammaan'?VIDEOS:VIDEOS.filter(v=>v.cat===c);draw(fil)}
+}
+function renderProfile(){
+ let myVids=VIDEOS.filter(v=>v.owner===CUR_USER);
+ let followersCount=Object.keys(follows).length;
+ $('profileBox').innerHTML=`<div class="list"><div style="text-align:center;padding:20px"><div class="avatar" style="width:70px;height:70px;font-size:1.5rem;margin:auto">${CUR_USER[0].toUpperCase()}</div><h2 style="margin-top:10px">@${CUR_USER}</h2></div>
+ <div class="stat"><div><b>${myVids.length}</b><small>Videos</small></div><div><b>${followersCount}</b><small>Followers</small></div><div><b>${Object.keys(likes).length}</b><small>Likes</small></div></div>
+ <div style="padding:12px"><button class="btn gray" onclick="logout()">Log Out</button><button class="btn gray" onclick="if(confirm('Tirtir dhammaan?')){clearVids().then(()=>location.reload())}">Tirtir Videos</button></div>
+ <div class="grid">${myVids.map(v=>{let url=URL.createObjectURL(v.blob);let m=v.type==='image'?`<img src="${url}">`:`<video src="${url}" muted></video>`;return `<div class="tile">${m}<p>${v.title}</p></div>`}).join('')}</div></div>`;
+}
+
+async function init(){ await openDB(); let all=await getAll(); VIDEOS=all.reverse(); checkAuth(); renderFeed(); renderDiscover(); renderInbox(); renderProfile(); } init();
+
+$('psave').onclick=async()=>{
+ let file=$('pfile').files[0]; if(!file){alert('Dooro file');return}
+ let btn=$('psave'); btn.disabled=true; btn.textContent='Kaydinaya...';
+ try{ let title=$('ptitle').value.trim()||file.name; let cat=$('pcat').value; let type=file.type.startsWith('image')?'image':'video';
+  await addVid({blob:file,title,cat,type,owner:CUR_USER,likeCount:0,date:Date.now()});
+  let all=await getAll(); VIDEOS=all.reverse(); renderFeed(); renderDiscover(); renderProfile(); closeM('postM'); $('pfile').value=''; $('ptitle').value=''; showP('home');
+ }catch(e){alert(e.message)} btn.disabled=false; btn.textContent='Ku dar';
+};
+</script>
+</body>
+</html>
