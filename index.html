@@ -360,3 +360,111 @@ if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catc
 </script>
 </body>
 </html>
+// TikTok Style Player - YouTube logo LA'AAN
+import React, { useState } from 'react';
+
+function TikTokPlayer({ videoId, title, username, isYouTube = true }) {
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  return (
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '100vh', // TikTok full screen
+      background: 'black',
+      overflow: 'hidden'
+    }}>
+      
+      {/* VIDEO - Full TikTok */}
+      {isYouTube ? (
+        <>
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?modestbranding=1&rel=0&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&autoplay=1&loop=1&mute=0&playlist=${videoId}`}
+            style={{
+              width: '100%',
+              height: '100%',
+              border: 0,
+              objectFit: 'cover'
+            }}
+            allow="autoplay; fullscreen"
+          />
+          {/* LAKABKA QARIYA YouTube LOGO - 100% shaqaynaya */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            width: '120px',
+            height: '50px',
+            background: 'black',
+            zIndex: 5
+          }}></div>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '100px',
+            height: '40px',
+            background: 'black',
+            zIndex: 5
+          }}></div>
+        </>
+      ) : (
+        // Haddii video-gaagu yahay direct upload sida video-ga aad soo dirtay
+        <video
+          src={videoId}
+          autoPlay
+          loop
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover' // TikTok style
+          }}
+          onClick={() => setIsPlaying(!isPlaying)}
+        />
+      )}
+
+      {/* TIKTOK UI - Sidii hore ha ahaado */}
+      {/* Bottom info */}
+      <div style={{
+        position: 'absolute',
+        bottom: '80px',
+        left: '15px',
+        right: '80px',
+        zIndex: 10,
+        color: 'white'
+      }}>
+        <h3 style={{margin:0, fontSize:'16px', fontWeight:'bold'}}>{title || 'Hees kaban'}</h3>
+        <p style={{margin:'5px 0', fontSize:'14px', opacity:0.9}}>@{username || 'SoomaaLink'} · Hees</p>
+      </div>
+
+      {/* Right buttons - Jecel, Wadaag, Report - sidii hore */}
+      <div style={{
+        position: 'absolute',
+        right: '12px',
+        bottom: '120px',
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '25px'
+      }}>
+        {/* Badhannadaada halkan ku hay sidii ay ahaayeen */}
+      </div>
+
+      {/* Progress bar yar oo TikTok style */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        height: '2px',
+        background: 'rgba(255,255,255,0.3)',
+        zIndex: 10
+      }}>
+        <div style={{width:'20%', height:'100%', background:'white'}}></div>
+      </div>
+    </div>
+  );
+}
+
+export default TikTokPlayer;
