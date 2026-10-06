@@ -85,7 +85,8 @@ function save(){localStorage.setItem('sl_likes',JSON.stringify(likes));localStor
 function openM(id){$(id).hidden=false} function closeM(id){$(id).hidden=true}
 function showP(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id==='p-'+p));document.querySelectorAll('.nav button[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p)); if(p==='profile')renderProfile(); if(p==='inbox')renderInbox(); if(p==='discover')renderDiscover()}
 
-function setAuth(m){AUTH_MODE=m; $('tabLogin').classList.toggle('on',m==='login'); $('tabSignup').classList.toggle('on',m==='signup'); $('authTitle').textContent=m==='login'?'Soo Gal':'Is Diiwaan Geli'; $('authBtn').textContent=m==='login'?'Login':'Sign Up'}
+function setAuth(m){AUTH_MODE=m; $('tabLogin').classList.toggle('on',m==='login'); $('tabSignup').classList.toggle('on',m==='signup'); $('authTitle').textContent=m==='login'?'Soo Gal':<!-- AUTH MODAL - EMAIL/NUMBER VERSION -->
+<div class="modal center" id="authM"><div class="mbox center" style="background:#1a1a1a;border-radius:20px"><h2 id="authTitle" style="font-size:1.4rem;margin-bottom:14px">Is Diiwaan Geli</h2><div class="tabs" style="display:flex;gap:8px;margin-bottom:12px"><button class="on" id="tabLogin" onclick="setAuth('login')" style="flex:1;padding:12px;border-radius:12px;border:1px solid #333;background:#000;color:#fff">Login</button><button id="tabSignup" onclick="setAuth('signup')" style="flex:1;padding:12px;border-radius:12px;border:1px solid #333;background:#000;color:#fff">Sign Up</button></div><input id="au_user" placeholder="Email ama Number 📱" style="width:100%;padding:14px;margin-bottom:10px;border-radius:12px;border:1px solid #333;background:#000;color:#fff"><input id="au_pass" type="password" placeholder="Password" style="width:100%;padding:14px;margin-bottom:14px;border-radius:12px;border:1px solid #333;background:#000;color:#fff"><button class="btn" id="authBtn" onclick="doAuth()" style="width:100%;padding:14px;border:0;border-radius:12px;background:#fe2c55;color:#fff;font-weight:700">Sign Up</button><p style="font-size:.7rem;color:#666;text-align:center;margin-top:10px">Local account - telefoonkaaga ku kaydsan</p></div></div>$('authBtn').textContent=m==='login'?'Login':'Sign Up'}
 function doAuth(){
  let u=$('au_user').value.trim(); let pw=$('au_pass').value.trim();
  if(!u||!pw){alert('Magac iyo password qor');return}
@@ -143,7 +144,7 @@ function renderInbox(){
  $('inboxList').innerHTML=inbox.length?inbox.map(i=>`<div class="item"><div class="avatar">${i.type==='like'?'♥':i.type==='follow'?'+':'💬'}</div><div><b>${i.txt}</b><br><small style="color:#888">${new Date(i.time).toLocaleString()}</small></div></div>`).join(''):`<p style="color:#888;text-align:center;padding:40px">Inbox madhan</p>`;
 }
 function renderDiscover(){
- const CATS=['Dhammaan','Dabeecadda','Hees','Wararka','Qosol','Quraan']; let cat='Dhammaan';
+ const CATS=['Dhammaan','Muuqaaladda','Hees','Wararka','Qosol','Quraan']; let cat='Dhammaan';
  $('chips').innerHTML=CATS.map(c=>`<button class="chip ${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
  function draw(f){ $('grid').innerHTML=f.map(v=>{let url=URL.createObjectURL(v.blob);let m=v.type==='image'?`<img src="${url}">`:`<video src="${url}" muted></video>`;return `<button class="tile" onclick="showP('home')">${m}<p>${v.title}</p></button>`}).join('')}
  draw(VIDEOS);
