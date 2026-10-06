@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SoomaaLink</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:system-ui;height:100vh;overflow:hidden}
+.header{position:fixed;top:0;left:0;right:0;height:54px;background:#000;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid #222;z-index:10}
+.nav{position:fixed;bottom:0;left:0;right:0;height:66px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:10}
+.nav button{background:0;border:0;color:#666;font-size:.7rem;display:flex;flex-direction:column;align-items:center}
+.nav button.on{color:#fff}.nav button.mid{background:#fe2c55;color:#fff;width:56px;height:56px;border-radius:50%;justify-content:center;font-size:2rem}
+.page{position:fixed;top:54px;bottom:66px;left:0;right:0;display:none;overflow:auto}.page.on{display:block}
+#feed{height:100%;overflow-y:auto;scroll-snap-type:y mandatory}
+.post{height:100%;scroll-snap-align:start;position:relative;background:#111;display:flex;align-items:center;justify-content:center}
+.post video,.post img{width:100%;height:100%;object-fit:cover}
+.info{position:absolute;left:12px;bottom:16px;right:80px;text-shadow:0 1px 5px #000}
+.side{position:absolute;right:10px;bottom:20px;display:flex;flex-direction:column;gap:16px}
+.side button{width:50px;height:50px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;font-size:1.4rem}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}.modal[hidden]{display:none!important}
+.box{width:100%;max-width:380px;background:#222;border-radius:20px;padding:22px;border:1px solid #333}
+.box input{width:100%;padding:16px;margin-bottom:12px;border-radius:12px;border:1px solid #444;background:#000;color:#fff;font-size:16px;outline:none}
+.box input:focus{border-color:#fe2c55}
+.tabs{display:flex;gap:8px;margin:14px 0}.tabs button{flex:1;padding:12px;border-radius:12px;border:1px solid #444;background:#000;color:#fff;font-weight:700}.tabs button.on{background:#fff;color:#000}
+.btn{width:100%;padding:16px;border-radius:12px;border:0;background:#fe2c55;color:#fff;font-weight:800;font-size:16px}
+.btn.gray{background:#333;margin-top:10px}
+.liveBadge{position:absolute;top:10px;left:10px;background:red;padding:4px 10px;border-radius:6px;font-size:.7rem;font-weight:700;z-index:5}
+</style>
+</head>
+<body>
+<div class="header"><b>SoomaaLink</b><small id="uLabel" style="color:#0f0"></small></div>
+<div class="page on" id="p-home"><div id="feed"></div></div>
+<div class="page" id="p-discover"><div id="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px"></div></div>
+<div class="page" id="p-inbox"><div id="inbox" style="padding:14px"></div></div>
+<div class="page" id="p-profile"><div id="prof"></div></div>
+
+<div class="modal" id="authModal"><div class="box">
+<h2 id="aTitle">Is Diiwaan Geli</h2>
+<div class="tabs">
+<button id="tabL" onclick="setMode('login')">Login</button>
+<button id="tabS" class="on" onclick="setMode('signup')">Sign Up</button>
+</div>
+<input id="emailInput" type="text" placeholder="Email (masuulsare784@gmail.com) ama Number">
+<input id="passInput" type="password" placeholder="Password">
+<button class="btn" id="mainBtn" onclick="handleAuth()">Sign Up</button>
+<p style="font-size:.7rem;color:#666;text-align:center;margin-top:10px">Tijaabi: Email + Password kasta waa shaqeynayaa</p>
+</div></div>
+
+<div class="modal" id="postModal" hidden><div class="box">
+<h2>Video cusub ku dar</h2>
+<div class="tabs">
+<button id="tU" class="on" onclick="setPost('upload')">📁 Upload</button>
+<button id="tL" onclick="setPost('live')">🔴 LIVE</button>
+</div>
+<div id="upBox"><input type="file" id="fFile" accept="video/*,image/*"><input id="fTitle" placeholder="Magac"><button class="btn" id="fSave">Ku dar</button></div>
+<div id="liveBox" hidden>
+<div style="background:#000;border-radius:12px;height:240px;position:relative;overflow:hidden;margin-bottom:10px">
+<video id="liveV" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"></video>
+<div id="liveDot" hidden class="liveBadge">🔴 LIVE <span id="tm">00:00</span></div>
+</div>
+<input id="liveT" placeholder="Magaca Live">
+<button class="btn gray" id="camB" onclick="openCam()">📷 Camera Fur</button>
+<button class="btn" id="liveB" onclick="goLive()" disabled style="background:red;margin-top:8px">🔴 Go LIVE</button>
+<button class="btn gray" id="saveB" onclick="saveLive()" hidden>💾 Kaydi Live</button>
+</div>
+<button class="btn gray" onclick="closeCam();document.getElementById('postModal').hidden=true">Xidh</button>
+</div></div>
+
+<div class="modal" id="cmtModal" hidden><div class="box"><h3>Comments</h3><div id="cmtL" style="max-height:40vh;overflow:auto;margin:12px 0"></div><div style="display:flex;gap:8px"><input id="cmtI" placeholder="Comment..."><button class="btn" style="width:auto" onclick="addC()">Dir</button></div><button class="btn gray" onclick="document.getElementById('cmtModal').hidden=true">Xidh</button></div></div>
+
+<div class="nav">
+<button data-p="home" class="on" onclick="showP('home')">🏠<br>Home</button>
+<button data-p="discover" onclick="showP('discover')">🔍<br>Discover</button>
+<button class="mid" onclick="document.getElementById('postModal').hidden=false">+</button>
+<button data-p="inbox" onclick="showP('inbox')">📥<br>Inbox</button>
+<button data-p="profile" onclick="showP('profile')">👤<br>Profile</button>
+</div>
+
+<script>
+let db,VIDS=[],CUR=null,MODE='signup',CUR_CMT=null, stream=null, rec=null, ch=[], isLive=false, tInt=null, liveBlob=null;
+let likes=JSON.parse(localStorage.getItem('sl_l')||'{}');let follows=JSON.parse(localStorage.getItem('sl_f')||'{}');let cmts=JSON.parse(localStorage.getItem('sl_c')||'{}');let users=JSON.parse(localStorage.getItem('sl_u')||'{}');
+function save(){localStorage.setItem('sl_l',JSON.stringify(likes));localStorage.setItem('sl_f',JSON.stringify(follows));localStorage.setItem('sl_c',JSON.stringify(cmts));localStorage.setItem('sl_u',JSON.stringify(users))}
+function showP(p){document.querySelectorAll('.page').forEach(e=>e.classList.toggle('on',e.id==='p-'+p));document.querySelectorAll('.nav button[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p))}
+function setMode(m){MODE=m; document.getElementById('tabL').classList.toggle('on',m==='login'); document.getElementById('tabS').classList.toggle('on',m==='signup'); document.getElementById('aTitle').textContent=m==='login'?'Soo Gal':'Is Diiwaan Geli'; document.getElementById('mainBtn').textContent=m==='login'?'Login':'Sign Up';}
+function handleAuth(){
+ let emailEl=document.getElementById('emailInput');
+ let passEl=document.getElementById('passInput');
+ let u=(emailEl.value||'').trim().toLowerCase();
+ let p=(passEl.value||'').trim();
+ if(!u){ alert('Fadlan Email gali - '+emailEl.value); emailEl.focus(); return; }
+ if(!p){ alert('Fadlan Password gali'); passEl.focus(); return; }
+ if(MODE==='signup'){
+  if(users[u]){ alert('Account-kan wuu jiraa, Login samee'); setMode('login'); return; }
+  users[u]={pass:p}; save();
+  CUR=u; localStorage.setItem('sl_cur',CUR);
+  alert('✅ Lagu guuleystay! Account: '+u); document.getElementById('authModal').hidden=true; check();
+ }else{
+  if(!users[u]){ alert('Account ma jiro, Sign Up samee'); setMode('signup'); return; }
+  if(users[u].pass!==p){ alert('Password khalad'); return; }
+  CUR=u; localStorage.setItem('sl_cur',CUR);
+  document.getElementById('authModal').hidden=true; check();
+ }
+}
+function check(){CUR=localStorage.getItem('sl_cur'); if(!CUR){document.getElementById('authModal').hidden=false; setMode('signup')}else{document.getElementById('authModal').hidden=true; document.getElementById('uLabel').textContent='@'+CUR.split('@')[0]}}
+function setPost(t){document.getElementById('tU').classList.toggle('on',t==='upload');document.getElementById('tL').classList.toggle('on',t==='live');document.getElementById('upBox').hidden=t!=='upload';document.getElementById('liveBox').hidden=t!=='live'; if(t!=='live')closeCam();}
+async function openCam(){try{stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});document.getElementById('liveV').srcObject=stream; document.getElementById('liveB').disabled=false; document.getElementById('camB').textContent='✅ Camera On'}catch(e){alert('Camera error: '+e.message)}}
+function goLive(){if(!stream){alert('Camera fur');return} if(!isLive){ch=[];rec=new MediaRecorder(stream);rec.ondataavailable=e=>{if(e.data.size>0)ch.push(e.data)};rec.onstop=()=>{liveBlob=new Blob(ch,{type:'video/webm'});document.getElementById('saveB').hidden=false};rec.start();isLive=true;document.getElementById('liveDot').hidden=false;let s=0;tInt=setInterval(()=>{s++;document.getElementById('tm').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},1000);document.getElementById('liveB').textContent='⏹️ Jooji';}else{rec.stop();isLive=false;clearInterval(tInt);document.getElementById('liveB').textContent='🔴 Go LIVE';document.getElementById('liveDot').hidden=true}}
+function saveLive(){if(!liveBlob){alert('Jooji marka hore');return} addV({blob:liveBlob,title:document.getElementById('liveT').value||'LIVE',type:'video',owner:CUR,isLive:true}).then(async()=>{VIDS=(await getAll()).reverse();renderFeed();closeCam();document.getElementById('postModal').hidden=true;showP('home')})}
+function closeCam(){if(rec&&rec.state!=='inactive')rec.stop();isLive=false;clearInterval(tInt);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}document.getElementById('liveV').srcObject=null;document.getElementById('liveB').disabled=true}
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open('sl2',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('v',{keyPath:'id',autoIncrement:true});r.onsuccess=e
