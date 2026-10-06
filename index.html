@@ -358,4 +358,42 @@ $('saveBtn').onclick=async()=>{
 };
 </script>
 </body>
-</html>
+</html>function setMode(m){
+ mode=m;
+ $('tL').classList.toggle('on',m==='login');
+ $('tS').classList.toggle('on',m==='signup');
+ $('authBtn').textContent=m==='login'?'Login':'Sign Up';
+ $('aHint').textContent=m==='login'?'Login: account horey u jira':'Sign Up: account cusub';
+}
+function doAuth(){
+ let u=($('e').value||'').trim().toLowerCase();
+ let pw=($('p').value||'').trim();
+ if(!u) u='masuulsare784@gmail.com'; if(!pw) pw='123456';
+
+ if(mode==='signup'){
+   if(users[u]){
+     // HADDII UU JIRO → AUTO LOGIN U BEDDEL
+     if(users[u].pass===pw){
+       localStorage.setItem('SL_cur',u); CUR=u; $('authM').hidden=true; checkAuth();
+       alert('✅ Account-kan wuu jiraa - Auto Login ayaan ku geliyay!');
+       return;
+     }else{
+       alert('Account wuu jiraa! Login taabo');
+       setMode('login');
+       return;
+     }
+   }
+   users[u]={pass:pw}; save(); localStorage.setItem('SL_cur',u); CUR=u; $('authM').hidden=true; checkAuth(); alert('✅ Sign Up OK');
+ }else{
+   // LOGIN
+   if(!users[u]){alert('Ma jiro! Sign Up taabo'); setMode('signup'); return;}
+   if(users[u].pass!==pw){alert('Password khalad - '+users[u].pass+' waa sax'); return;}
+   localStorage.setItem('SL_cur',u); CUR=u; $('authM').hidden=true; checkAuth(); alert('✅ Login OK - Soo dhawow');
+ }
+}
+// AUTO DETECT - haddii email qorantahay oo jira → Login noqo
+$('e').addEventListener('input',()=>{
+ let u=$('e').value.trim().toLowerCase();
+ if(users[u]) setMode('login');
+ else setMode('signup');
+});
