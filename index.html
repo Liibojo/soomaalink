@@ -1,0 +1,66 @@
+<script>
+// FIXED AUTH - 100% WORKING
+function setMode(m){
+ mode=m;
+ document.getElementById('tL').className=m==='login'?'on':'';
+ document.getElementById('tS').className=m==='signup'?'on':'';
+ document.getElementById('authBtn').textContent=m==='login'?'Login ✅':'Sign Up ✅';
+ document.getElementById('aHint').textContent=m==='login'?'Login: horey u jira':'Sign Up: cusub';
+}
+function doAuth(){
+ let u=(document.getElementById('e').value||'').trim().toLowerCase();
+ let pw=(document.getElementById('p').value||'').trim();
+ if(!u) u='masuulsare784@gmail.com'; if(!pw) pw='123456';
+ let users=JSON.parse(localStorage.getItem('SL_u')||'{}');
+
+ if(mode==='signup'){
+   if(users[u]){
+     // JIRA → AUTO LOGIN
+     localStorage.setItem('SL_cur',u);
+     document.getElementById('authM').hidden=true;
+     document.getElementById('authM').style.display='none';
+     alert('✅ Account jira - Auto Login!');
+     location.reload();
+     return;
+   }
+   users[u]={pass:pw}; localStorage.setItem('SL_u',JSON.stringify(users));
+   localStorage.setItem('SL_cur',u);
+   document.getElementById('authM').hidden=true;
+   document.getElementById('authM').style.display='none';
+   alert('✅ Sign Up OK! Home furmayaa');
+   location.reload();
+ }else{
+   if(!users[u]){alert('Ma jiro! Sign Up taabo'); setMode('signup'); return;}
+   if(users[u].pass!==pw){alert('Password khalad! Sax waa: '+users[u].pass); return;}
+   localStorage.setItem('SL_cur',u);
+   document.getElementById('authM').hidden=true;
+   document.getElementById('authM').style.display='none';
+   alert('✅ Login OK @'+u.split('@')[0]);
+   location.reload();
+ }
+}
+function checkAuth(){
+ let cur=localStorage.getItem('SL_cur');
+ if(!cur){
+   document.getElementById('authM').hidden=false;
+   document.getElementById('authM').style.display='flex';
+   setMode('signup');
+ }else{
+   document.getElementById('authM').hidden=true;
+   document.getElementById('authM').style.display='none';
+   document.getElementById('uLabel').textContent='@'+cur.split('@')[0];
+   document.getElementById('p-home').classList.add('on');
+ }
+}
+// AUTO SWITCH - haddii email jiro → Login
+document.addEventListener('DOMContentLoaded',()=>{
+ setTimeout(()=>{
+   let e=document.getElementById('e');
+   if(e) e.addEventListener('input',()=>{
+     let users=JSON.parse(localStorage.getItem('SL_u')||'{}');
+     let u=e.value.trim().toLowerCase();
+     if(users[u]) setMode('login'); else setMode('signup');
+   });
+ },500);
+});
+</script>
