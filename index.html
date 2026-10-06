@@ -174,4 +174,188 @@ async function init(){await openDB();VIDS=(await getAll()).reverse();checkAuth()
 $('saveBtn').onclick=async()=>{let f=$('fFile').files[0];if(!f){alert('Dooro');return}let b=$('saveBtn');b.disabled=true;await addV({blob:f,title:$('fTitle').value||f.name,cat:$('fCat').value,type:f.type.startsWith('image')?'image':'video',owner:CUR});VIDS=(await getAll()).reverse();renderFeed();$('postM').hidden=true;b.disabled=false;showP('home')};
 </script>
 </body>
+</html><!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SoomaaLink - Family Safe</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:system-ui;height:100vh;overflow:hidden}
+.header{position:fixed;top:0;left:0;right:0;height:54px;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:20;border-bottom:1px solid #222}
+.nav{position:fixed;bottom:0;left:0;right:0;height:70px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20}
+.nav button{background:none;border:0;color:#777;font-size:.7rem;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button.on{color:#fff}.nav button.mid{background:#fe2c55;color:#fff;width:58px;height:58px;border-radius:50%;justify-content:center;font-size:2rem}
+.page{position:fixed;top:54px;bottom:70px;left:0;right:0;display:none;overflow:auto;background:#000}.page.on{display:block}
+#feed{height:100%;overflow-y:auto;scroll-snap-type:y mandatory}
+.post{height:100%;scroll-snap-align:start;position:relative;background:#111;overflow:hidden}
+.post video,.post img{width:100%;height:100%;object-fit:cover;display:block}
+.overlay{position:absolute;left:12px;bottom:14px;right:90px;text-shadow:0 2px 8px #000;z-index:5}
+.actions{position:absolute;right:8px;bottom:14px;display:flex;flex-direction:column;gap:14px;z-index:6;align-items:center}
+.act button{width:52px;height:52px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:1.5rem}.act button.on{background:#fe2c55}
+.badge{position:absolute;top:12px;left:12px;background:red;padding:5px 10px;border-radius:8px;font-size:.7rem;font-weight:800;z-index:5}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+.modal.center{align-items:center;padding:16px}.modal[hidden]{display:none!important}
+.box{width:100%;max-width:460px;background:#1a1a1a;border-radius:20px 20px 0 0;padding:20px;max-height:90vh;overflow:auto;border:1px solid #2a2a2a}
+.box.c{border-radius:20px;background:#1e1e1e}
+.box input,.box select,.box textarea{width:100%;padding:14px;margin-bottom:10px;border-radius:12px;border:1px solid #333;background:#000;color:#fff;font-size:16px}
+.tabs{display:flex;gap:8px;margin:12px 0}.tabs button{flex:1;padding:12px;border-radius:12px;border:1px solid #333;background:#000;color:#fff;font-weight:700}.tabs button.on{background:#fff;color:#000}
+.btn{width:100%;padding:14px;border-radius:12px;border:0;background:#fe2c55;color:#fff;font-weight:800;margin-bottom:8px}.btn.gray{background:#2a2a2a}.btn.live{background:red}
+.rule{padding:12px;background:#111;border-radius:12px;margin-bottom:10px;border-left:4px solid #fe2c55}.rule.green{border-left-color:#0f0}.rule h4{margin-bottom:4px}.rule p{font-size:.8rem;color:#aaa}
+.item{display:flex;gap:12px;padding:14px;border-bottom:1px solid #1a1a1a}.av{width:44px;height:44px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-weight:800}
+.chip{padding:8px 16px;border-radius:99px;border:1px solid #333;background:#111;color:#fff;margin-right:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}.tile{background:#111;border-radius:12px;overflow:hidden}.tile video{width:100%;aspect-ratio:9/13;object-fit:cover}
+</style>
+</head>
+<body>
+<div class="header"><b>SoomaaLink 👨‍👩‍👧</b><div><small id="uLabel" style="color:#0f0;margin-right:6px"></small><button onclick="showP('about')" style="background:#222;color:#fff;border:0;padding:6px 10px;border-radius:8px;font-size:.7rem">ℹ️ About</button></div></div>
+
+<div class="page on" id="p-home"><div id="feed"></div></div>
+<div class="page" id="p-discover"><div style="display:flex;overflow:auto;padding:12px" id="chips"></div><div class="grid" id="grid"></div></div>
+<div class="page" id="p-inbox"><div id="inboxList"></div></div>
+<div class="page" id="p-profile"><div id="prof"></div></div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="p-about">
+<div style="padding:20px">
+<h2>ℹ️ About SoomaaLink</h2>
+<p style="color:#aaa;margin:10px 0;line-height:1.6">SoomaaLink waa TikTok Somali oo loogu talagalay qoyska Soomaaliyeed 👨‍👩‍👧. Waxaan nahay madal ammaan ah oo lagu wadaago dabeecadda, hees dhaqameed, qosol nadiif ah, warar iyo Quraan.</p>
+
+<div class="rule green"><h4>🎯 Ujeedkeena</h4><p>In aan abuurno jawi nadiif ah oo carruurta iyo waalidka wada daawan karaan.</p></div>
+<div class="rule green"><h4>👨‍👩‍👧 Family First</h4><p>Dhammaan muuqaalada waa inay yihiin kuwo qoyska oo dhan daawan karo. 0% anshax xumo.</p></div>
+<div class="rule green"><h4>🔴 LIVE Nadiif</h4><p>Live-ka waa inuu yahay mid toos ah oo anshax leh - wax lagula hadlo bulshada.</p></div>
+<button class="btn" onclick="showP('community')" style="margin-top:12px">📜 Shuruudaha Community - Akhri</button>
+<button class="btn gray" onclick="showP('home')">← Back Home</button>
+</div>
+</div>
+
+<!-- COMMUNITY GUIDELINES -->
+<div class="page" id="p-community">
+<div style="padding:20px">
+<h2>📜 Shuruudaha Community - Dadka Qoyska</h2>
+<p style="color:#fe2c55;font-weight:700;margin:10px 0">👨‍👩‍👧 SoomaaLink waa Family App - Mamnuuc:</p>
+
+<div class="rule"><h4>🚫 1. Anshax Xumo - MAMNUUC 100%</h4><p>- Muuqaal qaawan, dharka gaaban, cawrada muuqata<br>- Hadal xun, cay, aflagaado<br>- Qoob ka ciyaar anshax xumo ah<br><b>Ciqaab: Account Delete + Report Police</b></p></div>
+
+<div class="rule"><h4>🚫 2. Xadgudub & Violence</h4><p>- Dagaal, dhiig, dil, jirdil<br>- Cabsi gelin, hanjabaad<br>- Muuqaal argagax leh carruurta<br><b>Ciqaab: Video Delete + Warning</b></p></div>
+
+<div class="rule"><h4>🚫 3. Maandooriye & Sigaar</h4><p>- Khamri, daroogo, sigaar, shisha<br>- Dhiirigelinta isticmaalka<br><b>Ciqaab: Instant Ban</b></p></div>
+
+<div class="rule"><h4>🚫 4. Diin & Siyaasad Xadgudub</h4><p>- Caayida diinta, Quraanka<br>- Qabiil nacayb, kala fogeyn bulsho<br>- Warar been ah (fake news)<br><b>Ciqaab: Report + Ban</b></p></div>
+
+<div class="rule"><h4>🚫 5. Carruurta - Protection</h4><p>- Carruur lagu xadgudbo, shaqo culus<br>- Muuqaal carruur qaawan<br>- Afduub, ka ganacsiga carruurta<br><b>Ciqaab: Police Report + Permanent Ban</b></p></div>
+
+<div class="rule"><h4>🚫 6. Spam & Been Abuur</h4><p>- Linkyo khatar ah, hack<br>- Account been ah, iska dhig qof kale<br>- Like/Follow iibsi<br><b>Ciqaab: Warning → Ban</b></p></div>
+
+<div class="rule green"><h4>✅ Waxa La Ogol Yahay</h4><p>✔️ Dabeecadda, dalxiis, cunto Somali<br>✔️ Hees dhaqameed anshax leh<br>✔️ Qosol nadiif, sheekooyin<br>✔️ Warar sax ah, waxbarasho<br>✔️ Quraan, Muxaadaro, Wacdi<br>✔️ LIVE qoyska la daawan karo</p></div>
+
+<div style="background:#111;padding:14px;border-radius:12px;margin-top:14px;border:1px solid #333">
+<h4>📞 Soo Sheeg - Report</h4><p style="font-size:.8rem;color:#aaa;margin-top:6px">Haddii aad aragto muuqaal mamnuuc ah, taabo 🚩 Report. Admin 24 saac gudahood wuu eegayaa. 3 report = Auto Delete.</p>
+</div>
+
+<button class="btn" onclick="showP('about')" style="margin-top:14px">ℹ️ About</button>
+<button class="btn gray" onclick="showP('home')">✅ Waan Akhriyay - Home</button>
+</div>
+</div>
+
+<!-- AUTH - KEEP LOGIN -->
+<div class="modal center" id="authM"><div class="box c">
+<h2 id="aTitle">Is Diiwaan Geli</h2>
+<p style="color:#888;font-size:.8rem" id="aSub">Family Safe 👨‍👩‍👧</p>
+<div class="tabs"><button id="tL" onclick="setMode('login')">Login</button><button id="tS" class="on" onclick="setMode('signup')">Sign Up</button></div>
+<input id="e" type="text" placeholder="Email: masuulsare784@gmail.com">
+<input id="p" type="text" placeholder="Password" value="123456">
+<button class="btn" id="authBtn" onclick="doAuth()">Sign Up</button>
+<p style="font-size:.7rem;color:#666;text-align:center" id="aHint">Sign Up: cusub</p>
+<div style="margin-top:12px;text-align:center"><a onclick="showP('community');document.getElementById('authM').hidden=true" style="color:#888;font-size:.7rem;text-decoration:underline">📜 Shuruudaha Community akhri</a></div>
+</div></div>
+
+<div class="modal" id="postM" hidden><div class="box">
+<h3>Ku dar Muuqaal - Family Only 👨‍👩‍👧</h3>
+<p style="font-size:.7rem;color:#fe2c55;margin-bottom:8px">⚠️ Mamnuuc: anshax xumo, qaawan, violence - waa la delete-gareyn</p>
+<div class="tabs"><button id="uT" class="on" onclick="setP('up')">📁 Upload</button><button id="lT" onclick="setP('live')">🔴 LIVE</button></div>
+<div id="upB"><input type="file" id="fFile" accept="video/*,image/*"><input id="fTitle" placeholder="Magac nadiif ah"><select id="fCat"><option>Dabeecadda</option><option>Hees</option><option>Qosol Nadiif</option><option>Wararka</option><option>Quraan</option><option>Waxbarasho</option><option>Live</option></select><label style="display:flex;gap:8px;font-size:.8rem;margin:8px 0"><input type="checkbox" id="agree" checked style="width:auto"> Waxaan ogolahay Shuruudaha 👨‍👩‍👧</label><button class="btn" id="saveBtn">Ku dar ✅</button></div>
+<div id="liB" hidden>
+<div style="background:#000;border-radius:12px;height:250px;position:relative;overflow:hidden;margin-bottom:10px"><video id="lv" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"></video><div id="liveTag" hidden class="badge">🔴 LIVE <span id="lt">00:00</span></div></div>
+<input id="liveTitle" placeholder="Live nadiif ah..."><button class="btn gray" id="camBtn" onclick="openCam()">📷 Camera Fur</button><button class="btn live" id="goBtn" onclick="goLive()" disabled style="margin-top:8px">🔴 Go LIVE</button><button class="btn" style="background:#2563eb" id="svBtn" onclick="saveLive()" hidden>💾 Kaydi Live</button>
+</div>
+<button class="btn gray" onclick="closeCam();document.getElementById('postM').hidden=true">Xidh</button>
+</div></div>
+
+<div class="modal" id="cmtM" hidden><div class="box"><h3>Comments Nadiif 👨‍👩‍👧</h3><div id="cmtList" style="max-height:45vh;overflow:auto;margin:12px 0"></div><div style="display:flex;gap:8px"><input id="cmtI" placeholder="Comment nadiif..."><button class="btn" style="width:auto;background:#2563eb" onclick="addCmt()">Dir</button></div><button class="btn gray" onclick="document.getElementById('cmtM').hidden=true">Xidh</button></div></div>
+
+<div class="modal center" id="repM" hidden><div class="box c">
+<h3>🚩 Report - Family Safety</h3><select id="repReason"><option>Anshax xumo / Qaawan - MAMNUUC</option><option>Violence / Dagaal</option><option>Carruur xadgudub</option><option>Maandooriye</option><option>Diin/Siyaasad xadgudub</option><option>Spam/Been</option><option>Kale</option></select><textarea id="repTxt" placeholder="Maxaad ku aragtay?..." rows="3"></textarea><button class="btn" onclick="sendRep()">Dir Report - Admin wuu eegayaa</button><button class="btn gray" onclick="document.getElementById('repM').hidden=true">Cancel</button>
+</div></div>
+
+<div class="nav">
+<button data-p="home" class="on" onclick="showP('home')">🏠<br>Home</button>
+<button data-p="discover" onclick="showP('discover')">🔍<br>Discover</button>
+<button class="mid" onclick="document.getElementById('postM').hidden=false">+</button>
+<button data-p="inbox" onclick="showP('inbox')">💬<br>Inbox</button>
+<button data-p="profile" onclick="showP('profile')">👤<br>Profile</button>
+</div>
+
+<script>
+let mode='signup', db, VIDS=[], CUR=null, CUR_CMT=null, CUR_REP=null;
+let stream=null, rec=null, chunks=[], isLive=false, tInt=null, liveBlob=null, liveStart=0;
+let likes=JSON.parse(localStorage.getItem('SL_l')||'{}'), follows=JSON.parse(localStorage.getItem('SL_f')||'{}'), cmts=JSON.parse(localStorage.getItem('SL_c')||'{}'), users=JSON.parse(localStorage.getItem('SL_u')||'{}'), inbox=JSON.parse(localStorage.getItem('SL_in')||'[]'), reports=JSON.parse(localStorage.getItem('SL_rep')||'[]');
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('SL_l',JSON.stringify(likes));localStorage.setItem('SL_f',JSON.stringify(follows));localStorage.setItem('SL_c',JSON.stringify(cmts));localStorage.setItem('SL_u',JSON.stringify(users));localStorage.setItem('SL_in',JSON.stringify(inbox));localStorage.setItem('SL_rep',JSON.stringify(reports))}
+function showP(p){
+ document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));
+ document.getElementById('p-'+p).classList.add('on');
+ document.querySelectorAll('.nav button[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+ if(p==='profile')renderProf(); if(p==='discover')renderDisc(); if(p==='inbox')renderInbox();
+}
+function setMode(m){mode=m; $('tL').classList.toggle('on',m==='login'); $('tS').classList.toggle('on',m==='signup'); if(m==='login'){$('aTitle').textContent='Soo Gal - Login'; $('authBtn').textContent='Login'; $('aHint').textContent='Login: horey u jiro';}else{$('aTitle').textContent='Is Diiwaan Geli - Sign Up'; $('authBtn').textContent='Sign Up'; $('aHint').textContent='Sign Up: cusub';}}
+function setP(t){$('uT').classList.toggle('on',t==='up');$('lT').classList.toggle('on',t==='live');$('upB').hidden=t!=='up';$('liB').hidden=t!=='live'; if(t!=='live')closeCam();}
+function doAuth(){
+ let u=($('e').value||'').trim().toLowerCase(); let pw=($('p').value||'').trim();
+ if(!u) u='masuulsare784@gmail.com'; if(!pw) pw='123456';
+ if(mode==='signup'){
+   if(users[u]){alert('Wuu jiraa! Login u wareeg'); setMode('login'); return;}
+   users[u]={pass:pw}; save(); localStorage.setItem('SL_cur',u); CUR=u; $('authM').hidden=true; checkAuth(); alert('✅ Sign Up - Soo dhawow Family 👨‍👩‍👧');
+ }else{
+   if(!users[u]){alert('Ma jiro! Sign Up samee'); setMode('signup'); return;}
+   if(users[u].pass!==pw){alert('Password khalad'); return;}
+   localStorage.setItem('SL_cur',u); CUR=u; $('authM').hidden=true; checkAuth(); alert('✅ Login - Soo dhawow');
+ }
+}
+function checkAuth(){CUR=localStorage.getItem('SL_cur'); if(!CUR){$('authM').hidden=false; setMode('signup')} else{$('authM').hidden=true; $('uLabel').textContent='@'+CUR.split('@')[0]}}
+function openDB(){return new Promise(r=>{let q=indexedDB.open('SL_FAMILY',1);q.onupgradeneeded=e=>e.target.result.createObjectStore('v',{keyPath:'id',autoIncrement:true});q.onsuccess=e=>{db=e.target.result;r()}})}
+function getAll(){return new Promise(res=>{let tx=db.transaction('v','readonly');tx.objectStore('v').getAll().onsuccess=e=>res(e.target.result)})}
+function addV(o){return new Promise(res=>{let tx=db.transaction('v','readwrite');tx.objectStore('v').add(o).onsuccess=res})}
+function renderFeed(){
+ let f=$('feed');
+ if(!VIDS.length){f.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#666;text-align:center;padding:20px"><div style="font-size:4rem">👨‍👩‍👧</div><h3>SoomaaLink Family Safe</h3><p>Weli video ma jiro - + ku dar muuqaal nadiif ah</p><button class=btn style="width:auto;margin-top:12px" onclick="showP(\'community\')">📜 Shuruudaha Akhri</button></div>';return}
+ f.innerHTML=VIDS.map(v=>{
+  let url=URL.createObjectURL(v.blob);
+  let media=v.type==='image'?`<img src="${url}">`:`<video src="${url}" loop muted autoplay playsinline onclick="this.muted=!this.muted"></video>`;
+  let badge=v.isLive?'<div class=badge>🔴 LIVE</div>':'<div class=badge style="background:#0a0">👨‍👩‍👧 SAFE</div>';
+  return `<div class=post>${badge}${media}<div class=overlay><h3>${v.title}</h3><small>@${(v.owner||'').split('@')[0]} • ${v.cat}</small></div><div class=actions><div class=act><button class="${follows[v.id]?'on':''}" onclick="follows[${v.id}]=!follows[${v.id}];save();renderFeed()">${follows[v.id]?'✓':'+'}</button></div><div class=act><button class="${likes[v.id]?'on':''}" onclick="likes[${v.id}]=!likes[${v.id}];save();renderFeed()">♥</button></div><div class=act><button onclick="CUR_CMT=${v.id};document.getElementById('cmtM').hidden=false;renderC()">💬</button></div><div class=act><button onclick="CUR_REP=${v.id};document.getElementById('repM').hidden=false">🚩</button></div></div></div>`
+ }).join('');
+}
+function renderC(){let l=cmts[CUR_CMT]||[]; $('cmtList').innerHTML=l.length?l.map(c=>`<div style="padding:10px 0;border-bottom:1px solid #222"><b>@${c.u.split('@')[0]}</b> ${c.t}</div>`).join(''):'<p style="color:#666;text-align:center">No comments</p>'}
+function addCmt(){let t=$('cmtI').value.trim(); if(!t)return; if(/qaawan|siil|gus|fuck|xxx/i.test(t)){alert('🚫 Comment anshax xumo waa mamnuuc!');return;} if(!cmts[CUR_CMT])cmts[CUR_CMT]=[]; cmts[CUR_CMT].push({u:CUR,t,dt:Date.now()}); save(); $('cmtI').value=''; renderC()}
+function sendRep(){reports.unshift({vid:CUR_REP, reason:$('repReason').value, txt:$('repTxt').value, user:CUR, time:Date.now()}); save(); $('repM').hidden=true; alert('✅ Report sent! 24h admin wuu eegayaa - Mahadsanid Family Safety 👨‍👩‍👧'); inbox.unshift({txt:'Report: '+$('repReason').value, time:Date.now()}); save()}
+function renderDisc(){$('chips').innerHTML=['Dhammaan','Live','Dabeecadda','Quraan'].map(c=>`<button class=chip>${c}</button>`).join(''); $('grid').innerHTML=VIDS.map(v=>{let url=URL.createObjectURL(v.blob);return `<div class=tile><video src="${url}" muted></video><p style="padding:6px;font-size:.7rem">${v.title}</p></div>`}).join('')}
+function renderInbox(){$('inboxList').innerHTML=inbox.length?inbox.map(i=>`<div class=item><div class=av>🔔</div><div><b>${i.txt}</b><br><small>${new Date(i.time).toLocaleString()}</small></div></div>`).join(''):'<div style="padding:60px;text-align:center;color:#666">Inbox madhan</div>'}
+function renderProf(){let my=VIDS.filter(v=>v.owner===CUR); $('prof').innerHTML=`<div style="padding:16px"><div style="text-align:center;padding:20px"><div class=av style="width:70px;height:70px;background:#fe2c55;font-size:1.5rem;margin:0 auto 10px">${(CUR||'?')[0].toUpperCase()}</div><h2>@${CUR?CUR.split('@')[0]:''}</h2><small>${CUR||''}</small></div><div style="display:flex;gap:8px"><button class=btn style="background:#111" onclick="showP('about')">ℹ️ About</button><button class=btn style="background:#111" onclick="showP('community')">📜 Shuruudaha</button></div><div style="display:flex;justify-content:space-around;text-align:center;border-top:1px solid #222;border-bottom:1px solid #222;padding:14px 0;margin:14px 0"><div><b>${my.length}</b><br>Videos</div><div><b>${reports.filter(r=>r.user===CUR).length}</b><br>Reports</div></div><button class=btn style="background:#333" onclick="localStorage.removeItem('SL_cur');location.reload()">Log Out - Login ku laabo</button><button class=btn style="background:#111" onclick="showP('community')">👨‍👩‍👧 Family Rules</button></div>`}
+async function openCam(){try{stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true}); $('lv').srcObject=stream; $('goBtn').disabled=false; $('camBtn').textContent='✅ ON';}catch(e){alert(e.message)}}
+function goLive(){if(!stream){alert('Camera fur');return}if(!isLive){chunks=[];rec=new MediaRecorder(stream);rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};rec.onstop=()=>{liveBlob=new Blob(chunks,{type:'video/webm'}); $('svBtn').hidden=false};rec.start();isLive=true;liveStart=Date.now();$('liveTag').hidden=false;$('goBtn').textContent='⏹️ Jooji';tInt=setInterval(()=>{let s=Math.floor((Date.now()-liveStart)/1000);$('lt').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},1000);}else{rec.stop();isLive=false;clearInterval(tInt);$('goBtn').textContent='🔴 Go LIVE';$('liveTag').hidden=true;}}
+function saveLive(){if(!liveBlob){alert('Jooji');return}addV({blob:liveBlob,title:$('liveTitle').value||'LIVE',type:'video',cat:'Live',isLive:true,owner:CUR}).then(async()=>{VIDS=(await getAll()).reverse();renderFeed();closeCam();$('postM').hidden=true;showP('home')})}
+function closeCam(){if(rec&&rec.state!=='inactive')rec.stop();isLive=false;clearInterval(tInt);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('lv').srcObject=null;$('goBtn').disabled=true;$('goBtn').textContent='🔴 Go LIVE';$('liveTag').hidden=true;$('svBtn').hidden=true;$('camBtn').textContent='📷 Camera Fur';}
+async function init(){await openDB();VIDS=(await getAll()).reverse();checkAuth();setMode('signup');setP('up');renderFeed()}init();
+$('saveBtn').onclick=async()=>{
+ if(!$('agree').checked){alert('Fadlan ogolow Shuruudaha Community 👨‍👩‍👧');return;}
+ let f=$('fFile').files[0]; if(!f){alert('Dooro file');return}
+ let title=$('fTitle').value.toLowerCase();
+ if(/qaawan|siil|gus|xxx|porn|nude/i.test(title)){alert('🚫 Magac anshax xumo waa mamnuuc! Family Safe 👨‍👩‍👧');return;}
+ let b=$('saveBtn'); b.disabled=true; b.textContent='Kaydinaya...';
+ await addV({blob:f,title:$('fTitle').value||f.name,cat:$('fCat').value,type:f.type.startsWith('image')?'image':'video',owner:CUR}); VIDS=(await getAll()).reverse(); renderFeed(); $('postM').hidden=true; b.disabled=false; b.textContent='Ku dar ✅'; showP('home')
+};
+</script>
+</body>
 </html>
