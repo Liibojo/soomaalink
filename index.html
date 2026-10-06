@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SoomaaLink - TikTok Somali</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#000;color:#fff;font-family:system-ui,sans-serif;overflow:hidden}
+.header{position:fixed;top:0;left:0;right:0;height:54px;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:20;border-bottom:1px solid #111}
+.nav{position:fixed;bottom:0;left:0;right:0;height:68px;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;align-items:center;z-index:20}
+.nav button{background:none;border:0;color:#888;font-size:.7rem;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px}
+.nav button span{font-size:1.5rem}.nav button.on{color:#fff}.nav button.mid{background:#fe2c55;color:#fff;border-radius:50%;width:56px;height:56px;justify-content:center}
+.page{position:fixed;top:54px;bottom:68px;left:0;right:0;display:none;overflow-y:auto;background:#000}.page.on{display:block}
+#feed{scroll-snap-type:y mandatory;height:100%;overflow-y:auto;background:#000}
+.post{height:100%;scroll-snap-align:start;position:relative;background:#000;overflow:hidden}
+.stage{width:100%;height:100%;position:relative}.stage video,.stage img{width:100%;height:100%;object-fit:cover;display:block}
+.overlay{position:absolute;left:12px;bottom:16px;right:90px;z-index:10;text-shadow:0 2px 8px #000}
+.overlay h3{font-size:1rem;margin-bottom:4px}.overlay p{font-size:.8rem;color:#ddd}
+.actions{position:absolute;right:10px;bottom:16px;display:flex;flex-direction:column;gap:16px;align-items:center;z-index:11}
+.act{display:flex;flex-direction:column;align-items:center}.act button{width:54px;height:54px;border-radius:50%;border:0;background:rgba(60,60,60,.85);color:#fff;font-size:1.6rem;transition:.2s}.act button.on{background:#fe2c55;transform:scale(1.1)}.act small{font-size:.68rem;margin-top:4px}
+.mute{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:1.2rem;z-index:12}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal.center{align-items:center;padding:16px}.modal[hidden]{display:none!important}
+.mbox{width:100%;max-width:420px;background:#151515;border-radius:20px 20px 0 0
