@@ -151,6 +151,40 @@ body.light .nav.lt{background:#fff;color:#111;border-color:#ddd}
 .box{background:var(--s2);border-left:4px solid var(--ok);border-radius:12px;padding:12px;margin-bottom:10px;font-size:14px}.box b{display:block;margin-bottom:3px}
 .fh{position:absolute;font-size:34px;z-index:4;animation:fl 2.2s ease-out forwards;pointer-events:none}
 @keyframes fl{to{transform:translateY(-300px);opacity:0}}
+:root{--sbg:#0b0b0b;--scd:#1c1c1c}body.light{--sbg:#f5f5f5;--scd:#fff}
+#setPage{position:absolute;inset:0;z-index:90;background:var(--sbg);color:var(--tx);display:none;flex-direction:column}
+#setPage.on{display:flex}
+.sph{display:flex;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 10px 10px;font-weight:800;font-size:17px}
+.sph button{width:42px;height:42px;font-size:30px;line-height:1}
+.sph span{flex:1;text-align:center;margin-right:42px}
+#setBody{flex:1;overflow-y:auto;padding:0 12px 40px;-webkit-overflow-scrolling:touch}
+#setBody input{margin-top:8px}
+.sgt{color:var(--mu);font-size:13px;font-weight:600;margin:20px 6px 8px}
+.sg{background:var(--scd);border-radius:16px;overflow:hidden}
+.sr{display:flex;align-items:center;gap:14px;padding:15px 16px;width:100%;text-align:left;font-size:16px;font-weight:600;min-height:56px}
+.sr+.sr{border-top:1px solid var(--bd)}
+.si{font-size:20px;width:26px;text-align:center;opacity:.75;flex-shrink:0}
+.sl{flex:1;min-width:0}
+.sv{color:var(--mu);font-weight:400;font-size:15px;white-space:nowrap}
+.sc{color:var(--mu);font-size:22px}
+.sw{position:relative;width:46px;height:28px;flex-shrink:0}
+.sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;z-index:2;cursor:pointer;padding:0;margin:0}
+.sw i{position:absolute;inset:0;background:#8886;border-radius:14px;transition:.2s}
+.sw i:after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+i{background:var(--ac)}
+.sw input:checked+i:after{transform:translateX(18px)}
+.sub{color:var(--mu);font-size:13px;margin:10px 6px;line-height:1.55}
+.stat2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.stat2 div{background:var(--scd);border-radius:14px;padding:16px;text-align:center}
+.stat2 b{display:block;font-size:24px}.stat2 small{color:var(--mu)}
+.rd{width:22px;height:22px;border-radius:50%;border:2px solid var(--mu);flex-shrink:0}
+.sr.sel .rd{border:7px solid var(--ac)}
+.faq{padding:15px 16px}.faq+.faq{border-top:1px solid var(--bd)}.faq b{display:block;margin-bottom:6px}.faq p{color:var(--mu);font-size:14px;line-height:1.6}
+.sws{display:flex;gap:14px;flex-wrap:wrap;padding:16px}
+.swc{width:48px;height:48px;border-radius:50%;border:4px solid transparent}.swc.on{border-color:var(--tx)}
+body.reduce *{animation:none!important;transition:none!important}
+body.big .cap{font-size:17px}body.big .sl{font-size:18px}body.big .cm,body.big .msg{font-size:16px}
+body.hc{--mu:#d0d0d0;--bd:#777}body.light.hc{--mu:#333;--bd:#888}
 </style>
 </head>
 <body>
@@ -229,6 +263,7 @@ body.light .nav.lt{background:#fff;color:#111;border-color:#ddd}
   </div>
   <button class="btn g" id="natSh" onclick="shareTo('native')" data-i="more"></button>
   <div class="sh" style="margin-top:16px" data-i="moreOpts"></div>
+  <button class="li" id="dlB" onclick="shareTo('dl')" style="display:none"></button>
   <button class="li" onclick="reportOpen()"><span data-i="report"></span><span>🚩</span></button>
 </div></div>
 
@@ -248,15 +283,10 @@ body.light .nav.lt{background:#fff;color:#111;border-color:#ddd}
   <div class="row" style="margin-top:8px"><input id="chIn" maxlength="300" data-ph="writeMsg" onkeydown="if(event.key==='Enter')sendChat()"><button class="btn sm" onclick="sendChat()">➤</button></div>
 </div></div>
 
-<!-- SETTINGS -->
-<div class="ov" id="stOv" onclick="closeOv(event,'stOv')"><div class="sheet">
-  <div class="sh"><span data-i="settings"></span><button onclick="closeOv(null,'stOv')">✕</button></div>
-  <button class="li" onclick="toggleLang()"><span data-i="language"></span><b id="langV"></b></button>
-  <button class="li" onclick="toggleTheme()"><span data-i="theme"></span><b id="themeV"></b></button>
-  <button class="li" onclick="closeOv(null,'stOv');$('abOv').classList.add('on')"><span data-i="aboutT"></span><span>ℹ️</span></button>
-  <button class="li" onclick="alert(T('rules'))"><span data-i="rulesBtn"></span><span>📜</span></button>
-  <button class="li" onclick="resetAll()" style="color:var(--ac)"><span data-i="reset"></span><span>🗑️</span></button>
-</div></div>
+<!-- SETTINGS PAGE -->
+<div id="setPage"><div class="sph"><button onclick="backSet()">‹</button><span id="setT"></span></div><div id="setBody"></div></div>
+<span id="langV" hidden></span><span id="themeV" hidden></span>
+<div class="full" id="loginOv" style="z-index:200;background:var(--bg);color:var(--tx);overflow:auto"><div style="padding:50px 16px"><div style="text-align:center;font-size:44px">👨‍👩‍👧‍👦</div><div class="h" style="text-align:center">SoomaaLink</div><div id="loginBody"></div></div></div>
 
 <!-- ABOUT -->
 <div class="ov" id="abOv" onclick="closeOv(event,'abOv')"><div class="sheet about">
@@ -310,7 +340,7 @@ videos:'Videos',likes:'Jecel',followers:'Raacayaal',follow:'Raac',followingB:'Wa
 myVideos:'Videos',saved:'La keydiyay',liked:'La jeclaaday',noVids:'Video ma jiro halkan',noSaved:'Wax la keydiyay ma jiro',noLiked:'Wax la jeclaaday ma jiro',
 noFol:'Weli ma raacin qof.\nKu laabo "Adiga ku Habboon" oo raac abuur-yaqaanno.',noRes:'Wax lagu helay ma jiro',
 back:'Dib',bioDef:'Soo dhawoow SoomaaLink 👨‍👩‍👧‍👦',demo:'Demo',
-pickFirst:'Marka hore video dooro',tooBig:'Video-gu aad buu u weyn yahay (ugu badnaan 3000MB)',uploaded:'✅ Video waa la daabacay!',
+pickFirst:'Marka hore video dooro',tooBig:'Video-gu aad buu u weyn yahay (ugu badnaan 300MB)',uploaded:'✅ Video waa la daabacay!',
 copied:'Xiriirka waa la koobiyeeyay',saveT:'La keydiyay',unsaveT:'Waa laga saaray',confirmReset:'Dhammaan xogta waa la tirtirayaa. Ma hubtaa?',
 camErr:'Kamarada lama furi karo. Ogolow ogolaanshaha, oo u isticmaal https.',maxLen:'Ugu badnaan 60 ilbiriqsi',
 liveNote:'Tijaabo: kamarada waa la furay, laakiin dadka kale ma arki karaan ilaa server la ku xidho.',liveEnd:'Live wuu dhammaaday',liveStart:'Live waa bilowday',
@@ -319,7 +349,7 @@ bot:['Mahadsanid farriintaada! 🙏','Waan ku helnay. Wax kale ma ku caawin karn
 aboutTxt:'SoomaaLink waa TikTok Soomaali loogu talagalay qoyska Soomaaliyeed. Madal ammaan ah oo lagu wadaago dabeecadda, hees dhaqameed, qosol nadiif, warar sax ah iyo Quraan.',
 goal:'🎯 Ujeedkeena',goalTxt:'Jawi nadiif ah oo carruurta iyo waalidka wada daawan karaan - 0% anshax xumo.',famTxt:'Video kasta waa inuu yahay mid qoyska oo dhan daawan karo.',
 rules:'Shuruudaha:\n1. Nadiif oo qoys ahaan loo daawan karo\n2. Anshax xumo, rabshad ama nacayb ma jiro\n3. Ixtiraam dadka kale\n4. Warar been abuur ah ha faafin',
-cats:{all:'✅ Dhammaan',Dabeecad:'🌿 Dabeecad',Hees:'🎵 Hees',Warar:'📰 Warar',Qosol:'😄 Qosol'}},
+cats:{all:'✅ Dhammaan',Dabeecad:'🌿 Dabeecad',Hees:'🎵 Hees',Quraan:'📖 Quraan',Warar:'📰 Warar',Qosol:'😄 Qosol'}},
 en:{home:'Home',discover:'Discover',inbox:'Inbox',profile:'Me',following:'Following',foryou:'For You',
 trendTags:'🔥 Trending hashtags',trending:'🎬 Trending',creators:'👥 Creators',search:'Search videos, people, #hashtags...',
 newVideo:'🎬 New video',record:'Record with camera',recSub:'Record a video right now',gallery:'Choose from phone',galSub:'Upload an existing video',
@@ -356,12 +386,14 @@ const demo=()=>[
  {id:'d4',caption:'Xafladda qoyska 😂 #qosol #qoys',cat:'Qosol',owner:'fariida_funny',emoji:'😂',grad:'linear-gradient(135deg,#134e0f,#34d058)',music:'Cod asal ah',likes:5120,comments:[],shares:120},
  {id:'d5',caption:'Wararka maanta 📰 #warar #soomaaliya',cat:'Warar',owner:'war_sax',emoji:'📰',grad:'linear-gradient(135deg,#7f1d1d,#f97316)',music:'Cod asal ah',likes:760,comments:[],shares:20}
 ].map((v,i)=>({liked:false,saved:false,views:0,demo:true,ts:Date.now()-(i+1)*36e5*3,...v}));
-function fresh(){return{lang:'so',theme:'dark',muted:false,me:{name:'Masuulsare784',handle:'masuulsare784',bio:''},videos:demo(),following:[],
+const DEF={private:false,comments:'all',mentions:'all',dm:'all',activity:'none',reuse:true,linkProfile:false,downloads:true,followList:'me',likedVis:'me',viewers:true,nLikes:true,nComments:true,nFollowers:true,nMsgs:true,liveComments:true,liveGifts:true,limit:0,breakEvery:0,pin:'',kids:false,autoplay:true,dataSaver:false,bigText:false,reduceMotion:false,highContrast:false,ads:true,contacts:false,location:false,preview:true,defMusic:'',audience:'all',accent:'#fe2c55',hideCats:[],snooze:0};
+function fresh(){return{lang:'so',theme:'dark',muted:false,me:{name:'Masuulsare784',handle:'masuulsare784',bio:''},videos:demo(),following:[],blocked:[],set:{...DEF},
  notifs:[{k:'welcome',ts:Date.now(),un:true}],chats:{team:[{me:false,k:'welcome'}]},unread:1}}
 let S=(()=>{try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.videos)return s}catch(e){}return fresh()})();
+S.set={...DEF,...(S.set||{})};S.blocked=S.blocked||[];
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Storage full')}};
 const dbp=new Promise((res,rej)=>{try{const r=indexedDB.open('soomaalink_tt',1);r.onupgradeneeded=()=>r.result.createObjectStore('v');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});
-const idb=(m,k,v)=>dbp.then(db=>new Promise((res,rej)=>{const tx=db.transaction('v',m==='get'?'readonly':'readwrite');const st=tx.objectStore('v');const rq=m==='get'?st.get(k):m==='put'?st.put(v,k):st.clear();rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error)}));
+const idb=(m,k,v)=>dbp.then(db=>new Promise((res,rej)=>{const tx=db.transaction('v',m==='get'?'readonly':'readwrite');const st=tx.objectStore('v');const rq=m==='get'?st.get(k):m==='put'?st.put(v,k):m==='del'?st.delete(k):st.clear();rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error)}));
 const urls={};
 async function urlFor(id){if(urls[id])return urls[id];const b=await idb('get',id);if(!b)return null;return urls[id]=URL.createObjectURL(b)}
 
@@ -372,13 +404,13 @@ const vid=id=>S.videos.find(v=>v.id===id);
 const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(n>=1e4?0:1)+'K':n;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2300)}
 function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return S.lang==='so'?'hadda':'now';const m=s/60;if(m<60)return Math.floor(m)+(S.lang==='so'?' daq':'m');const h=m/60;if(h<24)return Math.floor(h)+(S.lang==='so'?' saac':'h');return Math.floor(h/24)+(S.lang==='so'?' maalin':'d')}
-function addNotif(k,extra){S.notifs.unshift({k,extra:extra||'',ts:Date.now(),un:true});S.notifs=S.notifs.slice(0,50);save();updDot()}
+function addNotif(k,extra){const g={nCm:'nComments',nFol:'nFollowers'}[k];if(g&&S.set[g]===false)return;S.notifs.unshift({k,extra:extra||'',ts:Date.now(),un:true});S.notifs=S.notifs.slice(0,50);save();updDot()}
 function updDot(){const n=S.notifs.filter(x=>x.un).length+(S.unread||0);const d=$('iDot');d.style.display=n?'flex':'none';d.textContent=n>9?'9+':n}
 function closeOv(e,id){if(!e||e.target===$(id))$(id).classList.remove('on')}
 
 /* ============ NAV ============ */
 let cur='home',feedTab='foryou',viewUser=null,pTab='mine',ibT='act',dCat='all',focusId=null,activeId=null;
-function go(t){
+function go(t){if(t==='upload'&&S.set.kids){toast(B('Habka carruurta: soo gelinta waa xidhan tahay','Kids mode: uploading is off'));return}
   cur=t;
   document.querySelectorAll('.page').forEach(e=>e.classList.toggle('on',e.id===t));
   document.querySelectorAll('.ni').forEach(e=>e.classList.toggle('on',e.dataset.go===t));
@@ -411,7 +443,8 @@ function toggleMute(){S.muted=!S.muted;save();$('muteB').textContent=S.muted?'�
 
 /* ============ FEED ============ */
 function setFeed(t){feedTab=t;$('tFol').classList.toggle('on',t==='following');$('tFyp').classList.toggle('on',t==='foryou');renderFeed()}
-function feedList(){return feedTab==='following'?S.videos.filter(v=>S.following.includes(v.owner)):S.videos}
+const visible=v=>!S.blocked.includes(v.owner)&&!(S.set.hideCats||[]).includes(v.cat);
+function feedList(){const a=S.videos.filter(visible);return feedTab==='following'?a.filter(v=>S.following.includes(v.owner)):a}
 function railHTML(v){
   const me=v.owner===S.me.handle,fol=S.following.includes(v.owner);
   return `<div class="avw" onclick="openUser('${v.owner}')"><div class="avc">👤</div>${me||fol?'':`<span class="fp" onclick="event.stopPropagation();toggleFollow('${v.owner}')">+</span>`}</div>
@@ -423,7 +456,7 @@ function railHTML(v){
 }
 function capHTML(c){return esc(c).replace(/#([\p{L}\p{N}_]+)/gu,(m,t)=>`<a onclick="searchTag('${t}')">#${t}</a>`)}
 function reelHTML(v){
-  const media=v.demo?`<div class="bgdemo" style="background:${v.grad}"><span class="em">${v.emoji}</span></div>`:`<video data-vid="${v.id}" loop playsinline preload="metadata" ${S.muted?'muted':''}></video>`;
+  const media=v.demo?`<div class="bgdemo" style="background:${v.grad}"><span class="em">${v.emoji}</span></div>`:`<video data-vid="${v.id}" loop playsinline preload="${S.set.dataSaver?'none':'metadata'}" ${S.muted?'muted':''}></video>`;
   return `<section class="reel" data-id="${v.id}">${media}<div class="shade"></div>
    <div class="tap" onclick="tapReel(event,'${v.id}')"></div><div class="pp">⏸️</div>
    <div class="rail">${railHTML(v)}</div>
@@ -450,7 +483,7 @@ function tryPlay(el){el.muted=S.muted;const p=el.play();if(p&&p.catch)p.catch(()
 function activateReel(el,id){
   activeId=id;el.dataset.t=0;
   const v=vid(id);if(v&&!v._viewed){v._viewed=1;v.views=(v.views||0)+1}
-  const vd=el.querySelector('video');if(vd&&vd.src)tryPlay(vd);
+  const vd=el.querySelector('video');if(vd&&vd.src&&S.set.autoplay!==false)tryPlay(vd);
 }
 function deactivateReel(el){const vd=el.querySelector('video');if(vd){vd.pause()}const pp=el.querySelector('.pp');if(pp)pp.classList.remove('on')}
 setInterval(()=>{
@@ -499,7 +532,7 @@ function renderDiscover(){
   const q=$('q').value.trim().toLowerCase();
   const tagsAll={};S.videos.forEach(v=>(v.caption.match(/#[\p{L}\p{N}_]+/gu)||[]).forEach(t=>{t=t.toLowerCase();tagsAll[t]=(tagsAll[t]||0)+v.likes+1}));
   $('dTags').innerHTML=Object.entries(tagsAll).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([t])=>`<button class="tag" onclick="$('q').value='${t}';renderDiscover()">${esc(t)}</button>`).join('');
-  const list=S.videos.filter(v=>(dCat==='all'||v.cat===dCat)&&(!q||(v.caption+' '+v.owner+' '+v.cat+' '+L[S.lang].cats[v.cat]).toLowerCase().includes(q))).sort((a,b)=>b.likes-a.likes);
+  const list=S.videos.filter(v=>visible(v)&&(dCat==='all'||v.cat===dCat)&&(!q||(v.caption+' '+v.owner+' '+v.cat+' '+L[S.lang].cats[v.cat]).toLowerCase().includes(q))).sort((a,b)=>b.likes-a.likes);
   $('dGrid').innerHTML=list.length?list.map(tileHTML).join(''):`<div class="empty" style="grid-column:1/-1;padding:30px">${T('noRes')}</div>`;
   hydrate($('dGrid'));
   const owners=[...new Set(S.videos.map(v=>v.owner))].filter(o=>o!==S.me.handle&&(!q||o.includes(q.replace('@',''))||!q.startsWith('#')&&!q));
@@ -526,7 +559,7 @@ async function doUpload(){
     const size=fileObj.size,ch=1024*1024;let off=0;
     while(off<size){await fileObj.slice(off,off+ch).arrayBuffer();off+=ch;setP(Math.min(off/size,1)*90)}
     const id='v'+Date.now();await idb('put',id,fileObj);setP(100);
-    S.videos.unshift({id,caption:$('uCap').value.trim()||'🎬',cat:$('uCat').value,owner:S.me.handle,music:$('uMus').value.trim()||'Original sound',likes:0,liked:false,saved:false,comments:[],shares:0,views:0,demo:false,ts:Date.now()});
+    S.videos.unshift({id,caption:$('uCap').value.trim()||'🎬',cat:$('uCat').value,owner:S.me.handle,music:$('uMus').value.trim()||S.set.defMusic||'Original sound',audience:S.set.audience,likes:0,liked:false,saved:false,comments:[],shares:0,views:0,demo:false,ts:Date.now()});
     save();addNotif('nUp');toast(T('uploaded'));
     $('uCap').value='';$('uMus').value='';resetUpload();
     setTimeout(()=>{feedTab='foryou';$('tFol').classList.remove('on');$('tFyp').classList.add('on');focusId=id;go('home')},400);
@@ -560,14 +593,14 @@ function toggleRec(){
 
 /* ============ LIVE (local preview) ============ */
 let live={stream:null,t0:0,timer:null,hearts:null};
-async function openLive(){
+async function openLive(){if(S.set.kids){toast(B('Habka carruurta: Live waa xidhan yahay','Kids mode: Live is off'));return}
   try{live.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true})}catch(e){toast(T('camErr'));return}
   $('liveV').srcObject=live.stream;$('liveOv').classList.add('on');$('liveChat').innerHTML='';
   live.t0=Date.now();live.timer=setInterval(()=>{const s=Math.floor((Date.now()-live.t0)/1000);$('liveT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},500);
   toast(T('liveStart'));
 }
 function endLive(){clearInterval(live.timer);if(live.stream){live.stream.getTracks().forEach(t=>t.stop());live.stream=null}$('liveOv').classList.remove('on');toast(T('liveEnd'))}
-function liveSend(){const i=$('liveIn'),t=i.value.trim();if(!t)return;i.value='';const d=document.createElement('div');d.innerHTML=`<b>@${esc(S.me.handle)}</b> ${esc(t)}`;$('liveChat').appendChild(d);while($('liveChat').children.length>8)$('liveChat').firstChild.remove()}
+function liveSend(){const i=$('liveIn'),t=i.value.trim();if(!t)return;if(S.set.liveComments===false){toast(B('Faallooyinka Live waa la xidhay','Live comments are off'));return}i.value='';const d=document.createElement('div');d.innerHTML=`<b>@${esc(S.me.handle)}</b> ${esc(t)}`;$('liveChat').appendChild(d);while($('liveChat').children.length>8)$('liveChat').firstChild.remove()}
 function liveHeart(){const h=document.createElement('div');h.className='fh';h.textContent='❤️';h.style.right=(14+Math.random()*40)+'px';h.style.bottom='90px';$('liveOv').appendChild(h);setTimeout(()=>h.remove(),2200)}
 
 /* ============ COMMENTS ============ */
@@ -586,10 +619,10 @@ function delComment(id){const v=vid(cmId);v.comments=v.comments.filter(c=>c.id!=
 
 /* ============ SHARE / REPORT ============ */
 let shId=null;
-function openShare(id){shId=id;$('natSh').style.display=navigator.share?'':'none';$('shOv').classList.add('on')}
+function openShare(id){shId=id;$('natSh').style.display=navigator.share?'':'none';const vv=vid(id);$('dlB').style.display=(vv&&!vv.demo&&S.set.downloads)?'':'none';$('dlB').innerHTML='<span>💾 '+B('Soo deji','Download')+'</span>';$('shOv').classList.add('on')}
 function shareTo(w){
-  const v=vid(shId),url=location.href.split('#')[0],text=v.caption.slice(0,80)+' - SoomaaLink 👨‍👩‍👧‍👦',e=encodeURIComponent;
-  v.shares=(v.shares||0)+1;save();refreshRail(shId);
+  const prof=shId==='__p',v=prof?{caption:'@'+S.me.handle}:vid(shId),url=location.href.split('#')[0],text=v.caption.slice(0,80)+' - SoomaaLink 👨‍👩‍👧‍👦',e=encodeURIComponent;
+  if(!prof){v.shares=(v.shares||0)+1;save();refreshRail(shId)}if(w==='dl'){closeOv(null,'shOv');downloadVid(shId);return}
   if(w==='wa')window.open('https://wa.me/?text='+e(text+' '+url),'_blank');
   else if(w==='tg')window.open('https://t.me/share/url?url='+e(url)+'&text='+e(text),'_blank');
   else if(w==='mail')location.href='mailto:?subject='+e(text)+'&body='+e(url);
@@ -610,7 +643,7 @@ function renderInbox(){
     $('ibBody').innerHTML=S.notifs.length?S.notifs.map(n=>`<div class="nt ${n.un?'un':''}"><div class="ico">🔔</div><div>${esc(notifText(n))}<small>${ago(n.ts)}</small></div></div>`).join(''):`<div class="empty">${T('noAct')}</div>`;
   }else{
     const ks=Object.keys(S.chats);
-    $('ibBody').innerHTML=ks.length?ks.map(k=>{const l=S.chats[k][S.chats[k].length-1];return `<div class="th" onclick="openChat('${k}')"><div class="usr" style="padding:0"><div class="av">${k==='team'?'👨‍👩‍👧‍👦':'👤'}</div></div><div class="m">${esc(chatName(k))}<small>${l?esc(l.k?T(l.k):l.t):''}</small></div></div>`}).join(''):`<div class="empty">${T('noMsg')}</div>`;
+    $('ibBody').innerHTML=ks.length?ks.map(k=>{const l=S.chats[k][S.chats[k].length-1];return `<div class="th" onclick="openChat('${k}')"><div class="usr" style="padding:0"><div class="av">${k==='team'?'👨‍👩‍👧‍👦':'👤'}</div></div><div class="m">${esc(chatName(k))}<small>${l&&S.set.preview!==false?esc(l.k?T(l.k):l.t):''}</small></div></div>`}).join(''):`<div class="empty">${T('noMsg')}</div>`;
   }
 }
 let chatKey=null;
@@ -635,11 +668,11 @@ function renderProfile(){
   if(mine&&pTab==='liked')list=S.videos.filter(v=>v.liked);
   if(!mine)pTab='mine';
   $('pBody').innerHTML=`
-   <div class="ptop">${mine?'<span></span>':`<button class="ic" onclick="openMe()">‹</button>`}<b>@${esc(h)}</b>${mine?`<button class="ic" onclick="$('stOv').classList.add('on')">⚙️</button>`:'<span style="width:40px"></span>'}</div>
-   <div class="prof"><div class="pav">👤</div><div style="font-size:19px;font-weight:800">${esc(mine?S.me.name:'@'+h)}</div>
+   <div class="ptop">${mine?'<span></span>':`<button class="ic" onclick="openMe()">‹</button>`}<b>@${esc(h)}</b>${mine?`<button class="ic" onclick="openSettings()">⚙️</button>`:'<span style="width:40px"></span>'}</div>
+   <div class="prof"><div class="pav">👤</div><div style="font-size:19px;font-weight:800">${esc(mine?S.me.name:'@'+h)}${mine&&S.set.private?' 🔒':''}</div>
     <div class="stats"><div><b>${S.following.length&&mine?S.following.length:(mine?0:fmt(Math.round(followers/4)))}</b><small>${T('following')}</small></div><div><b>${fmt(followers)}</b><small>${T('followers')}</small></div><div><b>${fmt(likesTotal)}</b><small>${T('likes')}</small></div></div>
-    ${mine?`<div class="row" style="justify-content:center"><button class="btn g sm" onclick="editOpen()">${T('edit')}</button></div>`
-      :`<div class="row" style="justify-content:center"><button class="fl ${fol?'on':''}" style="padding:11px 30px;font-size:14px" onclick="toggleFollow('${h}')">${fol?T('followingB'):T('follow')}</button><button class="btn g sm" onclick="openChat('${h}')">${T('message')}</button></div>`}
+    ${mine?`<div class="row" style="justify-content:center"><button class="btn g sm" onclick="editOpen()">${T('edit')}</button><button class="btn g sm" onclick="openShare('__p')">↗️</button></div>`
+      :`<div class="row" style="justify-content:center"><button class="fl ${fol?'on':''}" style="padding:11px 30px;font-size:14px" onclick="toggleFollow('${h}')">${fol?T('followingB'):T('follow')}</button><button class="btn g sm" onclick="openChat('${h}')">${T('message')}</button><button class="btn g sm" onclick="blockUser('${h}')">🚫</button></div>`}
     <div class="bio">${esc(mine?(S.me.bio||T('bioDef')):T('bioDef'))}</div></div>
    ${mine?`<div class="stabs"><button class="${pTab==='mine'?'on':''}" onclick="pTab='mine';renderProfile()">🎬 ${T('myVideos')}</button><button class="${pTab==='saved'?'on':''}" onclick="pTab='saved';renderProfile()">🔖 ${T('saved')}</button><button class="${pTab==='liked'?'on':''}" onclick="pTab='liked';renderProfile()">❤️ ${T('liked')}</button></div>`:'<div class="stabs"><button class="on">🎬</button></div>'}
    <div class="tg">${list.length?list.map(tileHTML).join(''):`<div class="empty" style="grid-column:1/-1;padding:40px 10px">${pTab==='saved'?T('noSaved'):pTab==='liked'?T('noLiked'):T('noVids')}</div>`}</div>`;
@@ -656,8 +689,235 @@ function saveProfile(){
 async function resetAll(){
   if(!confirm(T('confirmReset')))return;
   try{await idb('clear')}catch(e){}
-  localStorage.removeItem(KEY);S=fresh();closeOv(null,'stOv');feedTab='foryou';applyStatic();go('home');
+  localStorage.removeItem(KEY);S=fresh();closeSettings();feedTab='foryou';applyStatic();applySettings();go('home');
 }
+
+/* ============ SETTINGS & PRIVACY ============ */
+const B=(a,b)=>S.lang==='so'?a:b;
+const ALLC=[['all','Dhammaan','Everyone'],['fol','Dadka aan raaco','People I follow'],['none','Qofna','No one']];
+const MEC=[['all','Dhammaan','Everyone'],['me','Kaliya adiga','Only you']];
+const CHOICES={
+ comments:{t:['Yaa faallo ku dari kara','Who can comment'],o:ALLC},
+ mentions:{t:['Yaa ku sheegi kara','Who can mention you'],o:ALLC},
+ dm:{t:['Yaa farriin kuu diri kara','Who can message you'],o:ALLC},
+ activity:{t:['Xaaladda dhaqdhaqaaqa','Activity status'],o:ALLC},
+ followList:{t:['Liiska aad raacayso','Following list'],o:MEC},
+ likedVis:{t:['Videos la jeclaaday','Liked videos'],o:MEC},
+ audience:{t:['Xakamaynta dhegaystayaasha','Audience control'],o:[['all','Dhammaan','Everyone'],['fol','Raacayaasha','Followers'],['me','Kaliya aniga','Only me']],h:['Waxay khusaysaa video kasta oo cusub oo aad daabacdo.','Applies to every new video you post.']},
+ limit:{t:['Xadka waqtiga maalinlaha','Daily screen time'],o:[[0,'Dami','Off'],[30,'30 daqiiqo','30 minutes'],[60,'1 saac','1 hour'],[120,'2 saac','2 hours']]},
+ breakEvery:{t:['Xusuusta nasashada','Break reminders'],o:[[0,'Dami','Off'],[20,'Ka dib 20 daqiiqo','Every 20 min'],[40,'Ka dib 40 daqiiqo','Every 40 min'],[60,'Ka dib 1 saac','Every hour']]}
+};
+const valLabel=k=>{const o=CHOICES[k].o.find(x=>x[0]===S.set[k]);return o?B(o[1],o[2]):''};
+const sR=(i,l,v,a)=>`<button class="sr" onclick="${a}"><span class="si">${i}</span><span class="sl">${l}</span>${v!==''&&v!=null?`<span class="sv">${v}</span>`:''}<span class="sc">›</span></button>`;
+const sTG=(i,l,k)=>`<div class="sr"><span class="si">${i}</span><span class="sl">${l}</span><label class="sw"><input type="checkbox" ${S.set[k]?'checked':''} onchange="setv('${k}',this.checked)"><i></i></label></div>`;
+const sG=(t,r)=>`${t?`<div class="sgt">${t}</div>`:'<div style="height:10px"></div>'}<div class="sg">${r}</div>`;
+const st2=(a,b)=>`<div><b>${a}</b><small>${b}</small></div>`;
+const onoff=k=>S.set[k]?B('Furan','On'):B('Xidhan','Off');
+const mineV=()=>S.videos.filter(v=>v.owner===S.me.handle);
+let setStack=[];
+function applySettings(){
+  document.documentElement.style.setProperty('--ac',S.set.accent||'#fe2c55');
+  document.body.classList.toggle('reduce',!!S.set.reduceMotion);
+  document.body.classList.toggle('big',!!S.set.bigText);
+  document.body.classList.toggle('hc',!!S.set.highContrast);
+}
+function openSettings(){
+  if(S.set.pin){const p=prompt(B('Geli PIN-ka','Enter PIN'));if(p!==S.set.pin){if(p!==null)toast(B('PIN khalad','Wrong PIN'));return}}
+  setStack=['main'];$('setPage').classList.add('on');renderSet();
+}
+function closeSettings(){$('setPage').classList.remove('on');setStack=[]}
+function openScr(id){setStack.push(id);renderSet()}
+function backSet(){setStack.pop();if(!setStack.length)closeSettings();else renderSet()}
+function renderSet(){
+  const id=setStack[setStack.length-1];if(!id)return;
+  const sc=SCR[id]();const b=$('setBody'),sp=b.scrollTop,same=renderSet._id===id;
+  $('setT').textContent=sc.t;b.innerHTML=sc.h;b.scrollTop=same?sp:0;renderSet._id=id;
+  if(sc.after)sc.after();
+}
+function setv(k,v){S.set[k]=v;save();applySettings();renderSet()}
+function pick(k,v){S.set[k]=v;save();applySettings();backSet()}
+function chScreen(k){const c=CHOICES[k];return{t:B(c.t[0],c.t[1]),h:sG('',c.o.map(x=>`<button class="sr ${S.set[k]===x[0]?'sel':''}" onclick='pick("${k}",${JSON.stringify(x[0])})'><span class="sl">${B(x[1],x[2])}</span><span class="rd"></span></button>`).join(''))+(c.h?`<div class="sub">${B(c.h[0],c.h[1])}</div>`:'')}}
+const txt=(a,b)=>`<div class="sub" style="font-size:14px">${B(a,b)}</div>`;
+const SCR={
+main:()=>({t:B('Habaynta iyo asturnaanta','Settings and privacy'),h:
+ sG('',sR('↗️',B('La wadaag profile-ka','Share profile'),'',"openShare('__p')"))
++sG(B('Muuqaalka','Visibility'),sTG('🔒',B('Akoon gaar ah','Private account'),'private')+sR('🚫',B('Akoonnada la xannibay','Blocked accounts'),S.blocked.length||'',"openScr('blocked')"))
++sG(B('Wada-xiriirka','Interactions'),
+  sR('💬',B('Faallooyin','Comments'),valLabel('comments'),"openScr('c:comments')")
+ +sR('@',B('Sheegidda (Mentions)','Mentions'),valLabel('mentions'),"openScr('c:mentions')")
+ +sR('✉️',B('Farriimaha toos ah','Direct messages'),valLabel('dm'),"openScr('c:dm')")
+ +sR('🟢',B('Xaaladda dhaqdhaqaaqa','Activity status'),valLabel('activity'),"openScr('c:activity')")
+ +sTG('🔁',B('Dib u isticmaalka nuxurka','Reuse of content'),'reuse')
+ +sTG('🔗',B('Tus profile-ka marka xiriir la wadaago','Display profile when sharing links'),'linkProfile')
+ +sTG('⬇️',B('Soo dejin (Downloads)','Downloads'),'downloads')
+ +sR('👥',B('Liiska aad raacayso','Following list'),valLabel('followList'),"openScr('c:followList')")
+ +sR('❤️',B('Videos la jeclaaday','Liked videos'),valLabel('likedVis'),"openScr('c:likedVis')")
+ +sTG('👣',B('Daawadayaasha','Viewers'),'viewers'))
++sG(B('Dhaqdhaqaaq','Activity'),
+  sR('🎞️',B('Maamul post-yada','Manage posts'),mineV().length,"openScr('manage')")
+ +sR('📹',B('Doorashooyinka nuxurka','Content preferences'),'',"openScr('content')")
+ +sR('🔴','LIVE','',"openScr('live')")
+ +sR('🔔',B('Ogeysiisyo','Notifications'),'',"openScr('notif')")
+ +sR('⏳',B('Waqtiga iyo caafimaadka','Time and well-being'),S.set.limit?S.set.limit+' min':'',"openScr('wellbeing')")
+ +sR('🏠',B('Isku-xidhka Qoyska','Family Pairing'),(S.set.kids||S.set.pin)?B('Furan','On'):'',"openScr('family')"))
++sG(B('Akoon','Account'),
+  sR('👤',B('Akoon','Account'),'',"openScr('account')")
+ +sR('🛡️',B('Amniga iyo ogolaanshaha','Security & permissions'),'',"openScr('security')")
+ +sR('📈','Analytics','',"openScr('analytics')")
+ +sR('🛍️',B('Dalabyadaada','Your orders'),'',"openScr('orders')"))
++sG(B('Nuxur & Muuqaal','Content & Display'),
+  sR('🎵',B('Muusig','Music'),'',"openScr('music')")
+ +sR('📨','Inbox & '+B('Farriimo','Messaging'),'',"openScr('inboxmsg')")
+ +sR('🕒',B('Xarunta dhaqdhaqaaqa','Activity center'),'',"openScr('activityc')")
+ +sR('👁️',B('Xakamaynta dhegaystayaasha','Audience control'),valLabel('audience'),"openScr('c:audience')")
+ +sR('📢',B('Xayeysiisyo','Ads'),'',"openScr('ads')")
+ +sR('▶️',B('Ciyaarista','Playback'),'',"openScr('playback')")
+ +sR('🌙',B('Muuqaalka','Display'),S.theme==='light'?B('Iftiin','Light'):B('Madow','Dark'),"openScr('display')")
+ +sR('🅰️',B('Luqadda','Language'),S.lang==='so'?'Soomaali':'English',"openScr('language')")
+ +sR('♿',B('Helitaanka (Accessibility)','Accessibility'),'',"openScr('access')")
+ +sR('📍',B('Xiriirada iyo goobta','Contacts and location'),'',"openScr('contacts')"))
++sG('Cache & '+B('Xog','Cellular'),
+  sR('☁️',B('Videos offline','Offline videos'),'',"openScr('offline')")
+ +sR('🗑️',B('Bannaan samee meel','Free up space'),'',"openScr('space')")
+ +sR('💧','Data Saver',onoff('dataSaver'),"openScr('datasaver')")
+ +sR('🎨',B('Midabka app-ka','Wallpaper'),'',"openScr('wallpaper')"))
++sG(B('Taageero & Ku saabsan','Support & About'),
+  sR('🎧',B('Xarunta Gargaarka','Help Center'),'',"openScr('help')")
+ +sR('🔒',B('Xarunta Asturnaanta','Privacy Center'),'',"openScr('privacyc')")
+ +sR('ℹ️',B('Ku saabsan SoomaaLink','About SoomaaLink'),'',"$('abOv').classList.add('on')")
+ +sR('📄',B('Shuruudaha iyo Siyaasadaha','Terms and Policies'),'',"openScr('terms')"))
++sG(B('Gelitaan','Login'),
+  sR('🔁',B('Beddel akoon','Switch account'),'@'+esc(S.me.handle),"openScr('switch')")
+ +sR('🚪',B('Ka bax','Log out'),'',"logout()"))
++`<div class="sub" style="text-align:center;margin:18px 0">SoomaaLink v1.0</div>`}),
+
+blocked:()=>({t:B('Akoonnada la xannibay','Blocked accounts'),h:S.blocked.length?sG('',S.blocked.map(h=>`<div class="sr"><span class="si">🚫</span><span class="sl">@${esc(h)}</span><button class="fl on" onclick="unblock('${esc(h)}')">${B('Fur','Unblock')}</button></div>`).join('')):`<div class="empty"><b>🚫</b>${B('Qofna lama xannibin','No blocked accounts')}</div>`+txt('Si aad qof u xannibto, fur profile-kiisa oo taabo 🚫.','To block someone, open their profile and tap 🚫.')}),
+
+manage:()=>{const m=mineV();return{t:B('Maamul post-yada','Manage posts'),h:m.length?sG('',m.map(v=>`<div class="sr"><span class="si">${v.demo?v.emoji:'🎬'}</span><span class="sl" style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(v.caption)}</span><span class="sv">${v.audience==='me'?'🔒':v.audience==='fol'?'👥':'🌍'}</span><button onclick="delVideo('${v.id}')" style="font-size:20px">🗑️</button></div>`).join('')):`<div class="empty"><b>🎞️</b>${T('noVids')}</div>`}},
+
+content:()=>({t:B('Doorashooyinka nuxurka','Content preferences'),h:sG('',CATS.map(c=>`<div class="sr"><span class="sl">${L[S.lang].cats[c]}</span><label class="sw"><input type="checkbox" ${(S.set.hideCats||[]).includes(c)?'':'checked'} onchange="toggleCat('${c}',this.checked)"><i></i></label></div>`).join(''))+txt('Qaybaha aad damiso kuma soo muuqdaan feed-kaaga iyo raadinta.','Categories you turn off will not appear in your feed or search.')}),
+
+live:()=>({t:'LIVE',h:sG('',sTG('💬',B('Ogolow faallooyinka Live','Allow comments in LIVE'),'liveComments')+sTG('🎁',B('Ogolow hadiyadaha','Allow gifts'),'liveGifts')+sR('🔴',B('Bilow LIVE hadda','Go LIVE now'),'',"closeSettings();openLive()"))+txt('Live waa tijaabo kamarad. Dadka kale ma arki karaan ilaa server la ku xidho.','Live is a camera test. Others cannot watch until a server is connected.')}),
+
+notif:()=>({t:B('Ogeysiisyo','Notifications'),h:sG('',sTG('❤️',B('Jecelo','Likes'),'nLikes')+sTG('💬',B('Faallooyin','Comments'),'nComments')+sTG('👤',B('Raacayaal cusub','New followers'),'nFollowers')+sTG('✉️',B('Farriimo','Messages'),'nMsgs'))}),
+
+wellbeing:()=>({t:B('Waqtiga iyo caafimaadka','Time and well-being'),h:sG('',sR('⏳',B('Xadka waqtiga maalinlaha','Daily screen time'),valLabel('limit'),"openScr('c:limit')")+sR('⏰',B('Xusuusta nasashada','Break reminders'),valLabel('breakEvery'),"openScr('c:breakEvery')"))+`<div class="sgt">${B('Maanta','Today')}</div><div class="stat2">${st2(Math.round(usage().m),B('daqiiqo','minutes'))}${st2(S.set.limit?Math.max(0,S.set.limit-Math.round(usage().m)):'∞',B('hadhay','left'))}</div>`}),
+
+family:()=>({t:B('Isku-xidhka Qoyska','Family Pairing'),h:sG('',sTG('🧒',B('Habka carruurta (xidh soo gelinta iyo Live)','Kids mode (turn off posting and LIVE)'),'kids')+sR('🔑',B('PIN-ka qoyska','Family PIN'),S.set.pin?B('La dejiyay','Set'):B('Lama dejin','Not set'),'setPin()')+(S.set.pin?sR('❌',B('Ka saar PIN-ka','Remove PIN'),'','removePin()'):''))+txt('PIN-kan waxaa la weydiinayaa marka Settings la furo, si carruurtu u beddeli waayaan.','The PIN is asked when opening Settings, so kids cannot change them.')}),
+
+account:()=>({t:B('Akoon','Account'),h:sG('',sR('✏️',B('Wax ka beddel profile-ka','Edit profile'),'@'+esc(S.me.handle),'editOpen()')+sR('🗑️',B('Tirtir xogta oo dhan','Clear all data'),'','resetAll()'))}),
+
+security:()=>({t:B('Amniga iyo ogolaanshaha','Security & permissions'),h:sG('',sR('🔑','PIN',S.set.pin?B('La dejiyay','Set'):B('Lama dejin','Not set'),'setPin()')+sR('📷',B('Hubi ogolaanshaha kamarada/mic','Check camera & mic permission'),'','checkPerms()')+sR('🎥',B('Weydii ogolaansho','Request access'),'','reqPerms()'))+txt('Kamarada waxay u baahan tahay https iyo ogolaansho.','Camera needs https and your permission.')}),
+
+analytics:()=>{const m=mineV(),sum=f=>m.reduce((a,v)=>a+f(v),0);return{t:'Analytics',h:`<div class="stat2">${st2(m.length,'Videos')}${st2(fmt(sum(v=>v.views||0)),B('Daawasho','Views'))}${st2(fmt(sum(v=>v.likes)),B('Jecelo','Likes'))}${st2(fmt(sum(v=>v.comments.length)),B('Faallooyin','Comments'))}${st2(fmt(sum(v=>v.shares||0)),B('La wadaagay','Shares'))}${st2(0,B('Raacayaal','Followers'))}</div>`}},
+
+orders:()=>({t:B('Dalabyadaada','Your orders'),h:`<div class="empty"><b>🛍️</b>${B('Dalab ma jiro weli','No orders yet')}</div>`}),
+
+music:()=>({t:B('Muusig','Music'),h:txt('Magaca codka caadiga ah ee video kasta oo aad daabacdo.','Default sound name for every video you post.')+`<input id="sMus" value="${esc(S.set.defMusic||'')}" maxlength="60" placeholder="Original sound"><button class="btn" style="margin-top:12px" onclick="saveMusic()">${T('saveB')}</button>`}),
+
+inboxmsg:()=>({t:'Inbox & '+B('Farriimo','Messaging'),h:sG('',sTG('👀',B('Tus horudhac farriimaha','Show message previews'),'preview')+sR('✉️',B('Yaa farriin kuu diri kara','Who can message you'),valLabel('dm'),"openScr('c:dm')"))}),
+
+activityc:()=>{const c=S.videos.reduce((a,v)=>a+v.comments.filter(x=>x.u===S.me.handle).length,0);return{t:B('Xarunta dhaqdhaqaaqa','Activity center'),h:`<div class="stat2">${st2(Math.round(usage().m),B('daqiiqo maanta','minutes today'))}${st2(S.videos.filter(v=>v.liked).length,B('La jeclaaday','Liked'))}${st2(S.videos.filter(v=>v.saved).length,B('La keydiyay','Saved'))}${st2(c,B('Faallooyinkaaga','Your comments'))}</div>`}},
+
+ads:()=>({t:B('Xayeysiisyo','Ads'),h:sG('',sTG('📢',B('Xayeysiisyo la shakhsiyeeyay','Personalized ads'),'ads'))+txt('SoomaaLink hadda ma muujiso xayeysiis. Doorashadan waxaa loo kaydiyay mustaqbalka.','SoomaaLink shows no ads right now. This choice is saved for the future.')}),
+
+playback:()=>({t:B('Ciyaarista','Playback'),h:sG('',sTG('▶️',B('Auto-play','Autoplay'),'autoplay')+`<div class="sr"><span class="si">🔇</span><span class="sl">${B('Cod la'+'’aan bilow','Start muted')}</span><label class="sw"><input type="checkbox" ${S.muted?'checked':''} onchange="toggleMute();renderSet()"><i></i></label></div>`)}),
+
+display:()=>({t:B('Muuqaalka','Display'),h:sG('',['dark','light'].map(m=>`<button class="sr ${S.theme===m?'sel':''}" onclick="setThemeTo('${m}')"><span class="si">${m==='dark'?'🌙':'☀️'}</span><span class="sl">${m==='dark'?B('Madow','Dark'):B('Iftiin','Light')}</span><span class="rd"></span></button>`).join(''))}),
+
+language:()=>({t:B('Luqadda','Language'),h:sG('',[['so','Soomaali'],['en','English']].map(l=>`<button class="sr ${S.lang===l[0]?'sel':''}" onclick="setLang('${l[0]}')"><span class="sl">${l[1]}</span><span class="rd"></span></button>`).join(''))}),
+
+access:()=>({t:'Accessibility',h:sG('',sTG('🔠',B('Qoraal weyn','Larger text'),'bigText')+sTG('🚫',B('Yaree dhaqdhaqaaqa','Reduce motion'),'reduceMotion')+sTG('🔆',B('Kala duwanaansho sare','High contrast'),'highContrast'))}),
+
+contacts:()=>({t:B('Xiriirada iyo goobta','Contacts and location'),h:sG('',sTG('📇',B('Ogolow xiriirada','Allow contacts'),'contacts')+sTG('📍',B('Ogolow goobta','Allow location'),'location'))+txt('Doorashooyinkan waa la kaydiyay; app-ku hadda xiriirkaaga ama goobtaada ma isticmaalo.','These choices are saved; the app does not use your contacts or location right now.')}),
+
+offline:()=>{const m=mineV().filter(v=>!v.demo);return{t:B('Videos offline','Offline videos'),h:(m.length?sG('',m.map(v=>`<div class="sr"><span class="si">🎬</span><span class="sl" style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(v.caption)}</span><span class="sv" id="sz_${v.id}">…</span></div>`).join('')):`<div class="empty"><b>☁️</b>${B('Video lagu keydiyay taleefanka ma jiro','No videos stored on this device')}</div>`)+txt('Videos-kaaga waxay ku jiraan taleefankaaga, sidaas darteed offline ayay u shaqeeyaan.','Your videos live on this device, so they work offline.'),after:()=>m.forEach(v=>idb('get',v.id).then(b=>{const e=$('sz_'+v.id);if(e)e.textContent=b?(b.size/1048576).toFixed(1)+' MB':'—'}).catch(()=>{}))}},
+
+space:()=>({t:B('Bannaan samee meel','Free up space'),h:`<div class="stat2"><div style="grid-column:1/-1"><b id="spUse">…</b><small>${B('Meesha la isticmaalay','Storage used')}</small></div></div><button class="btn g" style="margin-top:14px" onclick="clearCache()">${B('Nadiifi cache-ka','Clear cache')}</button>`+txt('Cache-ka waa xog ku meel gaar ah. Videos-kaaga lama tirtiro.','Cache is temporary data. Your videos are not deleted.'),after:()=>{if(navigator.storage&&navigator.storage.estimate)navigator.storage.estimate().then(e=>{const el=$('spUse');if(el)el.textContent=(e.usage/1048576).toFixed(1)+' MB / '+(e.quota/1073741824).toFixed(1)+' GB'})}}),
+
+datasaver:()=>({t:'Data Saver',h:sG('',sTG('💧','Data Saver','dataSaver'))+txt('Marka la furo, video-yada ma horay-soo-raran ilaa aad gaadho.','When on, videos are not pre-loaded until you reach them.')}),
+
+wallpaper:()=>({t:B('Midabka app-ka','Wallpaper'),h:`<div class="sg"><div class="sws">${['#fe2c55','#25d366','#2f80ff','#a855f7','#ff9a3c'].map(c=>`<button class="swc ${S.set.accent===c?'on':''}" style="background:${c}" onclick="setAccent('${c}')"></button>`).join('')}</div></div>`}),
+
+help:()=>({t:B('Xarunta Gargaarka','Help Center'),h:`<div class="sg">${[
+ [B('Sidee video u daabacaa?','How do I post a video?'),B('Taabo + → duub kamarada ama ka dooro taleefanka → qor sharaxaad → Daabac.','Tap + → record with camera or choose from phone → write a caption → Post.')],
+ [B('Maxaa Live dadka kale u muuqan waayaa?','Why can others not see my LIVE?'),B('Live hadda waa tijaabo kamarad. Si dad kale u arkaan waxaa loo baahan yahay server.','Live is a camera test for now. Others need a server to watch.')],
+ [B('Sidee video u tirtiraa?','How do I delete a video?'),B('Settings → Maamul post-yada → taabo 🗑️.','Settings → Manage posts → tap 🗑️.')],
+ [B('Sidee qof u xannibaa?','How do I block someone?'),B('Fur profile-ka qofka oo taabo 🚫.','Open their profile and tap 🚫.')]
+].map(q=>`<div class="faq"><b>${q[0]}</b><p>${q[1]}</p></div>`).join('')}</div>`}),
+
+privacyc:()=>({t:B('Xarunta Asturnaanta','Privacy Center'),h:txt('🔒 Xogtaada (videos, faallooyin, habayn) waxay ku kaydsan tahay taleefankaaga (browser-ka) kaliya. Ma loo dirin server.','🔒 Your data (videos, comments, settings) is stored on your device (browser) only. Nothing is sent to a server.')+txt('Waxaad tirtiri kartaa wax walba: Settings → Akoon → Tirtir xogta oo dhan.','You can delete everything: Settings → Account → Clear all data.')+txt('Kamarada iyo makarafoonka waxaa la isticmaalaa kaliya marka aad duubayso ama Live bilowdo.','Camera and microphone are used only when you record or go LIVE.')}),
+
+terms:()=>({t:B('Shuruudaha iyo Siyaasadaha','Terms and Policies'),h:`<div class="sub" style="font-size:14px;white-space:pre-line">${esc(T('rules'))}</div>`}),
+
+'switch':()=>({t:B('Beddel akoon','Switch account'),h:accountsHTML()})
+};
+Object.keys(CHOICES).forEach(k=>SCR['c:'+k]=()=>chScreen(k));
+
+function toggleCat(c,on){const a=(S.set.hideCats||[]).filter(x=>x!==c);if(!on)a.push(c);S.set.hideCats=a;save();renderSet()}
+function delVideo(id){if(!confirm(B('Tirtir video-gan?','Delete this video?')))return;S.videos=S.videos.filter(v=>v.id!==id);try{idb('del',id)}catch(e){};delete urls[id];save();renderSet();toast(B('La tirtiray','Deleted'))}
+function setPin(){const p=prompt(B('Geli PIN 4 lambar ah','Enter a 4-digit PIN'));if(p===null)return;if(!/^\d{4}$/.test(p)){toast(B('PIN waa inuu noqdaa 4 lambar','PIN must be 4 digits'));return}S.set.pin=p;save();renderSet();toast(B('PIN waa la dejiyay','PIN set'))}
+function removePin(){const p=prompt(B('Geli PIN-ka hadda','Enter current PIN'));if(p!==S.set.pin){if(p!==null)toast(B('PIN khalad','Wrong PIN'));return}S.set.pin='';save();renderSet()}
+async function checkPerms(){
+  if(!navigator.permissions){toast(B('Browser-kaagu ma muujiyo xaaladda','Your browser does not report status'));return}
+  const out=[];
+  for(const n of ['camera','microphone']){try{const r=await navigator.permissions.query({name:n});out.push((n==='camera'?'📷 ':'🎤 ')+r.state)}catch(e){out.push(n+': ?')}}
+  toast(out.join('  ·  '));
+}
+async function reqPerms(){
+  try{const s=await navigator.mediaDevices.getUserMedia({video:true,audio:true});s.getTracks().forEach(t=>t.stop());toast(B('✅ Ogolaansho waa la helay','✅ Access granted'))}catch(e){toast(T('camErr'))}
+}
+function saveMusic(){S.set.defMusic=$('sMus').value.trim().slice(0,60);save();toast(T('saveT'))}
+function clearCache(){
+  Object.values(urls).forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});for(const k in urls)delete urls[k];
+  try{sessionStorage.clear()}catch(e){}
+  if(window.caches)caches.keys().then(ks=>ks.forEach(k=>caches.delete(k)));
+  toast(B('Cache waa la nadiifiyay','Cache cleared'));render();
+}
+function setThemeTo(m){S.theme=m;save();applyStatic();renderSet()}
+function setLang(l){S.lang=l;save();applyStatic();render();renderSet()}
+function setAccent(c){S.set.accent=c;save();applySettings();renderSet()}
+function blockUser(h){if(!confirm(B('Xannib @'+h+'?','Block @'+h+'?')))return;if(!S.blocked.includes(h))S.blocked.push(h);S.following=S.following.filter(x=>x!==h);save();toast(B('La xannibay','Blocked'));openMe()}
+function unblock(h){S.blocked=S.blocked.filter(x=>x!==h);save();renderSet()}
+async function downloadVid(id){
+  const b=await idb('get',id);if(!b){toast(B('Video lama helin','Video not found'));return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=b.name||('soomaalink-'+id+'.webm');document.body.appendChild(a);a.click();a.remove();toast(B('Waa la soo dejiyay','Downloaded'));
+}
+/* accounts */
+function getAccts(){
+  if(!S.accounts)S.accounts=[{...S.me}];
+  const i=S.accounts.findIndex(a=>a.handle===S.me.handle);
+  if(i<0)S.accounts.push({...S.me});else S.accounts[i]={...S.me};
+  return S.accounts;
+}
+function accountsHTML(){
+  const A=getAccts();
+  return sG('',A.map((a,i)=>`<button class="sr ${a.handle===S.me.handle&&!S.loggedOut?'sel':''}" onclick="switchTo(${i})"><span class="si">👤</span><span class="sl">${esc(a.name)}<small style="display:block;color:var(--mu);font-weight:400">@${esc(a.handle)}</small></span><span class="rd"></span></button>`).join(''))
+   +`<div class="sgt">${B('Ku dar akoon','Add account')}</div><input id="newAcc" maxlength="30" placeholder="${B('Magaca','Name')}"><button class="btn" style="margin-top:10px" onclick="addAccount()">${B('Ku dar oo gal','Add & log in')}</button>`;
+}
+function switchTo(i){
+  getAccts();S.accounts=getAccts();S.me={...S.accounts[i]};S.loggedOut=false;save();
+  $('loginOv').classList.remove('on');closeSettings();viewUser=null;feedTab='foryou';render();toast('@'+S.me.handle);
+}
+function addAccount(){
+  const n=$('newAcc').value.trim();if(!n)return;
+  let h=n.toLowerCase().replace(/[^a-z0-9_]/g,'')||'user'+(Date.now()%10000);
+  const A=getAccts();while(A.some(a=>a.handle===h))h+=Math.floor(Math.random()*10);
+  A.push({name:n.slice(0,30),handle:h,bio:''});switchTo(A.length-1);
+}
+function logout(){if(!confirm(B('Ma hubtaa inaad ka baxdo?','Log out?')))return;S.loggedOut=true;save();closeSettings();showLogin()}
+function showLogin(){$('loginBody').innerHTML=accountsHTML();$('loginOv').classList.add('on')}
+/* time & well-being */
+function usage(){try{const u=JSON.parse(localStorage.getItem('sl_use'))||{};const d=new Date().toDateString();return u.d===d?u:{d,m:0}}catch(e){return{d:new Date().toDateString(),m:0}}}
+let sessMin=0;
+function startUsage(){setInterval(()=>{
+  if(document.hidden)return;
+  const u=usage();u.m+=0.5;sessMin+=0.5;try{localStorage.setItem('sl_use',JSON.stringify(u))}catch(e){}
+  const lim=S.set.limit;
+  if(lim&&u.m>=lim&&Date.now()>(S.set.snooze||0)){document.querySelectorAll('video').forEach(v=>v.pause());S.set.snooze=Date.now()+10*60000;save();alert(B('Waxaad gaadhay xadka waqtiga maalinlaha ('+lim+' daqiiqo). Nasasho yar qaado 🌿','Daily limit reached ('+lim+' min). Take a short break 🌿'))}
+  const br=S.set.breakEvery;
+  if(br&&sessMin>=br){sessMin=0;toast(B('⏰ Waqti nasasho ah! '+br+' daqiiqo ayaad daawatay','⏰ Time for a break! You watched for '+br+' minutes'))}
+},30000)}
 
 /* ============ RENDER ============ */
 function render(){
@@ -667,7 +927,7 @@ function render(){
   if(cur==='inbox')renderInbox();
   if(cur==='profile')renderProfile();
 }
-applyStatic();render();
+applyStatic();applySettings();render();startUsage();if(S.loggedOut)showLogin();
 /* resume playback when returning to the tab */
 document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else if(cur==='home'){const el=document.querySelector(`.reel[data-id="${activeId}"] video`);if(el&&el.src)tryPlay(el)}});
 </script>
