@@ -193,7 +193,7 @@ body.hc{--mu:#d0d0d0;--bd:#777}body.light.hc{--mu:#333;--bd:#888}
 <!-- HOME -->
 <div id="home" class="page on">
   <div class="htop">
-    <button class="livebtn" onclick="openLive()">● LIVE</button>
+    <button class="livebtn" onclick="openLiveMenu()">● LIVE</button>
     <div class="htabs"><button id="tFol" onclick="setFeed('following')"></button><button id="tFyp" class="on" onclick="setFeed('foryou')"></button></div>
     <div class="row" style="gap:6px"><button class="tb" id="muteB" onclick="toggleMute()">🔊</button><button class="tb" onclick="go('discover')">🔍</button></div>
   </div>
@@ -311,11 +311,21 @@ body.hc{--mu:#d0d0d0;--bd:#777}body.light.hc{--mu:#333;--bd:#888}
   <div class="fbot"><button class="recb" id="recB" onclick="toggleRec()"><i></i></button><div style="text-align:center;margin-top:8px;font-size:12px;opacity:.8" data-i="maxLen"></div></div>
 </div>
 
+<!-- LIVE MENU -->
+<div class="ov" id="lvOv" onclick="closeOv(event,'lvOv')"><div class="sheet">
+  <div class="sh"><span>🔴 LIVE</span><button onclick="closeOv(null,'lvOv')">✕</button></div>
+  <button class="btn" id="lvGo" onclick="closeOv(null,'lvOv');openLive()"></button>
+  <div class="sh" style="margin-top:20px" id="lvWT"></div>
+  <input id="lvCode" maxlength="200" onkeydown="if(event.key==='Enter')watchFromInput()">
+  <button class="btn g" style="margin-top:10px" id="lvWatch" onclick="watchFromInput()"></button>
+  <div id="lvNote2" style="color:var(--mu);font-size:12px;margin-top:12px;line-height:1.5"></div>
+</div></div>
+
 <!-- LIVE -->
 <div class="full" id="liveOv">
   <video id="liveV" autoplay muted playsinline></video>
-  <div class="ftop"><div class="row"><span class="livebtn">● LIVE</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveT">0:00</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px">👁 1</span></div><button class="tb" onclick="endLive()">✕</button></div>
-  <div style="position:absolute;top:calc(64px + env(safe-area-inset-top));left:14px;right:14px;background:#0008;border-radius:10px;padding:8px 12px;font-size:12px;z-index:3" data-i="liveNote"></div>
+  <div class="ftop"><div class="row"><span class="livebtn">● LIVE</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveT">0:00</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveViews">👁 0</span></div><div class="row"><button class="tb" id="liveShareB" onclick="liveShare()">🔗</button><button class="tb" onclick="endLive()">✕</button></div></div>
+  <div id="liveNote" style="position:absolute;top:calc(64px + env(safe-area-inset-top));left:14px;right:14px;background:#0008;border-radius:10px;padding:8px 12px;font-size:13px;z-index:3"></div>
   <div class="fbot"><div class="lchat" id="liveChat"></div>
     <div class="row"><input id="liveIn" maxlength="120" data-ph="writeCm" style="background:#0007;border-color:#fff3;color:#fff" onkeydown="if(event.key==='Enter')liveSend()"><button class="tb" onclick="liveHeart()">❤️</button><button class="tb" onclick="liveSend()">➤</button></div></div>
 </div>
@@ -591,17 +601,145 @@ function toggleRec(){
   rec.timer=setInterval(()=>{const s=Math.floor((Date.now()-rec.t0)/1000);$('camT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s>=60)rec.mr.stop()},250);
 }
 
-/* ============ LIVE (local preview) ============ */
-let live={stream:null,t0:0,timer:null,hearts:null};
-async function openLive(){if(S.set.kids){toast(B('Habka carruurta: Live waa xidhan yahay','Kids mode: Live is off'));return}
-  try{live.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true})}catch(e){toast(T('camErr'));return}
-  $('liveV').srcObject=live.stream;$('liveOv').classList.add('on');$('liveChat').innerHTML='';
-  live.t0=Date.now();live.timer=setInterval(()=>{const s=Math.floor((Date.now()-live.t0)/1000);$('liveT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},500);
-  toast(T('liveStart'));
+/* ============ LIVE (real, peer-to-peer WebRTC via PeerJS) ============ */
+let LV={peer:null,stream:null,host:false,conns:[],conn:null,t0:0,timer:null,failT:null,gotStream:false,ending:false,loading:null};
+const lvId=h=>'soomaalink-live-'+String(h).toLowerCase().replace(/[^a-z0-9_]/g,'');
+function loadPeer(){
+  if(window.Peer)return Promise.resolve();
+  if(LV.loading)return LV.loading;
+  return LV.loading=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';sc.onload=res;sc.onerror=()=>{LV.loading=null;rej(new Error('peerjs'))};document.head.appendChild(sc)});
 }
-function endLive(){clearInterval(live.timer);if(live.stream){live.stream.getTracks().forEach(t=>t.stop());live.stream=null}$('liveOv').classList.remove('on');toast(T('liveEnd'))}
-function liveSend(){const i=$('liveIn'),t=i.value.trim();if(!t)return;if(S.set.liveComments===false){toast(B('Faallooyinka Live waa la xidhay','Live comments are off'));return}i.value='';const d=document.createElement('div');d.innerHTML=`<b>@${esc(S.me.handle)}</b> ${esc(t)}`;$('liveChat').appendChild(d);while($('liveChat').children.length>8)$('liveChat').firstChild.remove()}
-function liveHeart(){const h=document.createElement('div');h.className='fh';h.textContent='❤️';h.style.right=(14+Math.random()*40)+'px';h.style.bottom='90px';$('liveOv').appendChild(h);setTimeout(()=>h.remove(),2200)}
+function openLiveMenu(){
+  $('lvGo').textContent=B('🔴 Bilow Live (kamarada)','🔴 Go LIVE (camera)');
+  $('lvWT').textContent=B('👀 Daawo Live','👀 Watch a LIVE');
+  $('lvCode').placeholder=B('Magaca (tusaale: masuulsare784) ama link','Username (e.g. masuulsare784) or link');
+  $('lvWatch').textContent=B('Daawo','Watch');
+  $('lvNote2').textContent=B('Marka aad Live bilowdo, taabo 🔗 si aad link ugu dirto dadka. Waxay ku furi doonaan SoomaaLink oo toos u daawan doonaan.','When you go LIVE, tap 🔗 to send the link. People open it in SoomaaLink and watch instantly.');
+  $('lvOv').classList.add('on');
+}
+function showLiveUI(host){
+  $('liveOv').classList.add('on');$('liveChat').innerHTML='';
+  $('liveShareB').style.display=host?'':'none';
+  $('liveViews').textContent='👁 '+(host?0:'');
+  const n=$('liveNote');n.style.display='block';
+}
+async function openLive(){
+  if(S.set.kids){toast(B('Habka carruurta: Live waa xidhan yahay','Kids mode: Live is off'));return}
+  if(LV.peer){return}
+  let stream;
+  try{await loadPeer()}catch(e){toast(B('Internet ma jiro (PeerJS lama soo dejin)','No internet (could not load PeerJS)'));return}
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true})}catch(e){toast(T('camErr'));return}
+  LV.stream=stream;LV.host=true;LV.conns=[];LV.ending=false;
+  showLiveUI(true);
+  const v=$('liveV');v.srcObject=stream;v.muted=true;
+  $('liveNote').textContent=B('Ku xirmaya server-ka...','Connecting...');
+  const id=lvId(S.me.handle),peer=new Peer(id);LV.peer=peer;
+  peer.on('open',()=>{
+    $('liveNote').textContent=B('🔴 Waad Live tahay! Taabo 🔗 si aad link ugu dirto dadka.','🔴 You are LIVE! Tap 🔗 to send the link to people.');
+    setTimeout(()=>{if(LV.host)$('liveNote').style.display='none'},7000);toast(T('liveStart'));
+  });
+  peer.on('connection',conn=>{
+    conn.on('open',()=>{LV.conns.push(conn);try{peer.call(conn.peer,stream)}catch(e){}lvCount()});
+    conn.on('data',d=>{
+      if(!d)return;
+      if(d.type==='chat'&&S.set.liveComments!==false){lvChat(d.name,d.text);lvBroadcast({type:'chat',name:d.name,text:d.text})}
+      else if(d.type==='heart'){liveHeart(true);lvBroadcast({type:'heart'})}
+    });
+    conn.on('close',()=>{LV.conns=LV.conns.filter(c=>c!==conn);lvCount()});
+    conn.on('error',()=>{});
+  });
+  peer.on('error',e=>{
+    if(e.type==='unavailable-id')toast(B('Live-kaaga mid kale ayaa socda. Xidh kii hore, sug 30 ilbiriqsi, oo isku day.','Your LIVE is already running somewhere. Close it, wait 30s and retry.'));
+    else toast('Live: '+e.type);
+    endLive(true);
+  });
+  LV.t0=Date.now();clearInterval(LV.timer);
+  LV.timer=setInterval(()=>{const t=Math.floor((Date.now()-LV.t0)/1000);$('liveT').textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0')},500);
+}
+function lvBroadcast(m){LV.conns.forEach(c=>{try{c.send(m)}catch(e){}})}
+function lvCount(){const n=LV.conns.length;$('liveViews').textContent='👁 '+n;lvBroadcast({type:'count',n})}
+function lvChat(name,text){
+  const d=document.createElement('div');d.innerHTML=`<b>@${esc(name)}</b> ${esc(text)}`;
+  const c=$('liveChat');c.appendChild(d);while(c.children.length>8)c.firstChild.remove();
+}
+function watchFromInput(){
+  let t=$('lvCode').value.trim();if(!t)return;
+  const m=t.match(/live=([A-Za-z0-9_]+)/);if(m)t=m[1];
+  t=t.replace(/^@/,'').toLowerCase().replace(/[^a-z0-9_]/g,'');
+  if(!t){return}
+  closeOv(null,'lvOv');watchLive(t);
+}
+async function watchLive(handle){
+  if(LV.peer)return;
+  if(handle===S.me.handle){toast(B('Tani waa akoonkaaga','That is your own account'));return}
+  try{await loadPeer()}catch(e){toast(B('Internet ma jiro (PeerJS lama soo dejin)','No internet (could not load PeerJS)'));return}
+  LV.host=false;LV.gotStream=false;LV.ending=false;LV.conns=[];
+  showLiveUI(false);
+  $('liveT').textContent='@'+handle;
+  $('liveNote').textContent=B('Ku xirmaya @'+handle+'...','Connecting to @'+handle+'...');
+  const peer=new Peer();LV.peer=peer;
+  peer.on('open',()=>{
+    const conn=peer.connect(lvId(handle),{reliable:true});LV.conn=conn;
+    LV.failT=setTimeout(()=>{if(!LV.gotStream&&LV.peer){toast(B('@'+handle+' hadda Live ma aha','@'+handle+' is not live right now'));endLive(true)}},15000);
+    conn.on('open',()=>conn.send({type:'join',name:S.me.handle}));
+    conn.on('data',d=>{
+      if(!d)return;
+      if(d.type==='chat')lvChat(d.name,d.text);
+      else if(d.type==='heart')liveHeart(true);
+      else if(d.type==='count')$('liveViews').textContent='👁 '+d.n;
+      else if(d.type==='end'){toast(B('Live wuu dhammaaday','LIVE ended'));endLive(true)}
+    });
+    conn.on('close',()=>{if(LV.peer&&!LV.ending){toast(B('Live wuu dhammaaday','LIVE ended'));endLive(true)}});
+  });
+  peer.on('call',call=>{
+    call.answer();
+    call.on('stream',st=>{
+      LV.gotStream=true;clearTimeout(LV.failT);
+      const v=$('liveV');v.srcObject=st;v.muted=false;v.play().catch(()=>{v.muted=true;v.play().catch(()=>{})});
+      $('liveNote').style.display='none';
+    });
+  });
+  peer.on('error',e=>{
+    if(e.type==='peer-unavailable')toast(B('@'+handle+' hadda Live ma aha','@'+handle+' is not live right now'));
+    else toast('Live: '+e.type);
+    endLive(true);
+  });
+}
+function endLive(silent){
+  if(LV.ending)return;LV.ending=true;
+  if(LV.host)lvBroadcast({type:'end'});
+  clearTimeout(LV.failT);clearInterval(LV.timer);
+  try{LV.conn&&LV.conn.close()}catch(e){}
+  LV.conns.forEach(c=>{try{c.close()}catch(e){}});
+  try{LV.peer&&LV.peer.destroy()}catch(e){}
+  LV.peer=null;LV.conn=null;LV.conns=[];LV.gotStream=false;
+  if(LV.stream){LV.stream.getTracks().forEach(t=>t.stop());LV.stream=null}
+  const v=$('liveV');v.srcObject=null;$('liveOv').classList.remove('on');
+  if(silent!==true)toast(T('liveEnd'));
+  LV.host=false;
+}
+function liveSend(){
+  const i=$('liveIn'),t=i.value.trim();if(!t)return;
+  if(S.set.liveComments===false&&LV.host){toast(B('Faallooyinka Live waa la xidhay','Live comments are off'));return}
+  i.value='';
+  if(LV.host){lvChat(S.me.handle,t);lvBroadcast({type:'chat',name:S.me.handle,text:t})}
+  else if(LV.conn&&LV.conn.open)LV.conn.send({type:'chat',name:S.me.handle,text:t});
+}
+function liveHeart(remote){
+  const h=document.createElement('div');h.className='fh';h.textContent='❤️';h.style.right=(14+Math.random()*50)+'px';h.style.bottom='90px';$('liveOv').appendChild(h);setTimeout(()=>h.remove(),2200);
+  if(remote===true)return;
+  if(LV.host)lvBroadcast({type:'heart'});else if(LV.conn&&LV.conn.open)LV.conn.send({type:'heart'});
+}
+function liveShare(){
+  const url=location.href.split('#')[0]+'#live='+S.me.handle,text=B('Daawo Live-kayga SoomaaLink 🔴','Watch my SoomaaLink LIVE 🔴');
+  if(navigator.share)navigator.share({title:'SoomaaLink LIVE',text,url}).catch(()=>{});
+  else{(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast(T('copied'))).catch(()=>prompt('Link:',url))}
+}
+function checkLiveHash(){
+  const m=location.hash.match(/live=([A-Za-z0-9_]+)/);
+  if(m){const h=m[1].toLowerCase();history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>watchLive(h),600)}
+}
+window.addEventListener('hashchange',checkLiveHash);
 
 /* ============ COMMENTS ============ */
 let cmId=null;
@@ -797,7 +935,7 @@ manage:()=>{const m=mineV();return{t:B('Maamul post-yada','Manage posts'),h:m.le
 
 content:()=>({t:B('Doorashooyinka nuxurka','Content preferences'),h:sG('',CATS.map(c=>`<div class="sr"><span class="sl">${L[S.lang].cats[c]}</span><label class="sw"><input type="checkbox" ${(S.set.hideCats||[]).includes(c)?'':'checked'} onchange="toggleCat('${c}',this.checked)"><i></i></label></div>`).join(''))+txt('Qaybaha aad damiso kuma soo muuqdaan feed-kaaga iyo raadinta.','Categories you turn off will not appear in your feed or search.')}),
 
-live:()=>({t:'LIVE',h:sG('',sTG('💬',B('Ogolow faallooyinka Live','Allow comments in LIVE'),'liveComments')+sTG('🎁',B('Ogolow hadiyadaha','Allow gifts'),'liveGifts')+sR('🔴',B('Bilow LIVE hadda','Go LIVE now'),'',"closeSettings();openLive()"))+txt('Live waa tijaabo kamarad. Dadka kale ma arki karaan ilaa server la ku xidho.','Live is a camera test. Others cannot watch until a server is connected.')}),
+live:()=>({t:'LIVE',h:sG('',sTG('💬',B('Ogolow faallooyinka Live','Allow comments in LIVE'),'liveComments')+sTG('🎁',B('Ogolow hadiyadaha','Allow gifts'),'liveGifts')+sR('🔴',B('Bilow LIVE hadda','Go LIVE now'),'',"closeSettings();openLiveMenu()"))+txt('Live waa tijaabo kamarad. Dadka kale ma arki karaan ilaa server la ku xidho.','Live is a camera test. Others cannot watch until a server is connected.')}),
 
 notif:()=>({t:B('Ogeysiisyo','Notifications'),h:sG('',sTG('❤️',B('Jecelo','Likes'),'nLikes')+sTG('💬',B('Faallooyin','Comments'),'nComments')+sTG('👤',B('Raacayaal cusub','New followers'),'nFollowers')+sTG('✉️',B('Farriimo','Messages'),'nMsgs'))}),
 
@@ -927,7 +1065,7 @@ function render(){
   if(cur==='inbox')renderInbox();
   if(cur==='profile')renderProfile();
 }
-applyStatic();applySettings();render();startUsage();if(S.loggedOut)showLogin();
+applyStatic();applySettings();render();startUsage();if(S.loggedOut)showLogin();checkLiveHash();
 /* resume playback when returning to the tab */
 document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else if(cur==='home'){const el=document.querySelector(`.reel[data-id="${activeId}"] video`);if(el&&el.src)tryPlay(el)}});
 </script>
