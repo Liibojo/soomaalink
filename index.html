@@ -152,6 +152,25 @@ body.light .nav.lt{background:#fff;color:#111;border-color:#ddd}
 .fh{position:absolute;font-size:34px;z-index:4;animation:fl 2.2s ease-out forwards;pointer-events:none}
 .tdel{position:absolute;top:5px;right:5px;z-index:3;width:32px;height:32px;border-radius:50%;background:#000a;font-size:16px;display:flex;align-items:center;justify-content:center}
 @keyframes fl{to{transform:translateY(-300px);opacity:0}}
+.full canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#lsSetup{position:absolute;inset:0;display:none;flex-direction:column;justify-content:flex-end;z-index:4}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 4px;padding:0 10px 16px;color:#fff;text-shadow:0 1px 4px #000}
+.tool{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600}
+.tool i{font-style:normal;font-size:28px}
+.setbox{background:#000b;border-radius:20px 20px 0 0;padding:14px 14px calc(12px + env(safe-area-inset-bottom))}
+.setbox input,.setbox select{background:#fff2;border-color:#fff3;color:#fff}
+.setbox select option{color:#000}
+.bigb{background:var(--ac);color:#fff;border-radius:30px;padding:15px;font-size:18px;font-weight:800;width:100%;margin-top:12px}
+.modes{display:flex;justify-content:center;gap:28px;margin-top:12px;font-weight:700;font-size:15px}
+.modes button{opacity:.5;color:#fff}.modes button.on{opacity:1}
+#lvCd{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:130px;font-weight:800;z-index:6;background:#0006;color:#fff}
+.lmeta{position:absolute;top:calc(62px + env(safe-area-inset-top));left:12px;right:12px;z-index:3;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.lchip{background:#0009;border-radius:12px;padding:8px 12px;font-size:13px;color:#fff;max-width:100%;line-height:1.4}
+.lchip a{text-decoration:underline}
+.gbar{height:6px;background:#fff3;border-radius:3px;margin-top:5px;overflow:hidden;min-width:180px}.gbar div{height:100%;background:var(--ac);width:0}
+.pv{display:block;width:100%;text-align:left;background:#fff2;border-radius:8px;padding:8px 10px;margin-top:5px;color:#fff}
+.pr{position:relative;display:flex;justify-content:space-between;gap:12px;margin-top:5px;padding:7px 10px;border-radius:8px;background:#fff1;overflow:hidden;z-index:0}
+.pr i{position:absolute;left:0;top:0;bottom:0;background:#fe2c5588;z-index:-1}
 :root{--sbg:#0b0b0b;--scd:#1c1c1c}body.light{--sbg:#f5f5f5;--scd:#fff}
 #setPage{position:absolute;inset:0;z-index:90;background:var(--sbg);color:var(--tx);display:none;flex-direction:column}
 #setPage.on{display:flex}
@@ -325,12 +344,44 @@ body.hc{--mu:#d0d0d0;--bd:#777}body.light.hc{--mu:#333;--bd:#888}
 
 <!-- LIVE -->
 <div class="full" id="liveOv">
-  <video id="liveV" autoplay muted playsinline></video>
-  <div class="ftop"><div class="row"><span class="livebtn">● LIVE</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveT">0:00</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveViews">👁 0</span></div><div class="row"><button class="tb" id="liveShareB" onclick="liveShare()">🔗</button><button class="tb" onclick="endLive()">✕</button></div></div>
-  <div id="liveNote" style="position:absolute;top:calc(64px + env(safe-area-inset-top));left:14px;right:14px;background:#0008;border-radius:10px;padding:8px 12px;font-size:13px;z-index:3"></div>
-  <div class="fbot"><div class="lchat" id="liveChat"></div>
-    <div class="row"><input id="liveIn" maxlength="120" data-ph="writeCm" style="background:#0007;border-color:#fff3;color:#fff" onkeydown="if(event.key==='Enter')liveSend()"><button class="tb" onclick="liveHeart()">❤️</button><button class="tb" onclick="liveSend()">➤</button></div></div>
+  <canvas id="liveC" width="540" height="960"></canvas>
+  <video id="liveV" autoplay playsinline style="display:none"></video>
+
+  <div id="lsSetup">
+    <button class="tb" style="position:absolute;top:calc(12px + env(safe-area-inset-top));left:14px" onclick="lvCloseSetup()">✕</button>
+    <div class="tools" id="toolsSetup"></div>
+    <div class="setbox">
+      <div class="row"><input id="lsTitle" maxlength="60"><select id="lsGoal" style="width:130px;flex-shrink:0"></select></div>
+      <button class="bigb" id="lvGoBtn" onclick="lvGo()">Go LIVE</button>
+      <div class="modes"><button id="mdVoice" onclick="lvSetMode('voice')"></button><button id="mdCam" class="on" onclick="lvSetMode('cam')"></button></div>
+    </div>
+  </div>
+
+  <div id="lsLive" style="display:none">
+    <div class="ftop"><div class="row"><span class="livebtn">● LIVE</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveT">0:00</span><span style="background:#0007;border-radius:6px;padding:4px 9px;font-size:12px" id="liveViews">👁 0</span></div>
+      <div class="row"><button class="tb" id="liveToolsB" onclick="lvOpenTools()">⋯</button><button class="tb" id="liveShareB" onclick="liveShare()">🔗</button><button class="tb" onclick="endLive()">✕</button></div></div>
+    <div class="lmeta">
+      <div class="lchip" id="liveTitle" style="display:none"></div>
+      <div class="lchip" id="livePin" style="display:none"></div>
+      <div class="lchip" id="liveGoal" style="display:none"><span id="goalTxt"></span><div class="gbar"><div id="goalFill"></div></div></div>
+      <div class="lchip" id="livePoll" style="display:none;min-width:220px"></div>
+      <div class="lchip" id="liveNote"></div>
+    </div>
+    <button class="tb" id="liveGuestBtn" style="position:absolute;right:12px;bottom:calc(120px + env(safe-area-inset-bottom));z-index:4;display:none" onclick="lvGuestAsk()">🎤</button>
+    <div class="fbot"><div class="lchat" id="liveChat"></div>
+      <div class="row"><input id="liveIn" maxlength="120" data-ph="writeCm" style="background:#0007;border-color:#fff3;color:#fff" onkeydown="if(event.key==='Enter')liveSend()"><button class="tb" onclick="liveHeart()">❤️</button><button class="tb" onclick="liveSend()">➤</button></div></div>
+  </div>
+  <div id="lvCd"></div>
 </div>
+
+<div class="ov" id="lvTools" style="z-index:170" onclick="closeOv(event,'lvTools')"><div class="sheet">
+  <div class="sh"><span>🔴 LIVE</span><button onclick="closeOv(null,'lvTools')">✕</button></div>
+  <div class="tools" id="toolsLive" style="color:var(--tx);text-shadow:none;padding:0"></div>
+</div></div>
+<div class="ov" id="lvPanel" style="z-index:170" onclick="closeOv(event,'lvPanel')"><div class="sheet">
+  <div class="sh"><span id="lpT"></span><button onclick="closeOv(null,'lvPanel')">✕</button></div>
+  <div id="lpB"></div>
+</div></div>
 
 <div class="toast" id="toast"></div>
 </div>
@@ -603,14 +654,23 @@ function toggleRec(){
   rec.timer=setInterval(()=>{const s=Math.floor((Date.now()-rec.t0)/1000);$('camT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s>=60)rec.mr.stop()},250);
 }
 
-/* ============ LIVE (real, peer-to-peer WebRTC via PeerJS) ============ */
-let LV={peer:null,stream:null,host:false,conns:[],conn:null,t0:0,timer:null,failT:null,gotStream:false,ending:false,loading:null};
+/* ============ LIVE (TikTok-style, peer-to-peer WebRTC via PeerJS) ============ */
+const LV={peer:null,conn:null,conns:[],host:false,live:false,stage:false,going:false,loading:null,ending:false,failT:null,gotStream:false,timer:null,t0:0,
+ raw:null,vstream:null,ac:null,dest:null,micGain:null,src:null,ctx:null,drawT:null,out:null,
+ gv:null,gSrc:null,guestCall:null,guestConn:null,reqs:[],gStream:null,gCall:null,hostId:null,tool:'',voted:false,
+ o:{mode:'cam',facing:'user',fx:'none',enh:0,mic:true,comments:true,title:'',goal:0,hearts:0,pin:'',poll:null},
+ m:{title:'',pin:'',goal:0,hearts:0,poll:null}};
 const lvId=h=>'soomaalink-live-'+String(h).toLowerCase().replace(/[^a-z0-9_]/g,'');
+const FX={none:'',warm:'sepia(.25) saturate(1.3) hue-rotate(-10deg)',cool:'saturate(1.1) hue-rotate(15deg) brightness(1.03)',bw:'grayscale(1) contrast(1.1)',vintage:'sepia(.5) contrast(.95) brightness(1.05)',vivid:'saturate(1.7) contrast(1.1)',soft:'blur(1px) brightness(1.06)'};
+const FXN={none:['Caadi','None'],warm:['Diirran','Warm'],cool:['Qabow','Cool'],bw:['Madow & cad','B&W'],vintage:['Hore','Vintage'],vivid:['Midab badan','Vivid'],soft:['Jilicsan','Soft']};
+const ENH=['','brightness(1.05) contrast(1.04) saturate(1.08) blur(.4px)','brightness(1.1) contrast(1.06) saturate(1.15) blur(.8px)'];
 function loadPeer(){
   if(window.Peer)return Promise.resolve();
   if(LV.loading)return LV.loading;
   return LV.loading=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';sc.onload=res;sc.onerror=()=>{LV.loading=null;rej(new Error('peerjs'))};document.head.appendChild(sc)});
 }
+const gum=c=>navigator.mediaDevices.getUserMedia(c);
+const vidC=f=>({facingMode:f,width:{ideal:720},height:{ideal:1280}});
 function openLiveMenu(){
   $('lvGo').textContent=B('🔴 Bilow Live (kamarada)','🔴 Go LIVE (camera)');
   $('lvWT').textContent=B('👀 Daawo Live','👀 Watch a LIVE');
@@ -619,37 +679,126 @@ function openLiveMenu(){
   $('lvNote2').textContent=B('Marka aad Live bilowdo, taabo 🔗 si aad link ugu dirto dadka. Waxay ku furi doonaan SoomaaLink oo toos u daawan doonaan.','When you go LIVE, tap 🔗 to send the link. People open it in SoomaaLink and watch instantly.');
   $('lvOv').classList.add('on');
 }
-function showLiveUI(host){
-  $('liveOv').classList.add('on');$('liveChat').innerHTML='';
-  $('liveShareB').style.display=host?'':'none';
-  $('liveViews').textContent='👁 '+(host?0:'');
-  const n=$('liveNote');n.style.display='block';
+/* ---- canvas pipeline: camera -> filters -> canvas -> stream ---- */
+function lvFilter(){const f=((ENH[LV.o.enh]||'')+' '+(FX[LV.o.fx]||'')).trim();return f||'none'}
+function lvDraw(){
+  const c=LV.ctx,W=540,H=960;if(!c)return;
+  c.save();
+  if(LV.o.mode==='cam'&&LV.src&&LV.src.readyState>=2&&LV.src.videoWidth){
+    c.filter=lvFilter();
+    const sw=LV.src.videoWidth,sh=LV.src.videoHeight,sc=Math.max(W/sw,H/sh),dw=sw*sc,dh=sh*sc;
+    c.drawImage(LV.src,(W-dw)/2,(H-dh)/2,dw,dh);
+  }else{
+    c.filter='none';const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,'#1a0533');g.addColorStop(1,'#fe2c55');c.fillStyle=g;c.fillRect(0,0,W,H);
+    c.fillStyle='#fff';c.textAlign='center';c.textBaseline='middle';c.font='140px serif';c.fillText('🎙️',W/2,H/2-40);c.font='bold 38px sans-serif';c.fillText('@'+S.me.handle,W/2,H/2+90);
+  }
+  c.filter='none';
+  if(LV.gv&&LV.gv.readyState>=2&&LV.gv.videoWidth){
+    const pw=170,ph=240,x=W-pw-16,y=100;c.fillStyle='#fff';c.fillRect(x-3,y-3,pw+6,ph+6);
+    const sw=LV.gv.videoWidth,sh=LV.gv.videoHeight,sc=Math.max(pw/sw,ph/sh);
+    c.save();c.beginPath();c.rect(x,y,pw,ph);c.clip();c.drawImage(LV.gv,x+(pw-sw*sc)/2,y+(ph-sh*sc)/2,sw*sc,sh*sc);c.restore();
+  }
+  c.restore();
+}
+function lvMirror(){$('liveC').style.transform=(LV.o.mode==='cam'&&LV.o.facing==='user')?'scaleX(-1)':''}
+async function lvCapture(){
+  let raw;
+  try{raw=await gum({audio:{echoCancellation:true,noiseSuppression:true},video:vidC(LV.o.facing)});LV.o.mode='cam'}
+  catch(e){try{raw=await gum({audio:true,video:false});LV.o.mode='voice';toast(B('Kamarada ma furmin, Voice chat ayaa la bilaabay','Camera unavailable, starting voice chat'))}catch(e2){return false}}
+  LV.raw=raw;
+  LV.ac=new (window.AudioContext||window.webkitAudioContext)();LV.ac.resume();
+  LV.dest=LV.ac.createMediaStreamDestination();LV.micGain=LV.ac.createGain();LV.micGain.gain.value=1;
+  LV.ac.createMediaStreamSource(new MediaStream(raw.getAudioTracks())).connect(LV.micGain);LV.micGain.connect(LV.dest);
+  LV.src=document.createElement('video');LV.src.muted=true;LV.src.playsInline=true;LV.src.autoplay=true;LV.src.style.cssText='position:fixed;left:-9999px;width:2px;height:2px';document.body.appendChild(LV.src);
+  LV.vstream=new MediaStream(raw.getVideoTracks());
+  if(LV.o.mode==='cam'){LV.src.srcObject=LV.vstream;LV.src.play().catch(()=>{})}
+  const cv=$('liveC');LV.ctx=cv.getContext('2d');
+  if(!cv.captureStream)return false;
+  LV.drawT=setInterval(lvDraw,33);
+  LV.out=new MediaStream([...cv.captureStream(30).getVideoTracks(),...LV.dest.stream.getAudioTracks()]);
+  return true;
+}
+function lvStopCapture(){
+  clearInterval(LV.drawT);LV.drawT=null;
+  [LV.raw,LV.vstream,LV.gStream].forEach(st=>{if(st)st.getTracks().forEach(t=>t.stop())});
+  LV.raw=null;LV.vstream=null;LV.gStream=null;
+  if(LV.src){LV.src.srcObject=null;LV.src.remove();LV.src=null}
+  if(LV.gv){LV.gv.srcObject=null;LV.gv.remove();LV.gv=null}
+  if(LV.ac){try{LV.ac.close()}catch(e){}LV.ac=null}
+  LV.out=null;LV.ctx=null;
+}
+function lvModeUI(){
+  $('mdVoice').textContent=B('Cod kaliya (Voice chat)','Voice chat');$('mdCam').textContent=B('Kamarada','Device camera');
+  $('mdVoice').classList.toggle('on',LV.o.mode==='voice');$('mdCam').classList.toggle('on',LV.o.mode==='cam');lvMirror();
+}
+async function lvSetMode(m){
+  if(m===LV.o.mode||!LV.raw)return;
+  if(m==='voice'){LV.vstream&&LV.vstream.getTracks().forEach(t=>t.stop());LV.src.srcObject=null;LV.o.mode='voice'}
+  else{try{const v=await gum({video:vidC(LV.o.facing)});LV.vstream=v;LV.src.srcObject=v;LV.src.play().catch(()=>{});LV.o.mode='cam'}catch(e){toast(T('camErr'))}}
+  lvModeUI();
+}
+async function lvFlip(){
+  if(LV.o.mode!=='cam'){toast(B('Voice chat: kamarad ma jirto','Voice chat has no camera'));return}
+  const nf=LV.o.facing==='user'?'environment':'user';
+  try{const v=await gum({video:vidC(nf)});LV.vstream.getTracks().forEach(t=>t.stop());LV.vstream=v;LV.src.srcObject=v;LV.src.play().catch(()=>{});LV.o.facing=nf;lvMirror()}catch(e){toast(T('camErr'))}
+}
+/* ---- setup screen ---- */
+function lvToolsHTML(){
+  const t=[['🔄',B('Rog','Flip'),'lvFlip()'],['✨','Enhance',"lvTool('enh')"],['🎭','Effects',"lvTool('fx')"],['⚙️',B('Habayn','Settings'),"lvTool('set')"],['👥','Multi-guest',"lvTool('guest')"],['📌',B('Xiriir (Pin)','Pin link'),"lvTool('pin')"],['📊','Interact',"lvTool('poll')"],['↗️',B('Wadaag','Share'),'liveShare()']];
+  return t.map(x=>`<button class="tool" onclick="${x[2]}"><i>${x[0]}</i>${x[1]}</button>`).join('');
 }
 async function openLive(){
   if(S.set.kids){toast(B('Habka carruurta: Live waa xidhan yahay','Kids mode: Live is off'));return}
-  if(LV.peer){return}
-  let stream;
-  try{await loadPeer()}catch(e){toast(B('Internet ma jiro (PeerJS lama soo dejin)','No internet (could not load PeerJS)'));return}
-  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true})}catch(e){toast(T('camErr'));return}
-  LV.stream=stream;LV.host=true;LV.conns=[];LV.ending=false;
-  showLiveUI(true);
-  const v=$('liveV');v.srcObject=stream;v.muted=true;
-  $('liveNote').textContent=B('Ku xirmaya server-ka...','Connecting...');
+  if(LV.peer||LV.stage)return;
+  LV.ending=false;
+  if(!(await lvCapture())){lvStopCapture();toast(T('camErr'));return}
+  LV.stage=true;LV.host=true;LV.live=false;LV.going=false;
+  Object.assign(LV.o,{fx:'none',enh:0,mic:true,comments:S.set.liveComments!==false,hearts:0,pin:'',poll:null,title:'',goal:0});
+  LV.m=LV.o;
+  $('liveOv').classList.add('on');$('liveC').style.display='block';$('liveV').style.display='none';
+  $('lsSetup').style.display='flex';$('lsLive').style.display='none';
+  $('lsTitle').value='';$('lsTitle').placeholder=B('Soo dhawoow! Cinwaanka Live-ka...','Welcome! Live title...');
+  $('lsGoal').innerHTML=[0,50,100,500,1000].map(n=>`<option value="${n}">${n?'🎯 '+n+' ❤️':B('🎯 Hadaf ma jiro','🎯 No goal')}</option>`).join('');
+  $('toolsSetup').innerHTML=lvToolsHTML();$('lvGoBtn').textContent='Go LIVE';lvModeUI();
+}
+function lvCloseSetup(){endLive(true)}
+async function lvGo(){
+  if(LV.going)return;LV.going=true;
+  LV.o.title=$('lsTitle').value.trim();LV.o.goal=+$('lsGoal').value;
+  try{await loadPeer()}catch(e){toast(B('Internet ma jiro (PeerJS lama soo dejin)','No internet (could not load PeerJS)'));LV.going=false;return}
+  const cd=$('lvCd');cd.style.display='flex';
+  for(let i=3;i>0;i--){cd.textContent=i;await new Promise(r=>setTimeout(r,800));if(!LV.stage){cd.style.display='none';return}}
+  cd.style.display='none';lvStartBroadcast();
+}
+function lvStartBroadcast(){
+  $('lsSetup').style.display='none';$('lsLive').style.display='block';
+  $('liveGuestBtn').style.display='none';$('liveShareB').style.display='';$('liveToolsB').style.display='';
+  LV.m=LV.o;LV.reqs=[];LV.conns=[];$('liveChat').innerHTML='';$('liveViews').textContent='👁 0';
+  $('liveNote').style.display='';$('liveNote').textContent=B('Ku xirmaya...','Connecting...');
+  lvShowMeta();
   const id=lvId(S.me.handle),peer=new Peer(id);LV.peer=peer;
   peer.on('open',()=>{
-    $('liveNote').textContent=B('🔴 Waad Live tahay! Taabo 🔗 si aad link ugu dirto dadka.','🔴 You are LIVE! Tap 🔗 to send the link to people.');
+    LV.live=true;$('liveNote').textContent=B('🔴 Waad Live tahay! Taabo 🔗 si aad link ugu dirto dadka.','🔴 You are LIVE! Tap 🔗 to send the link.');
     setTimeout(()=>{if(LV.host)$('liveNote').style.display='none'},7000);toast(T('liveStart'));
   });
   peer.on('connection',conn=>{
-    conn.on('open',()=>{LV.conns.push(conn);try{peer.call(conn.peer,stream)}catch(e){}lvCount()});
+    conn.on('open',()=>{
+      LV.conns.push(conn);try{peer.call(conn.peer,LV.out)}catch(e){}
+      conn.send({type:'info',title:LV.o.title,goal:LV.o.goal,hearts:LV.o.hearts,pin:LV.o.pin});
+      if(LV.o.poll)lvSendPoll(conn);lvCount();
+    });
     conn.on('data',d=>{
       if(!d)return;
-      if(d.type==='chat'&&S.set.liveComments!==false){lvChat(d.name,d.text);lvBroadcast({type:'chat',name:d.name,text:d.text})}
-      else if(d.type==='heart'){liveHeart(true);lvBroadcast({type:'heart'})}
+      if(d.type==='chat'){if(LV.o.comments){lvChat(d.name,d.text);lvBroadcast({type:'chat',name:d.name,text:d.text})}else conn.send({type:'cmOff'})}
+      else if(d.type==='heart'){lvHeartCount();liveHeart(true);lvBroadcast({type:'heart'})}
+      else if(d.type==='vote'){const p=LV.o.poll;if(p&&p.active&&!p.voters[conn.peer]&&p.votes[d.i]!=null){p.voters[conn.peer]=1;p.votes[d.i]++;lvSendPoll();lvRenderPoll();if(LV.tool==='poll')lvPanelRender()}}
+      else if(d.type==='guestReq'){if(!LV.reqs.find(r=>r.conn===conn)){LV.reqs.push({conn,name:d.name});toast('🎤 @'+d.name+' '+B('rabaa inuu ku soo biiro','wants to join'));if(LV.tool==='guest')lvPanelRender()}}
+      else if(d.type==='guestLeave'){if(LV.guestConn===conn){LV.guestConn=null;lvGuestRemove()}LV.reqs=LV.reqs.filter(r=>r.conn!==conn)}
     });
-    conn.on('close',()=>{LV.conns=LV.conns.filter(c=>c!==conn);lvCount()});
+    conn.on('close',()=>{LV.conns=LV.conns.filter(c=>c!==conn);LV.reqs=LV.reqs.filter(r=>r.conn!==conn);if(LV.guestConn===conn){LV.guestConn=null;lvGuestRemove()}lvCount()});
     conn.on('error',()=>{});
   });
+  peer.on('call',call=>lvGuestCall(call));
   peer.on('error',e=>{
     if(e.type==='unavailable-id')toast(B('Live-kaaga mid kale ayaa socda. Xidh kii hore, sug 30 ilbiriqsi, oo isku day.','Your LIVE is already running somewhere. Close it, wait 30s and retry.'));
     else toast('Live: '+e.type);
@@ -658,30 +807,134 @@ async function openLive(){
   LV.t0=Date.now();clearInterval(LV.timer);
   LV.timer=setInterval(()=>{const t=Math.floor((Date.now()-LV.t0)/1000);$('liveT').textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0')},500);
 }
+/* ---- tools & panels ---- */
+function lvOpenTools(){$('toolsLive').innerHTML=lvToolsHTML();$('lvTools').classList.add('on')}
+function lvTool(n){
+  if((n==='guest'||n==='poll')&&!LV.live){toast(B('Marka hore taabo Go LIVE','Tap Go LIVE first'));return}
+  closeOv(null,'lvTools');LV.tool=n;lvPanelRender();$('lvPanel').classList.add('on');
+}
+const lvSel=(on,txt,act)=>`<button class="sr ${on?'sel':''}" onclick="${act}"><span class="sl">${txt}</span><span class="rd"></span></button>`;
+const lvSw=(txt,k,v)=>`<div class="sr"><span class="sl">${txt}</span><label class="sw"><input type="checkbox" ${v?'checked':''} onchange="lvToggle('${k}',this.checked)"><i></i></label></div>`;
+function lvPanelRender(){
+  const n=LV.tool,o=LV.o;let t='',h='';
+  if(n==='enh'){t='Enhance ✨';h=`<div class="sg">${[0,1,2].map(i=>lvSel(o.enh===i,[B('Dami','Off'),B('Yar','Low'),B('Sare','High')][i],`lvSet('enh',${i})`)).join('')}</div><div class="sub">${B('Waxay iftiimisaa oo jilciyaa muuqaalka. Dadka daawanaya ayaa arkaya.','Brightens and smooths the picture. Viewers see it.')}</div>`}
+  else if(n==='fx'){t=B('Saameyn (Effects) 🎭','Effects 🎭');h=`<div class="sg">${Object.keys(FX).map(k=>lvSel(o.fx===k,B(FXN[k][0],FXN[k][1]),`lvSet('fx','${k}')`)).join('')}</div><div class="sub">${B('Waxay shaqaysaa Chrome/Android. Browser-ka qaar ma taageero.','Works in Chrome/Android. Some browsers do not support it.')}</div>`}
+  else if(n==='set'){t=B('Habaynta Live ⚙️','LIVE settings ⚙️');h=`<div class="sg">${lvSw(B('Makarafoon (mic)','Microphone'),'mic',o.mic)}${lvSw(B('Ogolow faallooyin','Allow comments'),'comments',o.comments)}</div>`}
+  else if(n==='guest'){t='Multi-guest 👥';
+    h=(LV.guestConn||LV.guestCall)?`<div class="sg"><div class="sr"><span class="sl">🎤 ${B('Marti ayaa ku jira Live-ka','A guest is on LIVE')}</span><button class="fl on" onclick="lvGuestKick()">${B('Ka saar','Remove')}</button></div></div>`:'';
+    h+=LV.reqs.length?`<div class="sgt">${B('Codsiyada','Requests')}</div><div class="sg">${LV.reqs.map((r,i)=>`<div class="sr"><span class="sl">@${esc(r.name)}</span><button class="fl" onclick="lvGuestAccept(${i})">${B('Aqbal','Accept')}</button></div>`).join('')}</div>`:`<div class="sub">${B('Codsi ma jiro. Daawadayaasha waxay taaban karaan 🎤 si ay kuu codsadaan.','No requests. Viewers can tap 🎤 to ask to join.')}</div>`;
+    h+=`<div class="sub">${B('Hal marti ayaa ku jiri kara hal mar.','One guest at a time.')}</div>`}
+  else if(n==='pin'){t=B('Xiriir / Fariin la dhejiyay 📌','Pinned link / message 📌');h=`<input id="pinIn" maxlength="120" value="${esc(o.pin||'')}" placeholder="https://..."><div class="row" style="margin-top:12px"><button class="btn g" onclick="lvPin('')">${B('Tirtir','Clear')}</button><button class="btn" onclick="lvPin($('pinIn').value)">${B('Dhejiso','Pin')}</button></div>`}
+  else if(n==='poll'){t=B('Interact: Codbixin 📊','Interact: Poll 📊');
+    const p=o.poll;
+    if(p){const tot=p.votes.reduce((a,b)=>a+b,0);h=`<b>${esc(p.q)}</b><div class="sg" style="margin-top:10px">${p.opts.map((x,i)=>`<div class="sr"><span class="sl">${esc(x)}</span><span class="sv">${p.votes[i]}${tot?' · '+Math.round(p.votes[i]/tot*100)+'%':''}</span></div>`).join('')}</div><div class="row" style="margin-top:12px">${p.active?`<button class="btn" onclick="lvPollEnd()">${B('Dhammee','End poll')}</button>`:''}<button class="btn g" onclick="lvPollClear()">${B('Nadiifi','Clear')}</button></div>`}
+    else h=`<input id="pq" maxlength="80" placeholder="${B('Su’aasha...','Question...')}"><input class="po" maxlength="40" placeholder="${B('Doorasho 1','Option 1')}"><input class="po" maxlength="40" placeholder="${B('Doorasho 2','Option 2')}"><input class="po" maxlength="40" placeholder="${B('Doorasho 3 (ikhtiyaari)','Option 3 (optional)')}"><input class="po" maxlength="40" placeholder="${B('Doorasho 4 (ikhtiyaari)','Option 4 (optional)')}"><button class="btn" style="margin-top:12px" onclick="lvPollStart()">${B('Bilow','Start')}</button>`}
+  $('lpT').textContent=t;$('lpB').innerHTML=h;
+}
+function lvSet(k,v){LV.o[k]=v;lvPanelRender()}
+function lvToggle(k,v){LV.o[k]=v;if(k==='mic'&&LV.micGain)LV.micGain.gain.value=v?1:0}
+function lvPin(t){LV.o.pin=String(t||'').trim().slice(0,120);lvShowMeta();lvBroadcast({type:'pin',text:LV.o.pin});closeOv(null,'lvPanel')}
+function lvPollStart(){
+  const q=$('pq').value.trim(),opts=[...document.querySelectorAll('.po')].map(i=>i.value.trim()).filter(Boolean).slice(0,4);
+  if(!q||opts.length<2){toast(B('Qor su’aal iyo 2 doorasho ugu yaraan','Enter a question and at least 2 options'));return}
+  LV.o.poll={q,opts,votes:opts.map(()=>0),voters:{},active:true};lvSendPoll();lvRenderPoll();closeOv(null,'lvPanel');
+}
+function lvPollEnd(){if(LV.o.poll){LV.o.poll.active=false;lvSendPoll();lvRenderPoll();lvPanelRender()}}
+function lvPollClear(){LV.o.poll=null;lvSendPoll();lvRenderPoll();lvPanelRender()}
+function lvSendPoll(to){const p=LV.o.poll,m={type:'poll',p:p?{q:p.q,opts:p.opts,votes:p.votes,active:p.active}:null};if(to){try{to.send(m)}catch(e){}}else lvBroadcast(m)}
+/* ---- display state (shared by host and viewers) ---- */
+const lvChip=(id,html)=>{const el=$(id);el.style.display=html?'':'none';el.innerHTML=html||''};
+const lvLink=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+function lvShowMeta(){
+  const m=LV.m;
+  lvChip('liveTitle',m.title?'📣 '+esc(m.title):'');
+  lvChip('livePin',m.pin?'📌 '+lvLink(m.pin):'');
+  const g=$('liveGoal');
+  if(m.goal){g.style.display='';$('goalTxt').textContent='🎯 '+Math.min(m.hearts,m.goal)+' / '+m.goal+' ❤️';$('goalFill').style.width=Math.min(100,m.hearts/m.goal*100)+'%'}else g.style.display='none';
+  lvRenderPoll();
+}
+function lvRenderPoll(){
+  const p=LV.m.poll,el=$('livePoll');
+  if(!p){el.style.display='none';return}
+  el.style.display='';
+  const tot=p.votes.reduce((a,b)=>a+b,0),can=!LV.host&&p.active&&!LV.voted;
+  el.innerHTML=`<b>📊 ${esc(p.q)}</b>`+p.opts.map((x,i)=>can?`<button class="pv" onclick="lvVote(${i})">${esc(x)}</button>`:`<div class="pr"><span>${esc(x)}</span><b>${p.votes[i]}${tot?' · '+Math.round(p.votes[i]/tot*100)+'%':''}</b><i style="width:${tot?p.votes[i]/tot*100:0}%"></i></div>`).join('')+(p.active?'':`<small>${B('Dhammaaday','Ended')}</small>`);
+}
+function lvVote(i){if(LV.conn&&LV.conn.open){LV.conn.send({type:'vote',i});LV.voted=true;lvRenderPoll()}}
+function lvHeartCount(){
+  LV.o.hearts++;lvBroadcast({type:'goal',n:LV.o.hearts});lvShowMeta();
+  if(LV.o.goal&&LV.o.hearts===LV.o.goal){toast('🎯 '+B('Hadafkii waa la gaadhay!','Goal reached!'));lvBroadcast({type:'goalHit'})}
+}
+/* ---- guests ---- */
+function lvGuestAccept(i){
+  if(LV.guestConn||LV.guestCall){toast(B('Hal marti kaliya','One guest only'));return}
+  const r=LV.reqs[i];if(!r)return;LV.guestConn=r.conn;try{r.conn.send({type:'guestOk'})}catch(e){}LV.reqs.splice(i,1);lvPanelRender();
+}
+function lvGuestKick(){lvGuestRemove();lvPanelRender()}
+function lvGuestCall(call){
+  if(LV.guestCall){try{call.close()}catch(e){}return}
+  call.answer();
+  call.on('stream',gs=>{
+    const v=document.createElement('video');v.srcObject=gs;v.muted=true;v.playsInline=true;v.autoplay=true;v.style.cssText='position:fixed;left:-9999px;width:2px;height:2px';document.body.appendChild(v);v.play().catch(()=>{});
+    LV.gv=v;LV.guestCall=call;
+    try{LV.gSrc=LV.ac.createMediaStreamSource(gs);LV.gSrc.connect(LV.dest)}catch(e){}
+    lvBroadcast({type:'guestOn'});toast('🎤 '+B('Marti ayaa ku soo biiray','A guest joined'));
+  });
+  call.on('close',()=>{if(LV.guestCall===call)lvGuestRemove()});
+  call.on('error',()=>{});
+}
+function lvGuestRemove(){
+  if(LV.gSrc){try{LV.gSrc.disconnect()}catch(e){}LV.gSrc=null}
+  if(LV.gv){LV.gv.srcObject=null;LV.gv.remove();LV.gv=null}
+  const c=LV.guestCall;LV.guestCall=null;if(c){try{c.close()}catch(e){}}
+  const gc=LV.guestConn;LV.guestConn=null;if(gc){try{gc.send({type:'guestEnd'})}catch(e){}}
+  if(LV.host&&LV.live)lvBroadcast({type:'guestOff'});
+}
+function lvGuestAsk(){
+  if(LV.gStream){lvGuestLeave(true);return}
+  if(!LV.conn||!LV.conn.open)return;
+  LV.conn.send({type:'guestReq',name:S.me.handle});toast(B('Codsigaaga waa la diray','Request sent'));
+}
+async function lvGuestStart(){
+  try{LV.gStream=await gum({video:{facingMode:'user',width:{ideal:480}},audio:true})}catch(e){toast(T('camErr'));try{LV.conn.send({type:'guestLeave'})}catch(x){}return}
+  LV.gCall=LV.peer.call(LV.hostId,LV.gStream);$('liveGuestBtn').textContent='❌';toast(B('Hadda waad ku jirtaa Live-ka 🎤','You are on LIVE now 🎤'));
+}
+function lvGuestLeave(tell){
+  if(LV.gStream){LV.gStream.getTracks().forEach(t=>t.stop());LV.gStream=null}
+  if(LV.gCall){try{LV.gCall.close()}catch(e){}LV.gCall=null}
+  $('liveGuestBtn').textContent='🎤';
+  if(tell&&LV.conn&&LV.conn.open){try{LV.conn.send({type:'guestLeave'})}catch(e){}}
+}
+/* ---- shared helpers ---- */
 function lvBroadcast(m){LV.conns.forEach(c=>{try{c.send(m)}catch(e){}})}
 function lvCount(){const n=LV.conns.length;$('liveViews').textContent='👁 '+n;lvBroadcast({type:'count',n})}
 function lvChat(name,text){
   const d=document.createElement('div');d.innerHTML=`<b>@${esc(name)}</b> ${esc(text)}`;
   const c=$('liveChat');c.appendChild(d);while(c.children.length>8)c.firstChild.remove();
 }
+/* ---- viewer ---- */
 function watchFromInput(){
   let t=$('lvCode').value.trim();if(!t)return;
   const m=t.match(/live=([A-Za-z0-9_]+)/);if(m)t=m[1];
   t=t.replace(/^@/,'').toLowerCase().replace(/[^a-z0-9_]/g,'');
-  if(!t){return}
+  if(!t)return;
   closeOv(null,'lvOv');watchLive(t);
 }
 async function watchLive(handle){
-  if(LV.peer)return;
+  if(LV.peer||LV.stage)return;
   if(handle===S.me.handle){toast(B('Tani waa akoonkaaga','That is your own account'));return}
   try{await loadPeer()}catch(e){toast(B('Internet ma jiro (PeerJS lama soo dejin)','No internet (could not load PeerJS)'));return}
-  LV.host=false;LV.gotStream=false;LV.ending=false;LV.conns=[];
-  showLiveUI(false);
-  $('liveT').textContent='@'+handle;
-  $('liveNote').textContent=B('Ku xirmaya @'+handle+'...','Connecting to @'+handle+'...');
+  LV.stage=true;LV.host=false;LV.gotStream=false;LV.ending=false;LV.conns=[];LV.voted=false;LV.hostId=lvId(handle);
+  LV.m={title:'',pin:'',goal:0,hearts:0,poll:null};
+  $('liveOv').classList.add('on');$('liveC').style.display='none';$('liveV').style.display='block';
+  $('lsSetup').style.display='none';$('lsLive').style.display='block';$('liveChat').innerHTML='';
+  $('liveShareB').style.display='none';$('liveToolsB').style.display='none';$('liveGuestBtn').style.display='';$('liveGuestBtn').textContent='🎤';
+  $('liveT').textContent='@'+handle;$('liveViews').textContent='👁';
+  $('liveNote').style.display='';$('liveNote').textContent=B('Ku xirmaya @'+handle+'...','Connecting to @'+handle+'...');
+  lvShowMeta();
   const peer=new Peer();LV.peer=peer;
   peer.on('open',()=>{
-    const conn=peer.connect(lvId(handle),{reliable:true});LV.conn=conn;
+    const conn=peer.connect(LV.hostId,{reliable:true});LV.conn=conn;
     LV.failT=setTimeout(()=>{if(!LV.gotStream&&LV.peer){toast(B('@'+handle+' hadda Live ma aha','@'+handle+' is not live right now'));endLive(true)}},15000);
     conn.on('open',()=>conn.send({type:'join',name:S.me.handle}));
     conn.on('data',d=>{
@@ -689,6 +942,14 @@ async function watchLive(handle){
       if(d.type==='chat')lvChat(d.name,d.text);
       else if(d.type==='heart')liveHeart(true);
       else if(d.type==='count')$('liveViews').textContent='👁 '+d.n;
+      else if(d.type==='info'){Object.assign(LV.m,{title:d.title||'',goal:d.goal||0,hearts:d.hearts||0,pin:d.pin||''});lvShowMeta()}
+      else if(d.type==='goal'){LV.m.hearts=d.n;lvShowMeta()}
+      else if(d.type==='goalHit')toast('🎯 '+B('Hadafkii waa la gaadhay!','Goal reached!'));
+      else if(d.type==='pin'){LV.m.pin=d.text||'';lvShowMeta()}
+      else if(d.type==='poll'){const old=LV.m.poll;if(!d.p||!old||old.q!==d.p.q)LV.voted=false;LV.m.poll=d.p;lvRenderPoll()}
+      else if(d.type==='cmOff')toast(B('Faallooyinka waa la xidhay','Comments are off'));
+      else if(d.type==='guestOk')lvGuestStart();
+      else if(d.type==='guestEnd'){lvGuestLeave(false);toast(B('Waa lagaa saaray marti-ka','You left the guest spot'))}
       else if(d.type==='end'){toast(B('Live wuu dhammaaday','LIVE ended'));endLive(true)}
     });
     conn.on('close',()=>{if(LV.peer&&!LV.ending){toast(B('Live wuu dhammaaday','LIVE ended'));endLive(true)}});
@@ -709,20 +970,25 @@ async function watchLive(handle){
 }
 function endLive(silent){
   if(LV.ending)return;LV.ending=true;
-  if(LV.host)lvBroadcast({type:'end'});
+  if(LV.host&&LV.live)lvBroadcast({type:'end'});
   clearTimeout(LV.failT);clearInterval(LV.timer);
+  if(!LV.host)lvGuestLeave(false);
   try{LV.conn&&LV.conn.close()}catch(e){}
   LV.conns.forEach(c=>{try{c.close()}catch(e){}});
+  try{LV.guestCall&&LV.guestCall.close()}catch(e){}
   try{LV.peer&&LV.peer.destroy()}catch(e){}
-  LV.peer=null;LV.conn=null;LV.conns=[];LV.gotStream=false;
-  if(LV.stream){LV.stream.getTracks().forEach(t=>t.stop());LV.stream=null}
-  const v=$('liveV');v.srcObject=null;$('liveOv').classList.remove('on');
-  if(silent!==true)toast(T('liveEnd'));
-  LV.host=false;
+  LV.peer=null;LV.conn=null;LV.conns=[];LV.reqs=[];LV.guestCall=null;LV.guestConn=null;LV.gotStream=false;
+  lvStopCapture();
+  const v=$('liveV');v.srcObject=null;
+  $('liveOv').classList.remove('on');$('lsSetup').style.display='none';$('lsLive').style.display='none';$('lvCd').style.display='none';
+  ['lvTools','lvPanel'].forEach(id=>$(id).classList.remove('on'));
+  const wasLive=LV.live||LV.stage;LV.live=false;LV.stage=false;LV.going=false;LV.host=false;
+  if(silent!==true&&wasLive)toast(T('liveEnd'));
+  setTimeout(()=>{LV.ending=false},500);
 }
 function liveSend(){
   const i=$('liveIn'),t=i.value.trim();if(!t)return;
-  if(S.set.liveComments===false&&LV.host){toast(B('Faallooyinka Live waa la xidhay','Live comments are off'));return}
+  if(LV.host&&!LV.o.comments){toast(B('Faallooyinka Live waa la xidhay','Live comments are off'));return}
   i.value='';
   if(LV.host){lvChat(S.me.handle,t);lvBroadcast({type:'chat',name:S.me.handle,text:t})}
   else if(LV.conn&&LV.conn.open)LV.conn.send({type:'chat',name:S.me.handle,text:t});
@@ -730,7 +996,7 @@ function liveSend(){
 function liveHeart(remote){
   const h=document.createElement('div');h.className='fh';h.textContent='❤️';h.style.right=(14+Math.random()*50)+'px';h.style.bottom='90px';$('liveOv').appendChild(h);setTimeout(()=>h.remove(),2200);
   if(remote===true)return;
-  if(LV.host)lvBroadcast({type:'heart'});else if(LV.conn&&LV.conn.open)LV.conn.send({type:'heart'});
+  if(LV.host&&LV.live){lvHeartCount();lvBroadcast({type:'heart'})}else if(LV.conn&&LV.conn.open)LV.conn.send({type:'heart'});
 }
 function liveShare(){
   const url=location.href.split('#')[0]+'#live='+S.me.handle,text=B('Daawo Live-kayga SoomaaLink 🔴','Watch my SoomaaLink LIVE 🔴');
@@ -1068,6 +1334,17 @@ function render(){
   if(cur==='profile')renderProfile();
 }
 applyStatic();applySettings();render();startUsage();if(S.loggedOut)showLogin();checkLiveHash();
+/* Android back button: close screens one by one */
+window.appBack=function(){
+  if($('loginOv').classList.contains('on'))return true;
+  const ov=[...document.querySelectorAll('.ov.on')].pop();
+  if(ov){ov.classList.remove('on');return true}
+  if($('liveOv').classList.contains('on')){endLive();return true}
+  if($('camOv').classList.contains('on')){closeCam();return true}
+  if($('setPage').classList.contains('on')){backSet();return true}
+  if(cur!=='home'){go('home');return true}
+  return false;
+};
 /* resume playback when returning to the tab */
 document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else if(cur==='home'){const el=document.querySelector(`.reel[data-id="${activeId}"] video`);if(el&&el.src)tryPlay(el)}});
 </script>
