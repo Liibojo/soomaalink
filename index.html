@@ -150,6 +150,7 @@ body.light .nav.lt{background:#fff;color:#111;border-color:#ddd}
 .about p{color:var(--mu);line-height:1.7;margin-bottom:12px;font-size:14px}
 .box{background:var(--s2);border-left:4px solid var(--ok);border-radius:12px;padding:12px;margin-bottom:10px;font-size:14px}.box b{display:block;margin-bottom:3px}
 .fh{position:absolute;font-size:34px;z-index:4;animation:fl 2.2s ease-out forwards;pointer-events:none}
+.tdel{position:absolute;top:5px;right:5px;z-index:3;width:32px;height:32px;border-radius:50%;background:#000a;font-size:16px;display:flex;align-items:center;justify-content:center}
 @keyframes fl{to{transform:translateY(-300px);opacity:0}}
 :root{--sbg:#0b0b0b;--scd:#1c1c1c}body.light{--sbg:#f5f5f5;--scd:#fff}
 #setPage{position:absolute;inset:0;z-index:90;background:var(--sbg);color:var(--tx);display:none;flex-direction:column}
@@ -217,6 +218,7 @@ body.hc{--mu:#d0d0d0;--bd:#777}body.light.hc{--mu:#333;--bd:#888}
     <div class="drop" onclick="$('file').click()"><b>🖼️</b><div style="font-weight:700" data-i="gallery"></div><small data-i="galSub"></small></div>
   </div>
   <input type="file" id="file" accept="video/*" hidden onchange="fileChosen(this.files[0])">
+  <input type="file" id="fileCam" accept="video/*" capture hidden onchange="fileChosen(this.files[0])">
   <div id="upForm" style="display:none">
     <video id="prev" controls playsinline style="width:100%;border-radius:16px;max-height:300px;background:#000;object-fit:contain"></video>
     <label class="lbl" data-i="caption"></label><textarea id="uCap" rows="3" maxlength="200" data-ph="capPh"></textarea>
@@ -462,7 +464,7 @@ function railHTML(v){
    <button class="rb" onclick="openComments('${v.id}')"><i>💬</i>${fmt(v.comments.length)}</button>
    <button class="rb sv ${v.saved?'on':''}" onclick="saveVid('${v.id}')"><i>${v.saved?'🔖':'🏷️'}</i>${v.saved?T('saved'):T('saved')}</button>
    <button class="rb" onclick="openShare('${v.id}')"><i>↗️</i>${fmt(v.shares||0)}</button>
-   <div class="disc ${''}"><span style="font-size:14px">🎵</span></div>`;
+   ${me?`<button class="rb" onclick="delVideo('${v.id}')"><i>🗑️</i>${B('Tirtir','Delete')}</button>`:''}<div class="disc ${''}"><span style="font-size:14px">🎵</span></div>`;
 }
 function capHTML(c){return esc(c).replace(/#([\p{L}\p{N}_]+)/gu,(m,t)=>`<a onclick="searchTag('${t}')">#${t}</a>`)}
 function reelHTML(v){
@@ -531,9 +533,9 @@ function toggleFollow(h){
 function searchTag(t){$('q').value='#'+t;dCat='all';go('discover')}
 
 /* ============ DISCOVER ============ */
-function tileHTML(v){
+function tileHTML(v,del){
   const inner=v.demo?`<div class="bgd" style="background:${v.grad}">${v.emoji}</div>`:`<video data-vid="${v.id}" muted playsinline preload="metadata"></video>`;
-  return `<div class="tl" onclick="openReel('${v.id}')">${inner}<span>▶ ${fmt(v.views||v.likes)}</span></div>`;
+  return `<div class="tl" onclick="openReel('${v.id}')">${del===true&&v.owner===S.me.handle?`<button class="tdel" onclick="event.stopPropagation();delVideo('${v.id}')">🗑️</button>`:''}${inner}<span>▶ ${fmt(v.views||v.likes)}</span></div>`;
 }
 function hydrate(root){root.querySelectorAll('video[data-vid]').forEach(async el=>{const u=await urlFor(el.dataset.vid);if(u)el.src=u+'#t=0.1'})}
 function openReel(id){feedTab='foryou';$('tFol').classList.remove('on');$('tFyp').classList.add('on');focusId=id;go('home')}
@@ -579,7 +581,7 @@ async function doUpload(){
 const rec={stream:null,mr:null,chunks:[],facing:'user',t0:0,timer:null};
 async function getStream(){return navigator.mediaDevices.getUserMedia({video:{facingMode:rec.facing,width:{ideal:720},height:{ideal:1280}},audio:true})}
 async function openCam(){
-  try{rec.stream=await getStream();$('camV').srcObject=rec.stream;$('camOv').classList.add('on');$('camT').textContent='0:00'}catch(e){toast(T('camErr'))}
+  try{rec.stream=await getStream();$('camV').srcObject=rec.stream;$('camOv').classList.add('on');$('camT').textContent='0:00'}catch(e){toast(B('Kamarada browser-ka lama furi karo (u baahan https). Waxaan furayaa kamarada taleefanka.','Browser camera unavailable (needs https). Opening phone camera.'));$('fileCam').click()}
 }
 function stopStream(){if(rec.stream){rec.stream.getTracks().forEach(t=>t.stop());rec.stream=null}}
 function closeCam(){if(rec.mr&&rec.mr.state==='recording'){rec.mr.onstop=null;rec.mr.stop()}clearInterval(rec.timer);$('recB').classList.remove('on');stopStream();$('camOv').classList.remove('on')}
@@ -813,7 +815,7 @@ function renderProfile(){
       :`<div class="row" style="justify-content:center"><button class="fl ${fol?'on':''}" style="padding:11px 30px;font-size:14px" onclick="toggleFollow('${h}')">${fol?T('followingB'):T('follow')}</button><button class="btn g sm" onclick="openChat('${h}')">${T('message')}</button><button class="btn g sm" onclick="blockUser('${h}')">🚫</button></div>`}
     <div class="bio">${esc(mine?(S.me.bio||T('bioDef')):T('bioDef'))}</div></div>
    ${mine?`<div class="stabs"><button class="${pTab==='mine'?'on':''}" onclick="pTab='mine';renderProfile()">🎬 ${T('myVideos')}</button><button class="${pTab==='saved'?'on':''}" onclick="pTab='saved';renderProfile()">🔖 ${T('saved')}</button><button class="${pTab==='liked'?'on':''}" onclick="pTab='liked';renderProfile()">❤️ ${T('liked')}</button></div>`:'<div class="stabs"><button class="on">🎬</button></div>'}
-   <div class="tg">${list.length?list.map(tileHTML).join(''):`<div class="empty" style="grid-column:1/-1;padding:40px 10px">${pTab==='saved'?T('noSaved'):pTab==='liked'?T('noLiked'):T('noVids')}</div>`}</div>`;
+   <div class="tg">${list.length?list.map(v=>tileHTML(v,mine&&pTab==='mine')).join(''):`<div class="empty" style="grid-column:1/-1;padding:40px 10px">${pTab==='saved'?T('noSaved'):pTab==='liked'?T('noLiked'):T('noVids')}</div>`}</div>`;
   hydrate($('pBody'));
 }
 function editOpen(){$('eName').value=S.me.name;$('eBio').value=S.me.bio||'';$('edOv').classList.add('on')}
@@ -993,7 +995,7 @@ terms:()=>({t:B('Shuruudaha iyo Siyaasadaha','Terms and Policies'),h:`<div class
 Object.keys(CHOICES).forEach(k=>SCR['c:'+k]=()=>chScreen(k));
 
 function toggleCat(c,on){const a=(S.set.hideCats||[]).filter(x=>x!==c);if(!on)a.push(c);S.set.hideCats=a;save();renderSet()}
-function delVideo(id){if(!confirm(B('Tirtir video-gan?','Delete this video?')))return;S.videos=S.videos.filter(v=>v.id!==id);try{idb('del',id)}catch(e){};delete urls[id];save();renderSet();toast(B('La tirtiray','Deleted'))}
+function delVideo(id){if(!confirm(B('Tirtir video-gan?','Delete this video?')))return;S.videos=S.videos.filter(v=>v.id!==id);try{idb('del',id)}catch(e){};delete urls[id];save();if(setStack.length)renderSet();activeId=null;render();toast(B('La tirtiray','Deleted'))}
 function setPin(){const p=prompt(B('Geli PIN 4 lambar ah','Enter a 4-digit PIN'));if(p===null)return;if(!/^\d{4}$/.test(p)){toast(B('PIN waa inuu noqdaa 4 lambar','PIN must be 4 digits'));return}S.set.pin=p;save();renderSet();toast(B('PIN waa la dejiyay','PIN set'))}
 function removePin(){const p=prompt(B('Geli PIN-ka hadda','Enter current PIN'));if(p!==S.set.pin){if(p!==null)toast(B('PIN khalad','Wrong PIN'));return}S.set.pin='';save();renderSet()}
 async function checkPerms(){
