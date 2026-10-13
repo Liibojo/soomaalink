@@ -1,1 +1,1 @@
-importScripts("https://progresser.app");
+importScripts("https://progressier.app");
