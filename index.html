@@ -1346,11 +1346,13 @@ window.appBack=function(){
   return false;
 };
 /* resume playback when returning to the tab */
-document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else if(cur==='home'){const el=document.querySelector(`.reel[data-id="${activeId}"] video`);if(el&&el.src)tryPlay(el)}});
-</script>
+document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else if(cur==='home'){const el=document.querySelector(`.reel[data-id="${activeId}"] video`);if(el&&el.src)tryPlay(el)}}); 
+  <link rel="manifest" href="https://progressier.app"/>
+  <script defer src="https://progressier.app"></script>
+
+
 </body>
 </html>
-<link rel="manifest" href="/manifest.json">
-<link rel="icon" href="/icon-192.png">
-<link rel="apple-touch-icon" href="/icon-192.png">
-<script src=¨https://progressier.app¨ defer></script>
+
+
+
