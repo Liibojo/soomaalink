@@ -1350,3 +1350,14 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)document.qu
 </script>
 </body>
 </html>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/service-worker.js');
+  });
+}
+</script>
+
