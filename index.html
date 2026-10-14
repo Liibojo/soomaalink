@@ -1347,12 +1347,23 @@ window.appBack=function(){
 };
 /* resume playback when returning to the tab */
 document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video').forEach(v=>v.pause());else if(cur==='home'){const el=document.querySelector(`.reel[data-id="${activeId}"] video`);if(el&&el.src)tryPlay(el)}}); 
-  <link rel="manifest" href="https://progressier.app"/>
-  <script defer src="https://progressier.app"></script>
-
-
+  
+</script>
+<script>
+(function(){
+  var l=document.createElement('link');
+  l.rel='manifest';l.href='/manifest.json';
+  document.head.appendChild(l);
+  var i=document.createElement('link');
+  i.rel='icon';i.href='/icon-192.png';
+  document.head.appendChild(i);
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('/service-worker.js');
+    });
+  }
+})();
+</script>
 </body>
 </html>
-
-
 
