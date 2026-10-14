@@ -1447,3 +1447,70 @@ SCR.main=()=>{const r=_m();r.h=r.h.replace('<div class="sub" style="text-align:c
 })();
 </script>
 
+<script>
+(function(){
+const st=document.createElement('style');
+st.textContent=`
+#lsSetup{background:linear-gradient(#0000,#000a 40%)}
+#lsSetup .tools{grid-template-columns:repeat(5,1fr);gap:18px 2px;padding:0 6px 12px}
+#lsSetup .tool{font-size:11.5px}
+#lsSetup .tool i{font-size:26px}
+#lsSetup .setbox{background:#1c1c1ce8;border-radius:22px;margin:0 10px;padding:12px 12px 14px}
+#lsSetup .setbox .row{gap:6px}
+#lsSetup #lsTitle{background:transparent;border:none;font-size:20px;font-weight:700;padding:8px 6px;color:#fff}
+#lsSetup #lsGoal{width:auto;max-width:140px;background:transparent;border:none;font-weight:700;color:#fff;padding:8px 4px}
+#lsSetup .bigb{background:#fe2c55;border-radius:40px;padding:17px;font-size:20px;margin-top:8px}
+#lsSetup .modes{justify-content:flex-start;gap:26px;margin:12px 4px 0;overflow-x:auto;white-space:nowrap;font-size:16px}
+#lsSetup .modes button{opacity:.55;font-weight:600}
+#lsSetup .modes button.on{opacity:1}
+#lsTabs{display:flex;justify-content:center;gap:34px;padding:14px 0 calc(14px + env(safe-area-inset-bottom));background:#000;font-weight:800;font-size:17px;letter-spacing:.3px}
+#lsTabs button{opacity:.55;color:#fff}
+#lsTabs button.on{opacity:1}
+.tool.soon{opacity:.55}
+`;
+document.head.appendChild(st);
+
+window.lvToolsHTML=function(){
+  const soon=B('Dhawaan','Coming soon');
+  const t=[
+   ['🔄',B('Rog','Flip'),'lvFlip()'],
+   ['🪄','Enhance',"lvTool('enh')"],
+   ['✨','Effects',"lvTool('fx')"],
+   ['⚙️',B('Habayn','Settings'),"lvTool('set')"],
+   ['👥','Multi-guest',"lvTool('guest')"],
+   ['🛍️','Products',"toast('"+soon+"')",1],
+   ['🎧','Service+',"toast('"+soon+"')",1],
+   ['💗','Fan Club',"toast('"+soon+"')",1],
+   ['🎮','Interact',"lvTool('poll')"],
+   ['↗️',B('Wadaag','Share'),'liveShare()'],
+   ['🔥','Promote',"toast('"+soon+"')",1],
+   ['📌',B('Xiriir','Pin'),"lvTool('pin')"]
+  ];
+  return t.map(x=>`<button class="tool ${x[3]?'soon':''}" onclick="${x[2]}"><i>${x[0]}</i>${x[1]}</button>`).join('');
+};
+
+/* Mobile gaming mode + bottom tabs */
+const modes=document.querySelector('#lsSetup .modes');
+if(modes){
+  const g=document.createElement('button');
+  g.textContent=B('📱 Ciyaar mobile','📱 Mobile gaming');
+  g.onclick=()=>toast(B('Dhawaan','Coming soon'));
+  modes.appendChild(g);
+}
+const tabs=document.createElement('div');
+tabs.id='lsTabs';
+tabs.innerHTML='<button class="on">LIVE</button><button id="tbCam">CAMERA</button><button id="tbCre">CREATE</button>';
+$('lsSetup').appendChild(tabs);
+$('tbCam').onclick=function(){endLive(true);go('upload');setTimeout(openCam,150)};
+$('tbCre').onclick=function(){endLive(true);go('upload')};
+
+/* "LIVE goal" label in the dropdown */
+const _o=window.openLive;
+window.openLive=async function(){
+  await _o();
+  const gl=$('lsGoal');
+  if(gl)gl.innerHTML=[0,50,100,500,1000].map(n=>`<option value="${n}">${n?'🎯 '+n+' ❤️':'🎯 LIVE goal'}</option>`).join('');
+  $('lsTitle').placeholder=B('Soo dhawoow','Welcome');
+};
+})();
+</script>
