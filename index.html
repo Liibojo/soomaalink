@@ -1366,4 +1366,84 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)document.qu
 </script>
 </body>
 </html>
+<script>
+(function(){
+const RE=[
+['family','Nuxur aan qoys ahaan loo daawan karin','Not family-friendly'],
+['sexual','Qaawan ama nuxur galmo','Nudity or sexual content'],
+['violence','Rabshad ama nacayb','Violence or hate'],
+['harass','Cadaadis ama ceebayn','Harassment or bullying'],
+['child','Amni-darrada carruurta','Child safety'],
+['selfharm','Is-dhaawac ama is-dilid','Self-harm or suicide'],
+['illegal','Wax sharci-darro ah (hub, daroogo)','Illegal activity (weapons, drugs)'],
+['false','Warar been abuur ah','False information'],
+['spam','Spam ama khayaano','Spam or scam'],
+['copyright','Xuquuq daabacaad','Copyright'],
+['other','Kale','Other']];
+let RP={type:'',id:'',owner:'',reason:'',det:'',blk:false};
+const lab=k=>{const r=RE.find(x=>x[0]===k);return r?B(r[1],r[2]):k};
+function rpRender(){
+  const sh=$('rpOv').querySelector('.sheet');
+  const canBlk=RP.owner&&RP.owner!==S.me.handle;
+  sh.innerHTML=`<div class="sh"><span>🚩 ${B('Soo sheeg','Report')} ${RP.owner?'@'+esc(RP.owner):''}</span><button onclick="closeOv(null,'rpOv')">✕</button></div>
+  <div class="sub" style="margin:0 0 8px">${B('Maxaa khaldan?','What is wrong?')}</div>
+  <div class="sg">${RE.map(r=>`<button class="sr ${RP.reason===r[0]?'sel':''}" onclick="rpPick('${r[0]}')"><span class="sl">${B(r[1],r[2])}</span><span class="rd"></span></button>`).join('')}</div>
+  <textarea id="rpDet" rows="3" maxlength="300" placeholder="${B('Faahfaahin dheeraad ah (ikhtiyaari)','More details (optional)')}" style="margin-top:12px">${esc(RP.det||'')}</textarea>
+  ${canBlk?`<div class="sr" style="margin-top:8px"><span class="sl">${B('Xannib qofkan sidoo kale','Also block this account')}</span><label class="sw"><input type="checkbox" id="rpBlk" ${RP.blk?'checked':''}><i></i></label></div>`:''}
+  <button class="btn" style="margin-top:12px" onclick="rpSubmit()">${B('Dir warbixinta','Submit report')}</button>`;
+}
+function openReport(type,id,owner){
+  if(owner===S.me.handle){toast(B('Tani waa kaaga','This is yours'));return}
+  RP={type,id,owner,reason:'',det:'',blk:false};rpRender();$('rpOv').classList.add('on');
+}
+window.rpPick=function(k){RP.det=($('rpDet')||{}).value||'';RP.blk=!!($('rpBlk')&&$('rpBlk').checked);RP.reason=k;rpRender()};
+window.rpSubmit=function(){
+  if(!RP.reason){toast(B('Marka hore dooro sababta','Choose a reason first'));return}
+  const det=$('rpDet').value.trim(),blk=!!($('rpBlk')&&$('rpBlk').checked);
+  S.reports=S.reports||[];
+  S.reports.unshift({id:'r'+Date.now(),type:RP.type,target:RP.id,owner:RP.owner,reason:RP.reason,details:det,by:S.me.handle,ts:Date.now(),status:'pending'});
+  S.reports=S.reports.slice(0,200);
+  if(blk&&RP.owner&&!S.blocked.includes(RP.owner)){S.blocked.push(RP.owner);S.following=S.following.filter(x=>x!==RP.owner)}
+  if(RP.type==='video'){S.videos=S.videos.filter(v=>v.id!==RP.id);activeId=null}
+  if(RP.type==='comment'){const v=vid(cmId);if(v)v.comments=v.comments.filter(c=>c.id!==RP.id)}
+  save();closeOv(null,'rpOv');
+  toast(B('Mahadsanid. Warbixintaada waa la helay.','Thank you. Your report was received.'));
+  render();if(RP.type==='comment'&&cmId){renderComments();refreshRail(cmId)}
+  if(blk&&RP.type==='user')openMe();
+};
+window.reportOpen=function(){
+  closeOv(null,'shOv');
+  if(shId==='__p'){toast(B('Tani waa profile-kaaga','This is your profile'));return}
+  const v=vid(shId);if(v)openReport('video',shId,v.owner);
+};
+window.sendReport=function(){closeOv(null,'rpOv')};
+window.reportComment=function(id){
+  const v=vid(cmId),c=v&&v.comments.find(x=>x.id===id);
+  if(c)openReport('comment',id,c.u);
+};
+window.reportUser=function(){if(viewUser)openReport('user',viewUser,viewUser)};
+window.renderComments=function(){
+  const v=vid(cmId);$('cmCount').textContent='('+v.comments.length+')';
+  $('cmList').innerHTML=v.comments.length?v.comments.map(c=>`<div class="cm"><div class="a">👤</div><div class="b"><small>@${esc(c.u)}</small><div>${esc(c.t)}</div>${c.u===S.me.handle?`<small onclick="delComment('${c.id}')" style="color:var(--ac)">🗑</small>`:`<small onclick="reportComment('${c.id}')" style="color:var(--mu)">🚩 ${B('Soo sheeg','Report')}</small>`}</div><button class="lk ${c.liked?'on':''}" onclick="likeComment('${c.id}')"><span style="font-size:18px">${c.liked?'❤️':'🤍'}</span>${c.likes||''}</button></div>`).join(''):`<div class="empty" style="padding:30px">${T('noCm')}</div>`;
+};
+const _rp=window.renderProfile;
+window.renderProfile=function(){
+  _rp();
+  if(viewUser){const row=document.querySelector('#pBody .prof .row');if(row)row.insertAdjacentHTML('beforeend','<button class="btn g sm" onclick="reportUser()">🚩</button>')}
+};
+window.rpEmail=function(){
+  const R=S.reports||[];
+  const body=R.map(r=>`[${new Date(r.ts).toISOString()}] ${r.type} | ${r.target} | @${r.owner} | ${lab(r.reason)} | ${r.details||'-'} | by @${r.by}`).join('\n');
+  location.href='mailto:boyyare432@gmail.com?subject='+encodeURIComponent('SoomaaLink reports')+'&body='+encodeURIComponent(body);
+};
+window.rpClear=function(){if(!confirm(B('Nadiifi warbixinnada?','Clear reports?')))return;S.reports=[];save();renderSet()};
+SCR.reports=()=>{const R=S.reports||[];return{t:B('Warbixinnada','Reports'),h:
+ (R.length?sG('',R.map(r=>`<div class="sr"><span class="si">${r.type==='video'?'🎬':r.type==='comment'?'💬':'👤'}</span><span class="sl" style="font-weight:500">${esc(lab(r.reason))}<small style="display:block;color:var(--mu);font-weight:400">@${esc(r.owner||'')} · ${ago(r.ts)}</small></span></div>`).join(''))
+ +`<button class="btn" style="margin-top:14px" onclick="rpEmail()">📧 ${B('U dir kooxda maamulka','Send to moderation team')}</button><button class="btn g" style="margin-top:10px" onclick="rpClear()">${B('Nadiifi','Clear')}</button>`
+ :`<div class="empty"><b>🚩</b>${B('Warbixin ma jirto','No reports yet')}</div>`)
+ +txt('Warbixinnada waxay ku kaydsan yihiin taleefankaaga. Taabo "U dir" si email loogu diro kooxda maamulka.','Reports are stored on your device. Tap "Send" to email them to the moderation team.')}};
+const _m=SCR.main;
+SCR.main=()=>{const r=_m();r.h=r.h.replace('<div class="sub" style="text-align:center',sG(B('Amniga bulshada','Community safety'),sR('🚩',B('Warbixinnada','Reports'),(S.reports||[]).length||'',"openScr('reports')"))+'<div class="sub" style="text-align:center');return r};
+})();
+</script>
 
